@@ -10,6 +10,11 @@ create:
 	@$(DC) exec db pg_restore --dbname=gobelins -U gobelins /mn.lab.database.dump
 	@$(DC) exec engine ./project/provisioning/scripts/post-create.bash
 
+.PHONY: update-engine
+update-engine:
+	@$(DC) build --no-cache  engine
+	@$(DC) up -d engine
+
 .PHONY: import-db
 import-db:
 	@$(DC) exec db pg_restore --dbname=gobelins -U gobelins /mn.lab.database.dump

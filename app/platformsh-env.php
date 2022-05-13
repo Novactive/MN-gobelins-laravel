@@ -23,7 +23,24 @@ function mapPlatformShEnvironmentVariables() : void
     }
 
     // Map services as feasible.
+    mapPlatformShPostgreDatabase('postgre', $config);
     mapPlatformShElasticSearch('elasticsearch', $config);
+}
+
+function mapPlatformShPostgreDatabase(string $relationshipName, Config $config) : void
+{
+    if (!$config->hasRelationship($relationshipName)) {
+        return;
+    }
+
+    $credentials = $config->credentials($relationshipName);
+
+    setEnvVar('DB_CONNECTION', $credentials['scheme']);
+    setEnvVar('DB_HOST', $credentials['host']);
+    setEnvVar('DB_PORT', $credentials['port']);
+    setEnvVar('DB_DATABASE', $credentials['username']);
+    setEnvVar('DB_USERNAME', $credentials['username']);
+    setEnvVar('DB_PASSWORD', $credentials['password']);
 }
 
 function mapPlatformShElasticSearch(string $relationshipName, Config $config) : void

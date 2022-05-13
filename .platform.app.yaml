@@ -17,6 +17,7 @@ build:
 runtime:
   extensions:
     - redis
+    - pdo_pgsql
 
 # The hooks that will be performed when the package is deployed.
 hooks:
@@ -25,8 +26,10 @@ hooks:
     # install a specific NodeJS version https://github.com/platformsh/snippets/
     #   -v requested version
     #   -y install Yarn
-    curl -fsS https://raw.githubusercontent.com/platformsh/snippets/main/src/install_node.sh | { bash /dev/fd/3 -v 16 -y; } 3<&0
+    curl -fsS https://raw.githubusercontent.com/platformsh/snippets/main/src/install_node.sh | { bash /dev/fd/3 -v 16; } 3<&0
+    
     APP_ENV=prod composer install --no-dev --prefer-dist --no-progress --no-interaction --optimize-autoloader --no-scripts
+    npm install && npm run production
   deploy: |
     set -e
     APP_ENV=prod composer run platformsh-deploy
@@ -37,7 +40,7 @@ hooks:
 # to the application in the PLATFORM_RELATIONSHIPS variable. The right-hand
 # side is in the form `<service name>:<endpoint name>`.
 relationships:
-  database: "db:postgresql"
+  postgre: "db:gobelins"
   rediscache: "cache:redis"
   redissession: "cache:redis"
   elasticsearch: "es:elasticsearch"
@@ -81,3 +84,7 @@ web:
     "/storage":
       root: "storage/app/public"
       scripts: false
+
+variables:
+  env:
+    N_PREFIX: /app/.global

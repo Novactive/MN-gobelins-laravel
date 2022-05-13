@@ -99,6 +99,13 @@
       "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
       "@php artisan package:discover"
     ],
+    "build-assets": [
+      "yarn install",
+      "yarn run production"
+    ],
+    "platformsh-build": [
+      "@build-assets"
+    ],
     "platformsh-deploy": [
       "@post-install-cmd"
     ]
