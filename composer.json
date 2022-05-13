@@ -30,6 +30,7 @@
     "nyholm/psr7": "^1.3",
     "orangehill/iseed": "^2.6",
     "picturae/oai-pmh": "^0.5.20",
+    "platformsh/laravel-bridge": "^2.2",
     "seld/signal-handler": "^1.2",
     "spatie/laravel-image-optimizer": "^1.6",
     "symfony/psr-http-message-bridge": "~2.0",
@@ -57,7 +58,8 @@
   ],
   "autoload": {
     "files": [
-      "app/helpers.php"
+      "app/helpers.php",
+      "app/platformsh-env.php"
     ],
     "classmap": [
       "database/seeds",
@@ -87,6 +89,7 @@
       "@php artisan key:generate"
     ],
     "post-install-cmd": [
+      "@php artisan optimize:clear",
       "@php artisan migrate --force",
       "@php artisan db:seed --class=ProductTypeSeeder",
       "@php artisan es:indices:create"
@@ -94,6 +97,9 @@
     "post-autoload-dump": [
       "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
       "@php artisan package:discover"
+    ],
+    "platformsh-deploy": [
+      "@post-install-cmd"
     ]
   },
   "config": {

@@ -1,0 +1,13 @@
+db:
+  type: postgresql:9.6
+  disk: 1024
+
+es:
+  type: elasticsearch:6.8
+  disk: 256
+  configuration:
+    plugins:
+      - analysis-icu
+
+cache:
+  type: redis:5.0
