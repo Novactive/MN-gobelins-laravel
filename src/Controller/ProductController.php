@@ -27,6 +27,7 @@ class ProductController extends AbstractController
 
         return $this->render('product/index.html.twig', [
             'products' => $products,
+            'menu' => 'product'
         ]);
     }
 
@@ -42,7 +43,8 @@ class ProductController extends AbstractController
         }
 
         return $this->render('product/show.html.twig', [
-            'product' => $product
+            'product' => $product,
+            'menu' => 'product'
         ]);
     }
 

@@ -1,0 +1,21 @@
+{# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
+{# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
+{# @var entity \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto #}
+{% if ea.crud.currentAction == 'index' %}
+    <ul class="list-unstyled">
+        {% for key, orderDetails in field.value %}
+            <li><strong>Article</strong> : {{ orderDetails.product }}</li>
+            <li><strong>Prix</strong> : {{ orderDetails.price}}</li>
+            <li><strong>Quantité</strong> : {{ orderDetails.quantity }}</li>
+            <li><strong>Total</strong> : {{ orderDetails.total }}</li>
+            <li><strong>Commandé par</strong> : {{ orderDetails.user.fullName }}</li>
+            {% if loop.last %}
+            {% else %}
+                <hr>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+{% else %}
+    <span class="badge badge-secondary">{{ field.formattedValue }}</span>
+{% endif %}

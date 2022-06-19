@@ -1,39 +1,41 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ProductController!{% endblock %}
+{% block title %}Nos articles !{% endblock %}
 
 {% block body %}
 
     <div class="container-fluid bg-primary mb-5">
-        <div
-                class="d-flex flex-column align-items-center justify-content-center"
-                style="min-height: 400px"
-        >
-            <h3 class="display-3 font-weight-bold text-white">Our Classes</h3>
-            <div class="d-inline-flex text-white">
-                <p class="m-0"><a class="text-white" href="">Home</a></p>
-                <p class="m-0 px-2">/</p>
-                <p class="m-0">Our Classes</p>
+        <div class="container-fluid bg-primary mb-5">
+            <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 400px">
+                <h3 class="display-3 font-weight-bold text-white">Articles</h3>
+                <div class="d-inline-flex text-white">
+                    <p class="m-0"><a class="text-white" href="{{ path('home') }}">Accueil</a></p>
+                    <p class="m-0 px-2">/</p>
+                    <p class="m-0">Nos articles</p>
+                </div>
             </div>
         </div>
     </div>
-
 
     <!-- Class Start -->
     <div class="container-fluid pt-5">
         <div class="container">
             <div class="text-center pb-2">
                 <p class="section-title px-5">
-                    <span class="px-2">Popular Classes</span>
+                    <span class="px-2">Articles</span>
                 </p>
-                <h1 class="mb-4">Classes for Your Kids</h1>
+                <h1 class="mb-4">Nos articles de référence </h1>
             </div>
 
             <div class="row">
                 {% for product in products %}
                     <div class="col-lg-4 mb-5">
                         <div class="card border-0 bg-light shadow-sm pb-2">
-                            <img class="card-img-top mb-2" src="{{ asset('uploads/' ~ product.illustration) }}" alt="{{ product.name }}" />
+                            {% if product.illustration is defined and product.illustration is not null %}
+                                <img src="{{ asset('uploads/' ~ product.illustration) }}" class="card-img-top mb-2" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="{{ asset('images/img_1.png') }}" class="card-img-top mb-2" alt="{{ product.name }}">
+                            {% endif %}
                             <div class="card-body text-center">
                                 <h4 class="card-title">{{ product.name }}</h4>
                                 <p class="card-text">

@@ -36,12 +36,21 @@ class OrderController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
-            //dd($form->getData(), $cart->getFull(), $request->get('order')['discount']);
-
+            
             $user = $this->entityManager->getRepository(User::class)->find($request->get('order')['user']);
             $order->setUser($user);
-            $order->setDiscount($request->get('order')['discount']);
+            // remise
+            $discount = $request->get('order')['discount'];
+            $order->setDiscount($discount);
+            // reglement (payer)
+            $pay = $request->get('order')['pay'];
+            $order->setPay($pay);
+
+            $order->setAmount(0);
+            $order->setNetToPay(0);
+            $order->setRemainderToPay(0);
+
+            $amount = 0;
 
             $this->entityManager->persist($order);
 
@@ -54,13 +63,31 @@ class OrderController extends AbstractController
                 $orderDetails->setTotal($product['product']->getPrice() * $product['quantity']);
                 $orderDetails->setUser($this->getUser());
 
-
+                $amount = $amount + ($product['product']->getPrice() * $product['quantity']);
                 $this->entityManager->persist($orderDetails);
             }
 
-            $cart->remove();
+            $this->entityManager->flush();
+
+            // update order
+            $orderToUpdate = $this->entityManager->getRepository(Order::class)->find($order->getId());
+
+            // total avant remise
+            $orderToUpdate->setAmount($amount);
+            // net à pay (total arès remise)
+            $netToPay = $amount-$discount;
+            $orderToUpdate->setNetToPay($netToPay);
+
+            // reste à payer
+            $remainderToPay = $netToPay-$pay;
+            $orderToUpdate->setRemainderToPay($remainderToPay);
+
+            $this->entityManager->persist($orderToUpdate);
 
             $this->entityManager->flush();
+
+            $cart->remove();
+
 
             return $this->redirectToRoute('cart');
 

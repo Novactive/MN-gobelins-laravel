@@ -5,15 +5,14 @@
 {% block body %}
 
     <div class="container-fluid bg-primary mb-5">
-        <div
-                class="d-flex flex-column align-items-center justify-content-center"
-                style="min-height: 400px"
-        >
-            <h3 class="display-3 font-weight-bold text-white">Our Classes</h3>
+        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 400px">
+            <h3 class="display-3 font-weight-bold text-white">Mon panier</h3>
             <div class="d-inline-flex text-white">
-                <p class="m-0"><a class="text-white" href="">Home</a></p>
+                <p class="m-0"><a class="text-white" href="{{ path('home') }}">Accueil</a></p>
                 <p class="m-0 px-2">/</p>
-                <p class="m-0">Our Classes</p>
+                <p class="m-0"><a class="text-white" href="{{ path('product') }}">Articles</a></p>
+                <p class="m-0 px-2">/</p>
+                <p class="m-0">Mon panier</p>
             </div>
         </div>
     </div>
@@ -23,53 +22,53 @@
         <div class="container">
             <div class="text-center pb-2">
                 <p class="section-title px-5">
-                    <span class="px-2">Retrouvez l'ensemble des produits que vous avez ajouté à votre panier.</span>
+                    <span class="px-2">Retrouvez l'ensemble des produits que vous avez ajouté à votre panier</span>
                 </p>
-                <h1 class="mb-4">
-                    <hr>Mon panier</h1>
+                <h1 class="mb-4">Mes articles dans le panier</h1>
             </div>
 
             <div class="row">
             {% if cart | length > 0 %}
             <table class="table">
                 <thead>
-                <tr>
-                    <th scope="col">Produit</th>
-                    <th scope="col"></th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Article</th>
                     <th scope="col">Quantité</th>
                     <th scope="col">Prix</th>
                     <th scope="col">Total</th>
-                    <th scope="col"></th>
-                </tr>
+                    <th scope="col">Action</th>
                 </thead>
                 <tbody>
-                {% set total = null %}
-                {% for product in cart %}
-                    <tr>
-                        <th scope="row">
-                            <img src="{{ asset('uploads/' ~ product.product.illustration) }}" alt="{{ product.product.name }}" class="img-fluid" style="height:70px">
-                        </th>
-                        <th>{{ product.product.name }}</th>
-                        </th>
-                        <td>
-                            <a href="{{ path('decrease_to_cart', { 'id': product.product.id }) }}" class="btn btn-primary px-2">
-                                -
-                            </a>
-                            x{{ product.quantity }}
-                            <a href="{{ path('add_to_cart', { 'id': product.product.id }) }}" class="btn btn-primary px-2">
-                               +
-                            </a>
-                        </td>
-                        <td>{{ (product.product.price / 100) | number_format(2, ',', '.')}} $</td>
-                        <td>{{ ((product.product.price * product.quantity) / 100) | number_format(2, ',', '.') }} FDJ</td>
-                        <td>
-                            <a href="{{ path('delete_to_cart', { 'id': product.product.id }) }}" class="btn btn-primary px-2">
-                                supprimer
-                            </a>
-                        <td>
+                    {% set total = null %}
+                    {% for product in cart %}
+                        <tr>
+                            {% if product.illustration is defined and product.illustration is not null %}
+                                <td><img src="{{ asset('uploads/' ~ product.product.illustration) }}" alt="{{ product.product.name }}"  class="img-fluid" style="height:70px"></td>
+                            {% else %}
+                                <td><img src="{{ asset('images/img_1.png') }}" alt="{{ product.product.name }}"  class="img-fluid" style="height:70px"></td>
+                            {% endif %}
+                            <td>{{ product.product.name }}</td>
+                            <td>
+                                {% if product.quantity > 1 %}
+                                <a href="{{ path('decrease_to_cart', { 'id': product.product.id }) }}" class="btn btn-primary px-2">
+                                    -
+                                </a>
+                                {% endif %}
+                                x{{ product.quantity }}
+                                <a href="{{ path('add_to_cart', { 'id': product.product.id }) }}" class="btn btn-primary px-2">
+                                   +
+                                </a>
+                            </td>
+                            <td>{{ (product.product.price / 100) | number_format(2, ',', '.')}} FDJ</td>
+                            <td>{{ ((product.product.price * product.quantity) / 100) | number_format(2, ',', '.') }} FDJ</td>
+                            <td>
+                                <a href="{{ path('delete_to_cart', { 'id': product.product.id }) }}" class="btn btn-primary px-2">
+                                    supprimer
+                                </a>
+                            </td>
                     </tr>
-                    {% set total = total + (product.product.price * product.quantity) %}
-                {% endfor %}
+                        {% set total = total + (product.product.price * product.quantity) %}
+                    {% endfor %}
                 </tbody>
             </table>
 

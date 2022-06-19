@@ -5,15 +5,14 @@
 {% block body %}
 
     <div class="container-fluid bg-primary mb-5">
-        <div
-                class="d-flex flex-column align-items-center justify-content-center"
-                style="min-height: 400px"
-        >
-            <h3 class="display-3 font-weight-bold text-white">Our Classes</h3>
+        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 400px">
+            <h3 class="display-3 font-weight-bold text-white">Article</h3>
             <div class="d-inline-flex text-white">
-                <p class="m-0"><a class="text-white" href="">Home</a></p>
+                <p class="m-0"><a class="text-white" href="{{ path('home') }}">Accueil</a></p>
                 <p class="m-0 px-2">/</p>
-                <p class="m-0">Our Classes</p>
+                <p class="m-0"><a class="text-white" href="{{ path('product') }}">Nos produits</a></p>
+                <p class="m-0 px-2">/</p>
+                <p class="m-0">{{ product.name }}</p>
             </div>
         </div>
     </div>
@@ -24,20 +23,22 @@
         <div class="container">
             <div class="text-center pb-2">
                 <p class="section-title px-5">
-                    <span class="px-2">Popular Classes</span>
+                    <span class="px-2">Article</span>
                 </p>
-                <h1 class="mb-4">Classes for Your Kids</h1>
+                <h1 class="mb-4">{{ product.name }}</h1>
             </div>
 
             <div class="row">
                 <div class="col-md-4">
-                    <img src="{{ asset('uploads/' ~ product.illustration) }}" alt="{{ product.name }}" class="img-fluid">
+                    {% if product.illustration is defined and product.illustration is not null %}
+                        <img src="{{ asset('uploads/' ~ product.illustration) }}" class="img-fluid" alt="{{ product.name }}">
+                    {% else %}
+                        <img src="{{ asset('images/img_3.png') }}" class="img-fluid" alt="{{ product.name }}">
+                    {% endif %}
                 </div>
 
                 <div class="col-md-4">
-                    <h3>{{ product.name }}</h3>
-                    <spam class="product-page-price">{{ (product.price / 100) | number_format(2, ',', '.')}} $</spam>
-                    <hr>
+                    <h3>{{ (product.price / 100) | number_format(2, ',', '.')}} FDJ</h3><hr>
                     <p>
                         {{ product.description|e('html') }}
                     </p>

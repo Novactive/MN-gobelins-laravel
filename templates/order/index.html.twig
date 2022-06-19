@@ -1,19 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon panier - Tiir{% endblock %}
+{% block title %}Mon panier !{% endblock %}
 
 {% block body %}
 
     <div class="container-fluid bg-primary mb-5">
-        <div
-                class="d-flex flex-column align-items-center justify-content-center"
-                style="min-height: 400px"
-        >
-            <h3 class="display-3 font-weight-bold text-white">Our Classes</h3>
+        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 400px">
+            <h3 class="display-3 font-weight-bold text-white">Ma commande</h3>
             <div class="d-inline-flex text-white">
-                <p class="m-0"><a class="text-white" href="">Home</a></p>
+                <p class="m-0"><a class="text-white" href="{{ path('home') }}">Accueil</a></p>
                 <p class="m-0 px-2">/</p>
-                <p class="m-0">Our Classes</p>
+                <p class="m-0"><a class="text-white" href="{{ path('cart') }}">Mon panier</a></p>
+                <p class="m-0 px-2">/</p>
+                <p class="m-0">Ma commande</p>
             </div>
         </div>
     </div>
@@ -25,10 +24,9 @@
             {% if cart | length > 0 %}
             <div class="text-center pb-2">
                 <p class="section-title px-5">
-                    <span class="px-2">Retrouvez l'ensemble des produits que vous avez ajouté à votre panier.</span>
+                    <span class="px-2">Retrouvez l'ensemble des produits que vous avez ajouté à votre panier</span>
                 </p>
-                <h1 class="mb-4">
-                    <hr>Mon panier</h1>
+                <h1 class="mb-4"><hr>Ma commande</h1>
             </div>
 
             <div class="row">
@@ -38,7 +36,7 @@
                     {{ form_end(form) }}
                 </div>
                 <div class="col-6">
-                    <b>Récap de ma commande</b>
+                    <b class="mb-lg-1">Récapitulatif de ma commande</b>
 
                     {% set total = null %}
                     {% for key, product in cart %}
@@ -46,7 +44,11 @@
                         <div class="card mb-3" style="max-width: 540px;">
                             <div class="row g-0">
                                 <div class="col-md-4">
-                                    <img src="{{ asset('uploads/' ~ product.product.illustration) }}" class="img-fluid rounded-start" alt="{{ product.product.name }}">
+                                    {% if product.product.illustration is defined and product.product.illustration is not null %}
+                                        <img src="{{ asset('uploads/' ~ product.product.illustration) }}" class="img-fluid rounded-start" alt="{{ product.product.name }}">
+                                    {% else %}
+                                        <img src="{{ asset('images/img_1.png') }}" class="img-fluid rounded-start" alt="{{ product.product.name }}">
+                                    {% endif %}
                                 </div>
                                 <div class="col-md-8">
                                     <div class="card-body">
@@ -60,16 +62,15 @@
 
                         {% set total = total + (product.product.price * product.quantity) %}
                     {% endfor %}
-
+                    <hr>
+                    <strong>Total à payer : </strong>  {{ (total / 100) | number_format(2, ',', '.') }} FDJ
 
                 </div>
-                <hr>
-                <strong>Total : </strong>  {{ (total / 100) | number_format(2, ',', '.') }} FDJ
             </div>
 
             {% else %}
                 <hr>
-                <p><b> Votre panier est vide.</b></p>
+                <p><b>Votre panier est vide</b></p>
             {% endif %}
         </div>
     </div>

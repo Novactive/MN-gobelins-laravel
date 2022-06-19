@@ -34,7 +34,16 @@ class OrderType extends AbstractType
             ->add('discount', NumberType::class, [
                 'label' => 'Remise',
                 'attr' => [
-                    'placeholder' => 'remise',
+                    'placeholder' => 'remise (réduction)',
+                    'pattern' => '\d+',
+                ],
+                'required' => true,
+                'mapped' => false
+            ])
+            ->add('pay', NumberType::class, [
+                'label' => 'Réglement (payer)',
+                'attr' => [
+                    'placeholder' => 'somme à regler toute suite',
                     'pattern' => '\d+',
                 ],
                 'required' => true,
