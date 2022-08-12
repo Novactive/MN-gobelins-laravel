@@ -12,6 +12,8 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - &&  \
     apt-get install -y nodejs && \
     npm install --global yarn
 
+RUN apt-get install -y git zip
+
 RUN apt-get clean
 
 COPY entrypoint.bash /entrypoint.bash

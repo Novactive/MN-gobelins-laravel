@@ -7,7 +7,7 @@ create:
 	@$(DC) build --no-cache
 	@$(DC) up -d
 	sleep 5
-	@$(DC) exec db pg_restore --dbname=gobelins -U gobelins /mn.lab.database.dump
+	@$(DC) exec db pg_restore --dbname=gobelins -U gobelins --clean --no-acl --no-owner /mn.lab.database.dump
 	@$(DC) exec -u www-data engine ./project/provisioning/scripts/post-create.bash
 
 .PHONY: update-engine
@@ -17,7 +17,7 @@ update-engine:
 
 .PHONY: import-db
 import-db:
-	@$(DC) exec db pg_restore --dbname=gobelins -U gobelins /mn.lab.database.dump
+	@$(DC) exec db pg_restore --dbname=gobelins -U gobelins  --clean --no-acl --no-owner /mn.lab.database.dump
 
 .PHONY: start
 start:
