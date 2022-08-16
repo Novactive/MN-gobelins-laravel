@@ -53,6 +53,9 @@ mounts:
   "storage/app/public":
     source: local
     source_path: "public"
+  "storage/app/glide_cache":
+    source: local
+    source_path: "glide_cache"
   "storage/framework/views":
     source: local
     source_path: "views"
@@ -86,6 +89,8 @@ web:
       scripts: false
 
 variables:
+  php:
+    memory_limit: "256M"
   env:
     N_PREFIX: /app/.global
     MEDIA_LIBRARY_ENDPOINT_TYPE: local
