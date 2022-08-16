@@ -18,7 +18,7 @@
     "@sentry/browser": "^5.12.1",
     "@svgr/cli": "^2.4.1",
     "babel-preset-react": "^6.24.1",
-    "cross-env": "^5.2.0",
+    "cross-env": "^5.2.1",
     "laravel-mix": "^5.0.1",
     "lodash-webpack-plugin": "^0.11.5",
     "request": "^2.88.0",
