@@ -88,6 +88,9 @@ web:
 variables:
   env:
     N_PREFIX: /app/.global
+    MEDIA_LIBRARY_ENDPOINT_TYPE: local
+    MEDIA_LIBRARY_IMAGE_SERVICE: A17\Twill\Services\MediaLibrary\Glide
+    FILE_LIBRARY_ENDPOINT_TYPE: local
 
 crons:
   # Run Laravel's scheduler every 5 minutes, which is often as crons can run on Professional plans.
