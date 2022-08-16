@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use A17\Twill\Models\Model;
 use App\Models\Traits\Mappable;
 use Kalnoy\Nestedset\NodeTrait;
 
@@ -60,4 +60,5 @@ class ProductType extends Model
             return $anc->toSearchableArray();
         })->prepend($leaf)->all();
     }
+
 }

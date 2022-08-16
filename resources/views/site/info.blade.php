@@ -2,20 +2,10 @@
 
 @section('content')
 
+@include('site._nav')
+
 <nav class="InfoNav">
     <ul>
-        <li>
-            <a href="{{ route('search') }}" class="InfoNav__back">
-                <svg width="19" height="19">
-                    <path d="M9 18L1 9.52236" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                    <path d="M9 1L1 9.47764" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                    <line x1="18.5" y1="9.5" x2="1.5" y2="9.5" stroke="currentColor" stroke-linecap="round" />
-                </svg>
-                <span>Collection du Mobilier national</span>
-            </a>
-        </li>
         <li><a href="#mnlab">MN/Lab</a></li>
         <li><a href="#project">Projet</a></li>
         <li><a href="#credits">Crédits et mentions légales</a></li>
@@ -148,10 +138,25 @@
             Département de l’innovation et du numérique | DIN, Ministère de la culture
         </p>
 
-        <h2>Crédits photographiques </h2>
+        <h2 id="credits-photo">Crédits photographiques </h2>
         <p>
             Agents publics du ministère de la culture.
             Noms et prénoms des photographes précisés sur chaque fiche objet.
+        </p>
+        <p>
+            Crédits video page d’accueil<br>
+            Extrait de "Bleu", 2021.<br>
+            Réalisé avec les techniciens d’arts Sylvie Cikalleshi, Solène Corlet, Camille Paris et Sylvie Heurtaux.<br>
+            Grâce au service de communication du Mobilier national : Aurore Gallarino, Camille Gasser et Olivier Ibanez.<br>
+            Par :<br>
+            Réalisation et production : JTM<br>
+            Directeur de la photographie : Louis Sechaud<br>
+            Montage, étalonnage : Theo Jollet<br>
+            Effets spéciaux : Martin Maire<br>
+            Musique originale et mixage : Toco Vervisch<br>
+            Graphisme : Alethia<br>
+            Assistante : Emma Pustienne<br>
+            Location de matériel : Direct Digital
         </p>
 
 

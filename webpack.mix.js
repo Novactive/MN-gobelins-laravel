@@ -24,26 +24,39 @@ if (process.env.MIX_ENABLE_BUNDLE_ANALYZER) {
       reportFilename: "../storage/app/public/report.html",
       generateStatsFile: true,
       openAnalyzer: false,
-      statsFilename: "../storage/app/public/stats.json"
+      statsFilename: "../storage/app/public/stats.json",
     })
   );
 }
 
 mix
+  .js("resources/assets/js/article.js", "public/js")
   .react("resources/assets/js/bootstrap.js", "public/js")
   .sass("resources/assets/sass/app.scss", "public/css")
+  .sass("resources/assets/sass/article.scss", "public/css")
   .webpackConfig({
-    plugins: webpackPlugins
+    plugins: webpackPlugins,
   })
   .options({
     processCssUrls: false,
     hmrOptions: {
       // host: "gobelins.test",
       host: "127.0.0.1",
-      port: 8080
-    }
+      port: 8080,
+    },
   })
-  .extract(); // Auto-magically split out vendor JS.
+  .extract([
+    'react',
+    'react-dom',
+    'lodash',
+    'array-to-sentence',
+    'map-cache',
+    'object-assign',
+    'path-root-regex',
+    'is-windows',
+    'path-root',
+    '@sentry/browser',
+  ]);
 
 if (mix.inProduction()) {
   mix.version();
