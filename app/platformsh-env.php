@@ -73,7 +73,31 @@ function mapAdminAppUrl(Config $config) : void
         return;
     }
 
-    // for test only
+    $routes = $config->getUpstreamRoutes($config->applicationName);
 
-    setEnvVar('ADMIN_APP_URL', "https://admin.pr-3-3wpr5ty-pfgzak6qutkji.fr-3.platformsh.site");
+    if (!count($routes)) {
+        return;
+    }
+
+    $requestUrl = chr(0);
+    if (isset($_SERVER['SERVER_NAME'])) {
+        $requestUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://')
+            . $_SERVER['SERVER_NAME'];
+    }
+
+    usort($routes, function (array $a, array $b) use ($requestUrl) {
+        // false sorts before true, normally, so negate the comparison.
+        return
+            [strpos($a['url'], $requestUrl) !== 0, !$a['primary'], strpos($a['url'], 'https://') !== 0, strlen($a['url'])]
+            <=>
+            [strpos($b['url'], $requestUrl) !== 0, !$b['primary'], strpos($b['url'], 'https://') !== 0, strlen($b['url'])];
+    });
+
+    $url = reset($routes)['url'];
+
+    // for test only
+    if ('admin' === explode('.', $url)[0])
+    {
+        setEnvVar('ADMIN_APP_URL', $url);
+    }
 }
