@@ -61,8 +61,8 @@ function mapPlatformShElasticSearch(string $relationshipName, Config $config) : 
 
 function mapAdminAppUrl(Config $config) : void
 {
-    // If the APP_URL is already set, leave it be.
-    if (getenv('ADMIN_APP_URL')) {
+    // If the ADMIN_APP_URL is already set, leave it be.
+   /* if (getenv('ADMIN_APP_URL')) {
         return;
     }
 
@@ -71,7 +71,7 @@ function mapAdminAppUrl(Config $config) : void
     // in a .env file.
     if (!$config->inRuntime()) {
         return;
-    }
+    }*/
 
     $routes = $config->getUpstreamRoutes($config->applicationName);
 
@@ -95,7 +95,7 @@ function mapAdminAppUrl(Config $config) : void
 
     $url = reset($routes)['url'];
 
-    // for test only
+    // if first element of the url is admin (subdomain), set the url as ADMIN_APP_URL
     if ('admin' === explode('.', $url)[0])
     {
         setEnvVar('ADMIN_APP_URL', $url);

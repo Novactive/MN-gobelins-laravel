@@ -6,6 +6,7 @@
 "https://{default}/":
   type: upstream
   upstream: "app:http"
+  primary: true
 
 "https://admin.{default}/":
   type: upstream
