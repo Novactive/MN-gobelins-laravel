@@ -4,18 +4,10 @@
 # to be processed by Platform.sh.
 
 "https://{default}/":
-  type: redirect
-  to: "https://www.{default}/"
+  type: upstream
+  upstream: "app:http"
 
 "https://admin.{default}/":
-  type: upstream
-  upstream: "app:http"
-
-"https://www.{default}/":
-  type: upstream
-  upstream: "app:http"
-
-"https://beta.{default}/":
   type: upstream
   upstream: "app:http"
 
