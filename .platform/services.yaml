@@ -10,11 +10,11 @@ db:
           gobelins: admin
 
 es:
-  type: elasticsearch:6.8
+  type: elasticsearch:7.10
   disk: 256
   configuration:
     plugins:
       - analysis-icu
 
 cache:
-  type: redis:5.0
+  type: redis:7.0
