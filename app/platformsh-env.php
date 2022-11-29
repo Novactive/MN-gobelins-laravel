@@ -14,7 +14,7 @@ mapPlatformShEnvironmentVariables();
  * This is wrapped up into a function to avoid executing code in the global
  * namespace.
  */
-function mapPlatformShEnvironmentVariables() : void
+function mapPlatformShEnvironmentVariables(): void
 {
     $config = new Config();
 
@@ -28,7 +28,7 @@ function mapPlatformShEnvironmentVariables() : void
     mapAdminAppUrl($config);
 }
 
-function mapPlatformShPostgreDatabase(string $relationshipName, Config $config) : void
+function mapPlatformShPostgreDatabase(string $relationshipName, Config $config): void
 {
     if (!$config->hasRelationship($relationshipName)) {
         return;
@@ -44,7 +44,7 @@ function mapPlatformShPostgreDatabase(string $relationshipName, Config $config) 
     setEnvVar('DB_PASSWORD', $credentials['password']);
 }
 
-function mapPlatformShElasticSearch(string $relationshipName, Config $config) : void
+function mapPlatformShElasticSearch(string $relationshipName, Config $config): void
 {
     if (!$config->hasRelationship($relationshipName)) {
         return;
@@ -59,10 +59,10 @@ function mapPlatformShElasticSearch(string $relationshipName, Config $config) : 
     setEnvVar('ELASTIC_SCHEME', $credentials['scheme']);
 }
 
-function mapAdminAppUrl(Config $config) : void
+function mapAdminAppUrl(Config $config): void
 {
     // If the ADMIN_APP_URL is already set, leave it be.
-   /* if (getenv('ADMIN_APP_URL')) {
+    /* if (getenv('ADMIN_APP_URL')) {
         return;
     }
 
@@ -96,8 +96,7 @@ function mapAdminAppUrl(Config $config) : void
     $url = reset($routes)['url'];
 
     // if first element of the url is admin (subdomain), set the url as ADMIN_APP_URL
-    if ('admin' === explode('.', $url)[0])
-    {
+    if ('admin' === explode('.', $url)[0]) {
         setEnvVar('ADMIN_APP_URL', $url);
     }
 }

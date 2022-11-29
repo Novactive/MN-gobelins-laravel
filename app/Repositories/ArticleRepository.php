@@ -130,12 +130,14 @@ class ArticleRepository extends ModuleRepository
      */
     public function searchFor($q)
     {
-        return $this->published()
-            ->where('title', 'ILIKE', '%' . $q . '%')
-            ->orWhere('subtitle', 'ILIKE', '%' . $q . '%')
-            ->orWhere('lead', 'ILIKE', '%' . $q . '%')
-            ->orWhere('byline', 'ILIKE', '%' . $q . '%')
+        return $this->model
+            ->where(function ($query) use ($q) {
+                return $query->where('title', 'ILIKE', '%' . $q . '%')
+                    ->orWhere('subtitle', 'ILIKE', '%' . $q . '%')
+                    ->orWhere('lead', 'ILIKE', '%' . $q . '%')
+                    ->orWhere('byline', 'ILIKE', '%' . $q . '%');
+            })
+            ->where('published', '=', true)
             ->paginate($this->listingPaginationAmount);
     }
-
 }
