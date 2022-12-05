@@ -15,7 +15,7 @@ return [
     'default' => env('ELASTIC_CONNECTION', 'default'),
 
     'host' => [
-        'http://es:9200'
+        env('ELASTIC_HOST', 'http://es:9200')
     ],
     'servers' => [
         'host' => env('ELASTIC_HOST', '127.0.0.1'),

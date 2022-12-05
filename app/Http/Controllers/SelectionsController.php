@@ -76,7 +76,7 @@ class SelectionsController extends Controller
     {
         $user = Auth::user() ?? Auth::guard('api')->user();
         $mySelections = $user ?
-        $user->selections()->select('id', 'name', 'public')->orderBy('updated_at', 'DESC')->get()->all() : [];
+            $user->selections()->select('id', 'name', 'public')->orderBy('updated_at', 'DESC')->get()->all() : [];
         return ['mySelectionsShort' => $mySelections];
     }
 
@@ -250,8 +250,8 @@ class SelectionsController extends Controller
             $request->session()->flash(
                 'status',
                 'Bienvenue, ' .
-                $request->user()->name .
-                ' ! Vous pouvez désormais participer à cette sélection.'
+                    $request->user()->name .
+                    ' ! Vous pouvez désormais participer à cette sélection.'
             );
 
             $invitation->delete();
