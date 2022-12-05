@@ -52,7 +52,7 @@
                             onclick="document.querySelector(this.getAttribute('href')).scrollIntoView({behavior: 'smooth'}); return false;">créateurs</a></span>
                 </p>
                 <p class="EncycloHome__layus">
-                    Le Mobilier national vous propose son encyclopédie des savoir-faire. Cette institution nationale fait
+                    Le Mobilier national vous propos son encyclopédie des savoir-faire. Cette institution nationale fait
                     vivre 14 ateliers de création et de restauration. S'y transmettent des savoir-faire sur les tapisseries,
                     l’ébénisterie, la teinture… Vous trouverez ici un aperçu de ces métiers d’art, leurs techniques, leurs
                     innovations.

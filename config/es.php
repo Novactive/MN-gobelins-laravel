@@ -14,6 +14,19 @@ return [
 
     'default' => env('ELASTIC_CONNECTION', 'default'),
 
+    'host' => [
+        'http://es:9200'
+    ],
+    'servers' => [
+        'host' => env('ELASTIC_HOST', '127.0.0.1'),
+        'port' => env('ELASTIC_PORT', 9200),
+        'user' => env('ELASTIC_USER', ''),
+        'pass' => env('ELASTIC_PASS', ''),
+        'scheme' => env('ELASTIC_SCHEME', 'http'),
+    ],
+
+    'index' => env('ELASTIC_INDEX', 'gobelins_search'),
+
     /*
     |--------------------------------------------------------------------------
     | Elasticsearch Connections
@@ -76,9 +89,11 @@ return [
                         'french_elision' => [
                             'type' => 'elision',
                             'articles_case' => true,
-                            'articles' => ['l', 'm', 't', 'qu', 'n', 's', 'j',
-                                            'd', 'c', 'jusqu', 'quoiqu',
-                                            'lorsqu', 'puisqu']
+                            'articles' => [
+                                'l', 'm', 't', 'qu', 'n', 's', 'j',
+                                'd', 'c', 'jusqu', 'quoiqu',
+                                'lorsqu', 'puisqu'
+                            ]
                         ],
                         'french_synonym' => [
                             'type' => 'synonym',
@@ -94,7 +109,7 @@ return [
                         ],
                         'authors_stop' => [
                             'type' => 'stop',
-                            'stopwords'=> ['de', 'du', 'le', 'la', 'et', 'da', 'l', 'd', 'van', 'von', 'der']
+                            'stopwords' => ['de', 'du', 'le', 'la', 'et', 'da', 'l', 'd', 'van', 'von', 'der']
                         ],
                     ],
                     'analyzer' => [
@@ -115,7 +130,7 @@ return [
                             ]
                         ],
                         'author_name_analyzer' => [
-                            'type'=> 'custom',
+                            'type' => 'custom',
                             'tokenizer' => 'icu_tokenizer',
                             'filter' => [
                                 'icu_folding', // remove accents, etc.
@@ -331,7 +346,7 @@ return [
                             'type' => 'scaled_float',
                             'scaling_factor' => 1000,
                         ],
-                        
+
                         // ALIASES
                         // 'titre' => [
                         //     'type' => 'alias',

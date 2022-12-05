@@ -6,11 +6,9 @@ DC := PROJECTPORTPREFIX=39 DEV_UID=$(CURRENT_UID) DEV_GID=$(CURRENT_GID) docker-
 create:
 	@$(DC) build --no-cache
 	@$(DC) up -d
-	sleep 5
+	sleep 15
 	@$(DC) exec db psql --dbname=gobelins -U gobelins -f /mn.lab.database.dump/gobelins.dump
 	@$(DC) exec -u www-data engine ./project/provisioning/scripts/post-create.bash
-
-	provisioning/dev/db/mn.lab.database.dump/gobelins.dump
 
 .PHONY: update-engine
 update-engine:

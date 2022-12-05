@@ -46,25 +46,25 @@ class SearchController extends Controller
         $mob_nat_user = User::where('identity_code', User::IDENTITY_MOBILIER_NATIONAL)->first();
         if ($request->route()->named('selections')) {
             $my_selections = Auth::check() ? new SelectionCollection(Auth::user()
-                    ->selections()
-                    ->orderBy('updated_at', 'DESC')
-                    ->with(['users:id,name'])
-                    ->paginate(4)
-                    ->withPath(route('api.mySelections'))) : null;
+                ->selections()
+                ->orderBy('updated_at', 'DESC')
+                ->with(['users:id,name'])
+                ->paginate(4)
+                ->withPath(route('api.mySelections'))) : null;
             $mob_nat_selections = new SelectionCollection($mob_nat_user->selections()
-                    ->public()
-                    ->orderBy('updated_at', 'DESC')
-                    ->with('users:id,name,email')
-                    ->paginate(4)
-                    ->withPath(route('api.mobNatSelections')));
+                ->public()
+                ->orderBy('updated_at', 'DESC')
+                ->with('users:id,name,email')
+                ->paginate(4)
+                ->withPath(route('api.mobNatSelections')));
             $user_selections = new SelectionCollection(Selection::with('users:id,name,email')
-                    ->public()
-                    ->whereDoesntHave('users', function ($q) {
-                        $q->where('identity_code', User::IDENTITY_MOBILIER_NATIONAL);
-                    })
-                    ->orderBy('selections.updated_at', 'DESC')
-                    ->paginate(4)
-                    ->withPath(route('api.userSelections')));
+                ->public()
+                ->whereDoesntHave('users', function ($q) {
+                    $q->where('identity_code', User::IDENTITY_MOBILIER_NATIONAL);
+                })
+                ->orderBy('selections.updated_at', 'DESC')
+                ->paginate(4)
+                ->withPath(route('api.userSelections')));
         }
 
         $selection_detail = null;
@@ -95,7 +95,6 @@ class SearchController extends Controller
     public function search(Request $request)
     {
         $query = ES::type("products");
-
         $filters = [];
 
         $inventory_roots = Cache::rememberForever('distinct_inventory_roots', function () {
@@ -165,12 +164,14 @@ class SearchController extends Controller
             $filters[] = ['terms' => ['production_origin.id' => $production_origin_ids]];
         }
 
-        $dimensions = collect(['length_or_diameter_lte',
+        $dimensions = collect([
+            'length_or_diameter_lte',
             'length_or_diameter_gte',
             'depth_or_width_lte',
             'depth_or_width_gte',
             'height_or_thickness_lte',
-            'height_or_thickness_gte']);
+            'height_or_thickness_gte'
+        ]);
         $sanitized_dimensions = [];
         $dimensions->filter(function ($d) use ($request) {
             return $request->$d;
@@ -226,10 +227,12 @@ class SearchController extends Controller
                     // use-case : "Notre-dame"
                     $a = mb_split(' |-', strtolower($request->input('q')));
                     // Strip stop words
-                    $stopwords = ['de', 'du', 'le', 'la',
+                    $stopwords = [
+                        'de', 'du', 'le', 'la',
                         'et', 'da', 'l', 'd', 'van',
                         'von', 'der', 'au', 'pour',
-                        'sur', 'à', 'a', 'en', 'par'];
+                        'sur', 'à', 'a', 'en', 'par'
+                    ];
                     $f = array_filter($a, function ($item) use ($stopwords) {
                         return !in_array($item, $stopwords);
                     });
