@@ -26,4 +26,6 @@ npm-debug.log
 yarn-error.log
 .env
 .DS_Store
+composer.lock
+package-lock.json
 /provisioning/dev/db/mn.lab.database.dump
