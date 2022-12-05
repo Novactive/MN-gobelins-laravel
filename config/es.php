@@ -17,13 +17,6 @@ return [
     'host' => [
         env('ELASTIC_HOST', 'http://es:9200')
     ],
-    'servers' => [
-        'host' => env('ELASTIC_HOST', '127.0.0.1'),
-        'port' => env('ELASTIC_PORT', 9200),
-        'user' => env('ELASTIC_USER', ''),
-        'pass' => env('ELASTIC_PASS', ''),
-        'scheme' => env('ELASTIC_SCHEME', 'http'),
-    ],
 
     'index' => env('ELASTIC_INDEX', 'gobelins_search'),
 
