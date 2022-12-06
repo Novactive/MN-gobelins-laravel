@@ -29,6 +29,7 @@ return [
     | Of course, examples of configuring each Elasticsearch platform.
     |
     */
+
     'connections' => [
 
         'default' => [
