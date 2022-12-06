@@ -8,14 +8,13 @@
   "license": "MIT",
   "type": "project",
   "require": {
-    "php": "^7.4.5",
-    "area17/twill": "^2.8",
+    "php": "^7.4.8",
     "artesaos/seotools": "^0.18.0",
     "basemkhirat/elasticsearch": "dev-dev-scout-engine",
     "fideloper/proxy": "^4.4.0",
     "flynsarmy/csv-seeder": "^2.0.3",
     "folklore/image": "dev-master",
-    "guzzlehttp/guzzle": "^6.2",
+    "guzzlehttp/guzzle": "^7.0.1",
     "illuminated/console-logger": "^7.0",
     "kalnoy/nestedset": "^5.0",
     "laravel-lang/lang": "~7.0",
@@ -88,7 +87,7 @@
       "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
     ],
     "post-create-project-cmd": [
-      "@php artisan key: "
+      "@php artisan key:generate"
     ],
     "post-install-cmd": [
       "@php artisan optimize:clear",
