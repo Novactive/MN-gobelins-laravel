@@ -14,5 +14,9 @@ export default function imageUrl(path, width, height, options) {
   // Path can contain spaces, that we need to escape.
   const url = `${MEDIA_DIR}/${encodeURIComponent(path)}`;
 
-  return urlGenerator.make(url, width, height, options);
+  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+    return `https://beta.collections-mobilier-national.com/${url}`;
+  } else {
+    return urlGenerator.make(url, width, height, options);
+  }
 }
