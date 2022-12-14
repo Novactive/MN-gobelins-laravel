@@ -14,11 +14,12 @@ class MainImage extends Component {
   }
 
   render() {
+    // ${location.origin}
     let imgUrl = this.props.image
-      ? `/media/xl/${encodeURIComponent(this.props.image.path)}`
+      ? `https://beta.collections-mobilier-national.com/media/xl/${encodeURIComponent(this.props.image.path)}`
       : "";
     let downloadUrl = this.props.image
-      ? `${location.origin}/media/orig/${encodeURIComponent(
+      ? `https://beta.collections-mobilier-national.com/media/orig/${encodeURIComponent(
           this.props.image.path
         )}`
       : "";
