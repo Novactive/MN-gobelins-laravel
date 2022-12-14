@@ -14,7 +14,7 @@ export default function imageUrl(path, width, height, options) {
   // Path can contain spaces, that we need to escape.
   const url = `${MEDIA_DIR}/${encodeURIComponent(path)}`;
 
-  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development' || process.env.MIX_PROD_URL) {
     return `${process.env.MIX_PROD_URL}/${url}`;
   } else {
     return urlGenerator.make(url, width, height, options);
