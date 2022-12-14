@@ -15,7 +15,7 @@ export default function imageUrl(path, width, height, options) {
   const url = `${MEDIA_DIR}/${encodeURIComponent(path)}`;
 
   if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-    return `https://beta.collections-mobilier-national.com/${url}`;
+    return `${process.env.MIX_PROD_URL}/${url}`;
   } else {
     return urlGenerator.make(url, width, height, options);
   }

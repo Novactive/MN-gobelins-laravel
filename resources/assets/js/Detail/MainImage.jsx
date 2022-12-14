@@ -16,12 +16,10 @@ class MainImage extends Component {
   render() {
     // ${location.origin}
     let imgUrl = this.props.image
-      ? `https://beta.collections-mobilier-national.com/media/xl/${encodeURIComponent(this.props.image.path)}`
+      ? `${process.env.MIX_PROD_URL}/media/xl/${encodeURIComponent(this.props.image.path)}`
       : "";
     let downloadUrl = this.props.image
-      ? `https://beta.collections-mobilier-national.com/media/orig/${encodeURIComponent(
-          this.props.image.path
-        )}`
+      ? `${process.env.MIX_PROD_URL}/media/orig/${encodeURIComponent(this.props.image.path)}`
       : "";
     let downloadFilename = "";
     let downloadFilenameRes = this.props.image
@@ -33,6 +31,7 @@ class MainImage extends Component {
         " © Mobilier national" +
         downloadFilenameRes[2];
     }
+    console.log(`downloadFilename ${downloadFilename}`);
     return (
       <section className="DetailMainImage">
         {this.props.image ? (
