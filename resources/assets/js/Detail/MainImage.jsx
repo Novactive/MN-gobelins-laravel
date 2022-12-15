@@ -16,10 +16,10 @@ class MainImage extends Component {
   render() {
     // ${location.origin}
     let imgUrl = this.props.image
-      ? `${process.env.MIX_PROD_URL}/media/xl/${encodeURIComponent(this.props.image.path)}`
+      ? `https://collection.mobiliernational.culture.gouv.fr/media/xl/${encodeURIComponent(this.props.image.path)}`
       : "";
     let downloadUrl = this.props.image
-      ? `${process.env.MIX_PROD_URL}/media/orig/${encodeURIComponent(this.props.image.path)}`
+      ? `https://collection.mobiliernational.culture.gouv.fr/media/orig/${encodeURIComponent(this.props.image.path)}`
       : "";
     let downloadFilename = "";
     let downloadFilenameRes = this.props.image

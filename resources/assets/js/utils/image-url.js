@@ -13,9 +13,8 @@ const MEDIA_DIR = "/media/xl";
 export default function imageUrl(path, width, height, options) {
   // Path can contain spaces, that we need to escape.
   const url = `${MEDIA_DIR}/${encodeURIComponent(path)}`;
-
-  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development' || process.env.MIX_PROD_URL) {
-    return `${process.env.MIX_PROD_URL}/${url}`;
+  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+    return `https://collection.mobiliernational.culture.gouv.fr/${url}`;
   } else {
     return urlGenerator.make(url, width, height, options);
   }
