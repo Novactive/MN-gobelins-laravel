@@ -61,6 +61,32 @@
                 s.parentNode.insertBefore(g, s);
             })();
         </script>
+
+        <script>
+            var _paq = window._paq = window._paq || [];
+            /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+            (function() {
+                var u = "https://mobiliernational.matomo.cloud/";
+                _paq.push(['setTrackerUrl', u + 'matomo.php']);
+                _paq.push(['setSiteId', '1']);
+                var d = document,
+                    g = d.createElement('script'),
+                    s = d.getElementsByTagName('script')[0];
+                g.async = true;
+                g.src = '//cdn.matomo.cloud/mobiliernational.matomo.cloud/matomo.js';
+                s.parentNode.insertBefore(g, s);
+            })();
+        </script>
+
+        <noscript>
+            <p><img src="https://mobiliernational.matomo.cloud/matomo.php?idsite=1&amp;rec=1" style="border:0;"
+                    alt="" />
+            </p>
+        </noscript>
+        <!-- End Matomo Code -->
+    @else
         <!-- Matomo -->
         <script>
             var _paq = window._paq = window._paq || [];
@@ -70,7 +96,7 @@
             (function() {
                 var u = "https://mobiliernational.matomo.cloud/";
                 _paq.push(['setTrackerUrl', u + 'matomo.php']);
-                _paq.push(['setSiteId', '2']);
+                _paq.push(['setSiteId', '3']);
                 var d = document,
                     g = d.createElement('script'),
                     s = d.getElementsByTagName('script')[0];
@@ -79,12 +105,6 @@
                 s.parentNode.insertBefore(g, s);
             })();
         </script>
-        <!-- End Matomo Code -->
-        <noscript>
-            <p><img src="https://mobiliernational.matomo.cloud/matomo.php?idsite=1&amp;rec=1" style="border:0;"
-                    alt="" />
-            </p>
-        </noscript>
         <!-- End Matomo Code -->
     @endif
 
@@ -121,6 +141,8 @@
     <script src="{{ mix('js/bootstrap.js') }}"></script>
 
     @yield('end_body')
+
+    <script></script>
 </body>
 
 </html>
