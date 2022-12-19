@@ -16,7 +16,7 @@
             var env = '{{ env('APP_ENV') }}';
             var u = "https://mobiliernational.matomo.cloud/";
             _paq.push(['setTrackerUrl', u + 'matomo.php']);
-            env === 'production' ? _paq.push(['setSiteId', '2']) : _paq.push(['setSiteId', '4']);
+            env === 'prod' ? _paq.push(['setSiteId', '2']) : _paq.push(['setSiteId', '4']);
             var d = document,
                 g = d.createElement('script'),
                 s = d.getElementsByTagName('script')[0];
