@@ -39,7 +39,7 @@
             <div class="EncycloHome__intro" data->
                 <p class="EncycloHome__intro_lines">
                     <span class="EncycloHome__line1">Découvrez</span>
-                    <span class="EncycloHome__line2">nos <a href="#rubrique-metier"
+                    <span class="EncycloHome__line2">nos <a href="#rubrique-metiers"
                             onclick="document.querySelector(this.getAttribute('href')).scrollIntoView({behavior: 'smooth'}); return false;">
                             métiers</a><span class="EncycloHome__comma">,</span></span>
                     <span class="EncycloHome__line3"><a href="#rubrique-outils-techniques"
@@ -48,11 +48,11 @@
                     <span class="EncycloHome__line4"><a href="#rubrique-histoires-dobjet"
                             onclick="document.querySelector(this.getAttribute('href')).scrollIntoView({behavior: 'smooth'}); return false;">histoires
                             d’objets</a></span>
-                    <span class="EncycloHome__line5">ou <a href="#rubrique-createur"
+                    <span class="EncycloHome__line5">ou <a href="#rubrique-createurs"
                             onclick="document.querySelector(this.getAttribute('href')).scrollIntoView({behavior: 'smooth'}); return false;">créateurs</a></span>
                 </p>
                 <p class="EncycloHome__layus">
-                    Le Mobilier national vous propos son encyclopédie des savoir-faire. Cette institution nationale fait
+                    Le Mobilier national vous propose son encyclopédie des savoir-faire. Cette institution nationale fait
                     vivre 14 ateliers de création et de restauration. S'y transmettent des savoir-faire sur les tapisseries,
                     l’ébénisterie, la teinture… Vous trouverez ici un aperçu de ces métiers d’art, leurs techniques, leurs
                     innovations.
