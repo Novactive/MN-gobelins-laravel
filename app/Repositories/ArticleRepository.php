@@ -40,7 +40,7 @@ class ArticleRepository extends ModuleRepository
     public function afterSave($object, $fields)
     {
         $this->updateBrowser($object, $fields, 'related');
-        parent::afterSave($object, $fields);
+        // parent::afterSave($object, $fields);
     }
 
     public function inSection($section, $qty = 6)
