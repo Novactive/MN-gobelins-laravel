@@ -37,11 +37,11 @@ class ArticleRepository extends ModuleRepository
         return parent::filter($query, $scopes);
     }
 
-    public function afterSave($object, $fields)
-    {
-        $this->updateBrowser($object, $fields, 'related');
-        // parent::afterSave($object, $fields);
-    }
+    // public function afterSave($object, $fields)
+    // {
+    //     $this->updateBrowser($object, $fields, 'related');
+    //     parent::afterSave($object, $fields);
+    // }
 
     public function inSection($section, $qty = 6)
     {

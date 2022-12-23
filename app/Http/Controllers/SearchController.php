@@ -185,6 +185,7 @@ class SearchController extends Controller
         });
 
         $body = [
+            'track_total_hits' => true,
             'query' => [
                 'function_score' => [
                     'boost_mode' => 'sum', // For when we have an initial score of 0.
