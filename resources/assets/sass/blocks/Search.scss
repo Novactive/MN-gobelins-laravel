@@ -2,7 +2,7 @@
     position: fixed;
     top: 15px;
     right: 150px;
-    z-index: 5;
+    z-index: 9;
     @include breakpoint(768px) {
         top: 30px;
         right: 160px;
@@ -16,7 +16,7 @@
     }
 }
 .Search__backdrop{
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -167,11 +167,11 @@
         top: 30px;
         left: 33px;
     }
-    @include breakpoint($large-up) {
-        top: 40px;
-        left: initial;
-        right: 185px;
-    }
+    // @include breakpoint($large-up) {
+    //     top: 40px;
+    //     left: initial;
+    //     right: 185px;
+    // }
 }
 
 .Search__content {
