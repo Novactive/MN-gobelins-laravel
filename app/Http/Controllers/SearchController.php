@@ -134,7 +134,7 @@ class SearchController extends Controller
             $period_end_year = (int) $request->input('period_end_year');
             $filters[] = [
                 'bool' => [
-                    'must' => [
+                    'should' => [
                         ['bool' => [
                             'must' => [
                                 ['range' => ['period_start_year' => ['lt' => $period_end_year]]],
@@ -332,6 +332,7 @@ class SearchController extends Controller
             'totalHits' => $pagination->total(),
             'hits' => $query->take(self::$RESULTS_PER_PAGE)->get()->toArray(),
             'queryBody' => \App::environment(['local', 'staging']) ? $query->getBody() : 'filtered',
+            '$query' => $query,
             // 'aggs' => $aggs,
         ]);
     }

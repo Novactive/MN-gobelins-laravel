@@ -1,5 +1,5 @@
 @extends('site.layouts.article')
-
+@section('title', 'Les savoir-faire du Mobilier national')
 @section('content')
 
     @include('site._nav')

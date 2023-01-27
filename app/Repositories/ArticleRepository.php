@@ -54,7 +54,7 @@ class ArticleRepository extends ModuleRepository
     public function getFormFields($object)
     {
         $fields = parent::getFormFields($object);
-        $fields['browsers']['related'] = $this->getFormFieldsForBrowser($object, 'related');
+        // $fields['browsers']['related'] = $this->getFormFieldsForBrowser($object, 'related');
         return $fields;
     }
 

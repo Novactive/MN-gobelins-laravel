@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="{{ mix('css/article.css') }}" rel="stylesheet" type="text/css">
-
+    <title> @yield('title') </title>
     <!-- Matomo -->
     <script>
         var _paq = window._paq = window._paq || [];

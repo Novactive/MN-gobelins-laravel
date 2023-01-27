@@ -20,7 +20,7 @@ class Article extends Model implements Sortable
     public $presenterAdmin = AdminArticlePresenter::class;
     public $presenter = ArticlePresenter::class;
 
-    public $browsers = ['related'];
+    // public $browsers = ['related'];
 
     protected $fillable = [
         'published',
