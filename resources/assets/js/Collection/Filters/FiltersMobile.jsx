@@ -96,7 +96,7 @@ class FiltersMobile extends Component {
           <div className="FiltersMobile__header">
             <h1 className="FiltersMobile__maintitle">
               <a
-                href="{{ route('search') }}"
+                href="/recherche"
                 className="FiltersMobile__maintitle-link"
                 title="Mobilier national"
               >
