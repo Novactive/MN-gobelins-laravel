@@ -16,7 +16,7 @@ class ArticleRepository extends ModuleRepository
     use HandleBlocks, HandleSlugs, HandleMedias, HandleRevisions, HandleTags;
 
     protected $relatedBrowsers = ['articles'];
-    protected $listingPaginationAmount = 9;
+    protected $listingPaginationAmount = 90;
 
     public function __construct(Article $model)
     {
