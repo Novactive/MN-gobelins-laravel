@@ -332,7 +332,6 @@ class SearchController extends Controller
             'totalHits' => $pagination->total(),
             'hits' => $query->take(self::$RESULTS_PER_PAGE)->get()->toArray(),
             'queryBody' => \App::environment(['local', 'staging']) ? $query->getBody() : 'filtered',
-            '$query' => $query,
             // 'aggs' => $aggs,
         ]);
     }
