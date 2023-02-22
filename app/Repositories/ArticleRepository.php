@@ -149,8 +149,8 @@ class ArticleRepository extends ModuleRepository
             ->join('blocks', 'blocks.blockable_id', '=', 'articles.id')
             ->where(function ($query) use ($q) {
                 return $query->whereRaw("unaccent(articles.title) ILIKE unaccent('%$q%')") //unaccent remove accents from the search string
-                    ->orWhere("unaccent(articles.subtitle) ILIKE unaccent('%$q%')")
-                    ->orWhere("unaccent(articles.lead) ILIKE unaccent('%$q%')")
+                    ->orWhereRaw("unaccent(articles.subtitle) ILIKE unaccent('%$q%')")
+                    ->orWhereRaw("unaccent(articles.lead) ILIKE unaccent('%$q%')")
                     ->orWhereRaw("unaccent(blocks.content->>'body') ILIKE unaccent('%$q%')") // search in the content body field of the blocks table
                     ->orWhereRaw("unaccent(blocks.content->>'heading2') ILIKE unaccent('%$q%')"); // search in the content heading2 field of the blocks table
             })
