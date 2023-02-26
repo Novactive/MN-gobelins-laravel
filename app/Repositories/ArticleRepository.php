@@ -156,7 +156,7 @@ class ArticleRepository extends ModuleRepository
             })
             ->where('articles.published', '=', true)
             ->select('articles.*')
-            ->distinct()
+            ->groupBy('articles.id')
             ->paginate($this->listingPaginationAmount);
     }
 }
