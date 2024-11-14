@@ -444,6 +444,7 @@ class App extends Component {
   }
 
   render() {
+    console.info('HI, THIS IS JUST A TEST ON THE DEV ENVIRONMENT (TO BE REVERTED)')
     return (
       <AppProviders>
         <GatewayProvider>
