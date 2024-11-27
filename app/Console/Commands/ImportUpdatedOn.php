@@ -91,6 +91,10 @@ class ImportUpdatedOn extends Command
     public function handle()
     {
         // $this->signal_handle = SignalHandler::create();
+        if ($this->blockExecution()) {
+            $this->error('Cette commande ne peut pas être exécutée pour le moment.');
+            return 1;
+        }
 
         $this->initHttpClient();
         $this->setupProgressBar();
@@ -161,5 +165,10 @@ class ImportUpdatedOn extends Command
         });
 
         $this->progress_bar->advance();
+    }
+
+    private function blockExecution(): bool
+    {
+        return env('BLOCK_UPDATED_ON_IMPORT', true);
     }
 }

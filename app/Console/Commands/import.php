@@ -88,6 +88,10 @@ class Import extends Command
      */
     public function handle()
     {
+        if ($this->blockExecution()) {
+            $this->error('Cette commande ne peut pas être exécutée pour le moment.');
+            return 1;
+        }
         $this->signal_handle = SignalHandler::create();
 
         // Temporarily deactivate Scout indexing.
@@ -446,5 +450,10 @@ class Import extends Command
         if ($this->progress_bar) {
             $this->progress_bar->finish();
         }
+    }
+
+    private function blockExecution(): bool
+    {
+        return env('BLOCK_IMPORT', true);
     }
 }
