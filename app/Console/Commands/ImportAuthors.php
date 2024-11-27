@@ -40,6 +40,11 @@ class ImportAuthors extends Command
      */
     public function handle()
     {
+        if ($this->blockExecution()) {
+            $this->error('Cette commande ne peut pas être exécutée pour le moment.');
+            return 1;
+        }
+
         $this->initHttpClient();
         $this->loadAuthors();
     }
@@ -79,5 +84,10 @@ class ImportAuthors extends Command
             echo Psr7\str($e->getRequest());
             echo Psr7\str($e->getResponse());
         }
+    }
+
+    private function blockExecution(): bool
+    {
+        return env('BLOCK_AUTHORS_IMPORT', true);
     }
 }
