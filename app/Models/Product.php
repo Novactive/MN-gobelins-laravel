@@ -223,6 +223,8 @@ class Product extends Model
         'publication_code',
         'entry_mode_id',
         'legacy_updated_on',
+        'historic',
+        'about_author'
     ];
 
     // Eloquent scopes
@@ -296,6 +298,8 @@ class Product extends Model
             'title_or_designation' => $this->title_or_designation,
             'denomination' => $this->denomination,
             'description' => in_array($this->publication_code, ['P+D', 'P+D+P', 'P+D+O']) ? $this->description : null,
+            'historic' => $this->historic,
+            'about_author' => $this->about_author,
             'bibliography' => $this->bibliography,
             'acquisition_origin' => $this->publication_code === 'P+D+O' ? $this->acquisition_origin : null,
             'acquisition_date' => $this->acquisition_date,
