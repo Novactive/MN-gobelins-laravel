@@ -331,6 +331,14 @@ return [
                             'type' => 'scaled_float',
                             'scaling_factor' => 1000,
                         ],
+                        'historic' => [
+                            'type' => 'text',
+                            'analyzer' => 'french_heavy',
+                        ],
+                        'about_author' => [
+                            'type' => 'text',
+                            'analyzer' => 'french_heavy',
+                        ],
                         
                         // ALIASES
                         // 'titre' => [

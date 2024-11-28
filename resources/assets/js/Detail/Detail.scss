@@ -280,6 +280,7 @@
   margin: 0;
   padding: 0;
 }
+
 .DetailData__unit,
 .DetailInfo__unit {
   padding-bottom: 15px;
@@ -293,6 +294,10 @@
     border-bottom: 0;
     padding-bottom: 0;
   }
+}
+.DetailInfo__separator{
+  border: 1px solid #ccc;
+  margin: 20px 0;
 }
 .DetailData__label,
 .DetailInfo__label {

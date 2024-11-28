@@ -22,6 +22,18 @@ function Description(props) {
   ) : null;
 }
 
+function Historic(props) {
+  return props.historic ? (
+    <InfoUnitTemplate label="Historique" value={nl2br(props.historic)} />
+  ) : null;
+}
+
+function AboutAuthor(props) {
+  return props.about_author ? (
+    <InfoUnitTemplate label="A propos de l’auteur" value={nl2br(props.about_author)} />
+  ) : null;
+}
+
 function Bibliography(props) {
   return props.bibliography ? (
     <InfoUnitTemplate label="Bibliographie" value={nl2br(props.bibliography)} />
@@ -67,10 +79,12 @@ class Info extends Component {
           "/image/" + encodeURIComponent(this.props.product.images[0].path)
         )
       : "";
-
     return (
       <dl className="DetailInfo">
         <Description description={this.props.product.description} />
+        <Historic historic={this.props.product.historic}></Historic>
+        <hr className="DetailInfo__separator" />
+        <AboutAuthor about_author={this.props.product.about_author}></AboutAuthor>
         <Bibliography bibliography={this.props.product.bibliography} />
         <div className="DetailInfo__unit DetailInfo__sharing">
           <a
