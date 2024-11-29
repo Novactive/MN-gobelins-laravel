@@ -2,9 +2,22 @@ FROM php:7.4-fpm
 
 RUN apt-get update
 
-RUN apt-get install -y libpq-dev && \
-	docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql && \
-	docker-php-ext-install pdo_pgsql
+RUN apt-get install -y libpq-dev libssl-dev && \
+    docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql && \
+    docker-php-ext-install pdo_pgsql sockets &&\
+    docker-php-ext-install exif && docker-php-ext-enable exif && \
+#    Install GD Extension && # image optimisation tools
+    apt-get update && apt-get install -y \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    imagemagick \
+    jpegoptim \
+    libimage-exiftool-perl \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd \
+    && rm -rf /var/lib/apt/lists/*
+
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --2
 
