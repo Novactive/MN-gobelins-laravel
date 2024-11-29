@@ -2,9 +2,9 @@ FROM php:7.4-fpm
 
 RUN apt-get update
 
-RUN apt-get install -y libpq-dev && \
-	docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql && \
-	docker-php-ext-install pdo_pgsql
+RUN apt-get install -y libpq-dev libssl-dev && \
+    docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql && \
+    docker-php-ext-install pdo_pgsql sockets
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --2
 
