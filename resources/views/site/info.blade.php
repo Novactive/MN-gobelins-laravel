@@ -37,7 +37,7 @@
             </p>
 
             <p>
-                Les institutions publiques qui souhaitent obtenir des dépôtsdoivent s’adresser à la mission
+                Les institutions publiques qui souhaitent obtenir des dépôts doivent s’adresser à la mission
                 Ameublement du Mobilier national qui est en mesure de formuler des propositions adaptées
                 aux besoins des dépositaires, aux configurations des adresses de dépôt et aux disponibilités au
                 sein des collections.
@@ -55,7 +55,7 @@
             <h1><span>Projet</span></h1>
 
             <p>
-                Ce projet a pour objectif de rendre accessible la collection du Mobilier nationalportail des
+                Ce projet a pour objectif de rendre accessible la collection du Mobilier national portail des
                 collections, ses objets, œuvres, meubles, textiles… et permettre à chacun de consulter les
                 informations relatives à ceux-ci.
             </p>
