@@ -5,6 +5,7 @@ namespace App\Services;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Client\Response;
 
 class ZetcomService
 {
@@ -24,7 +25,7 @@ class ZetcomService
      * @param string $endpoint
      * @param array $params
      * @param array $headers
-     * @return string
+     * @return Response
      * @throws Exception
      */
     private function callEndpoint(string $method, string $endpoint, array $params = [], array $headers = [])
@@ -45,7 +46,7 @@ class ZetcomService
                 throw new Exception('API request failed with status ' . $response->status());
             }
 
-            return $response->body();
+            return $response;
         } catch (Exception $e) {
             Log::error('ZETCOM API Exception', [
                 'message' => $e->getMessage(),
@@ -66,7 +67,7 @@ class ZetcomService
      */
     public function getSingleModule(string $moduleName, int $moduleRecordId)
     {
-        return $this->callEndpoint('get', "/module/$moduleName/$moduleRecordId");
+        return $this->callEndpoint('get', "/module/$moduleName/$moduleRecordId")->body();
     }
 
     /**
@@ -83,7 +84,7 @@ class ZetcomService
             ['__lastModified' => ['operator' => 'greaterThanOrEqual', 'value' => $startDate->toIso8601String()]]
         );
 
-        return $this->callEndpoint('post', "/module/$moduleName/search", ['body' => $requestXml]);
+        return $this->callEndpoint('post', "/module/$moduleName/search", ['body' => $requestXml])->body();
     }
 
     /**
@@ -91,11 +92,44 @@ class ZetcomService
      * @return string
      * @throws Exception
      */
-    public function getAllModules(string $moduleName)
+    public function getModuleItems(string $moduleName)
     {
         $requestXml = $this->buildSearchRequestXml($moduleName);
 
-        return $this->callEndpoint('post', "/module/$moduleName/search", ['body' => $requestXml]);
+        return $this->callEndpoint('post', "/module/$moduleName/search", ['body' => $requestXml])->body();
+    }
+
+    public function getImage($id)
+    {
+        $response = $this->callEndpoint('get', "/module/Multimedia/$id/attachment", [
+            'headers' => [
+                'Accept' => 'application/octet-stream'
+            ]
+        ]);
+
+        $fileName = null;
+        if ($response->hasHeader('Content-Disposition')) {
+            $contentDisposition = $response->getHeader('Content-Disposition')[0];
+            if (preg_match('/filename=(.+)/', $contentDisposition, $matches)) {
+                $fileName = $matches[1];
+            }
+        }
+
+        $filePath = storage_path('app/public/' . $fileName);
+        $isSaved= file_put_contents($filePath, $response->body());
+
+        if ($isSaved === false || !file_exists($filePath)) {
+            Log::error("L'image n'a pas pu être enregistrée sur le chemin : $filePath");
+            throw new \Exception("L'image n'a pas pu être enregistrée sur le chemin : $filePath");
+        }
+
+        if (!@getimagesize($filePath)) {
+            unlink($filePath);
+            Log::error("Le fichier enregistré n'est pas une image valide : $filePath");
+            throw new \Exception("Le fichier enregistré n'est pas une image valide : $filePath");
+        }
+
+        return $fileName;
     }
 
     /**
@@ -115,10 +149,10 @@ class ZetcomService
             '<application ' . $this->buildXmlAttributes($xmlNamespaces) . '>',
             '  <modules>',
             "    <module name=\"$moduleName\">",
-            '      <search limit="3" offset="0">',
-            '        <select>',
-            '          <field fieldPath="__id"/>',
-            '        </select>'
+            '      <search limit="10" offset="0">',
+//            '        <select>',
+//            '          <field fieldPath="__id"/>',
+//            '        </select>'
         ];
 
         if (!empty($expertConditions)) {
