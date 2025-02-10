@@ -9,6 +9,7 @@
   "type": "project",
   "require": {
     "php": "^7.4.8",
+    "ext-SimpleXML": "^7.4",
     "artesaos/seotools": "^0.18.0",
     "basemkhirat/elasticsearch": "dev-dev-scout-engine",
     "fideloper/proxy": "^4.4.0",
