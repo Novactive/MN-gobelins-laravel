@@ -6,7 +6,7 @@ RUN apt-get install -y libpq-dev libssl-dev && \
     docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql && \
     docker-php-ext-install pdo_pgsql sockets
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --1
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --2
 
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - &&  \
     apt-get install -y nodejs && \
