@@ -9,7 +9,7 @@ type: php:7.4
 
 dependencies:
   php:
-    composer/composer: '^1'
+    composer/composer: '^2.8.5'
 
 build:
   flavor: none
