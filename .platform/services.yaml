@@ -18,3 +18,7 @@ es:
 
 cache:
   type: redis:7.0
+
+rabbitmq:
+  type: rabbitmq:3.12
+  disk: 1024
