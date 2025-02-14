@@ -20,6 +20,6 @@ cache:
   type: redis:5.0
 
 rabbitmq:
-  type: rabbitmq:3.12
+  type: rabbitmq:3.9
   disk: 1024
 
