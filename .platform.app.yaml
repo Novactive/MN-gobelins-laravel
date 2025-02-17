@@ -44,7 +44,7 @@ relationships:
   rediscache: "cache:redis"
   redissession: "cache:redis"
   elasticsearch: "es:elasticsearch"
-  rabbitmq: "rabbitmq:rabbitmq"
+  rabbitmq: "queue:rabbitmq"
 
 
 # The size of the persistent disk of the application (in MB).
