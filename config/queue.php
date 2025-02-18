@@ -1,5 +1,8 @@
 <?php
 
+$relationships = json_decode(base64_decode($_ENV['PLATFORM_RELATIONSHIPS'] ?? ''), true);
+$rabbitmq = $relationships['rabbitmq'][0] ?? [];
+
 return [
 
     /*
@@ -71,11 +74,11 @@ return [
 
             'hosts' => [
                 [
-                    'host' => env('RABBITMQ_HOST', '127.0.0.1'),
-                    'port' => env('RABBITMQ_PORT', 5672),
-                    'user' => env('RABBITMQ_USER', 'guest'),
-                    'password' => env('RABBITMQ_PASSWORD', 'guest'),
-                    'vhost' => env('RABBITMQ_VHOST', '/'),
+                    'host' => $rabbitmq['host'] ?? 'rabbitmq',
+                    'port' => $rabbitmq['port'] ?? 5672,
+                    'user' => $rabbitmq['username'] ?? 'guest',
+                    'password' => $rabbitmq['password'] ?? 'guest',
+                    'vhost' => $rabbitmq['path'] ?? '/',
                 ],
             ],
 
