@@ -2,10 +2,13 @@
 
 namespace App\Providers;
 
+use App\Services\Import;
+use App\Services\XmlDataProcessor;
+use App\Services\ZetcomService;
+use App\User;
 use App\Mail\EmailVerification;
 use App\Observers\UserObserver;
 use App\Repositories\SectionRepository;
-use App\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Blade;
@@ -70,6 +73,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(Import::class, function ($app) {
+            return new Import($app->make(ZetcomService::class), $app->make(XmlDataProcessor::class));
+        });
     }
 }

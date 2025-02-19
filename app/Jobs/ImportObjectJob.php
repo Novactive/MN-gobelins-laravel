@@ -2,12 +2,13 @@
 
 namespace App\Jobs;
 
+use App\Services\Import;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
+
 
 class ImportObjectJob implements ShouldQueue
 {
@@ -22,7 +23,6 @@ class ImportObjectJob implements ShouldQueue
      */
     public function __construct($object)
     {
-        //
         $this->object = $object;
     }
 
@@ -33,6 +33,7 @@ class ImportObjectJob implements ShouldQueue
      */
     public function handle()
     {
-        Log::info(json_encode($this->object));
+        $import = \app(Import::class);
+        $import->execute($this->object);
     }
 }
