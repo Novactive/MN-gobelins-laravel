@@ -9,7 +9,13 @@ class ProductionOrigin extends Model
 {
     use Mappable;
 
+    protected $fillable =  [
+        'name',
+        'mapping_key'
+    ];
+
     protected $touches = ['products'];
+    public $timestamps = false;
 
     public function products()
     {
