@@ -59,6 +59,7 @@ class ZetcomService
         }
     }
 
+
     /**
      * @param string $moduleName
      * @param int $moduleRecordId
@@ -72,33 +73,37 @@ class ZetcomService
 
     /**
      * @param string $moduleName
+     * @param bool $all
+     * @param $limit
+     * @param $offset
      * @param $startDate
      * @return string
      * @throws Exception
      */
-    public function getModifiedModules(string $moduleName, $startDate = null) {
+    public function getModifiedModules(string $moduleName, bool $all, $limit, $offset, $startDate = null) {
+
         $startDate = $startDate ?? now()->subDay()->setTime(2, 0, 0);
 
         $requestXml = $this->buildSearchRequestXml(
             $moduleName,
-            ['__lastModified' => ['operator' => 'greaterThanOrEqual', 'value' => $startDate->toIso8601String()]]
+            ['__lastModified' => [
+                'operator' => 'betweenIncl',
+                'operand1' => $startDate->toIso8601String(),
+                'operand2' => now()->toIso8601String()
+            ]],
+            $all,
+            $limit,
+            $offset
         );
 
         return $this->callEndpoint('post', "/module/$moduleName/search", ['body' => $requestXml])->body();
     }
 
     /**
-     * @param string $moduleName
-     * @return string
+     * @param $id
+     * @return false|mixed
      * @throws Exception
      */
-    public function getModuleItems(string $moduleName)
-    {
-        $requestXml = $this->buildSearchRequestXml($moduleName);
-
-        return $this->callEndpoint('post', "/module/$moduleName/search", ['body' => $requestXml])->body();
-    }
-
     public function getImage($id)
     {
         $response = $this->callEndpoint('get', "/module/Multimedia/$id/attachment", [
@@ -115,7 +120,12 @@ class ZetcomService
             }
         }
 
-        $filePath = storage_path('app/public/' . $fileName);
+        if (!$fileName) {
+            Log::error("Image ($id) has no content ");
+            return false;
+        }
+
+        $filePath = public_path('media/xl/' . $fileName);
         $isSaved= file_put_contents($filePath, $response->body());
 
         if ($isSaved === false || !file_exists($filePath)) {
@@ -135,9 +145,12 @@ class ZetcomService
     /**
      * @param string $moduleName
      * @param array $expertConditions
+     * @param bool $all
+     * @param int|null $limit
+     * @param int $offset
      * @return string
      */
-    private function buildSearchRequestXml(string $moduleName, array $expertConditions = []): string
+    private function buildSearchRequestXml(string $moduleName, array $expertConditions = [], bool $all = false, int $limit = null, int $offset = 0): string
     {
         $xmlNamespaces = [
             'xmlns' => "http://www.zetcom.com/ria/ws/module/search",
@@ -148,17 +161,17 @@ class ZetcomService
         $xmlParts = [
             '<application ' . $this->buildXmlAttributes($xmlNamespaces) . '>',
             '  <modules>',
-            "    <module name=\"$moduleName\">",
-            '      <search limit="10" offset="0">',
-//            '        <select>',
-//            '          <field fieldPath="__id"/>',
-//            '        </select>'
+            "    <module name='$moduleName'>",
+            "      <search " . ($all && $limit ? "limit='$limit' " : "") . "offset='$offset'>",
+            '        <sort>',
+            '            <field fieldPath="__lastModified" direction="Descending"/>',
+            '        </sort>',
         ];
 
-        if (!empty($expertConditions)) {
+        if (!$all && !empty($expertConditions)) {
             $xmlParts[] = '        <expert>';
             foreach ($expertConditions as $field => $condition) {
-                $xmlParts[] = "          <{$condition['operator']} fieldPath=\"$field\" operand=\"{$condition['value']}\" />";
+                $xmlParts[] = "          <{$condition['operator']} fieldPath=\"$field\" operand1=\"{$condition['operand1']}\" operand2=\"{$condition['operand2']}\" />";
             }
             $xmlParts[] = '        </expert>';
         }
