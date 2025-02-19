@@ -3,20 +3,20 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ImportObjectJob;
-use App\Jobs\ImportPersonJob;
 use App\Services\XmlDataProcessor;
 use App\Services\ZetcomService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ImportZetcomData extends Command
 {
+    const MODULE_NAME = "Object";
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'gobelins:import:zetcom {--module= : Import a specific table}';
+    protected $signature = 'gobelins:import:zetcom {--all : Import globale} {--offset=} {--limit=}';
 
     /**
      * The console command description.
@@ -28,9 +28,8 @@ class ImportZetcomData extends Command
     private XmlDataProcessor $dataProcessor;
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
+     * @param ZetcomService $zetcomService
+     * @param XmlDataProcessor $dataProcessor
      */
     public function __construct(ZetcomService $zetcomService, XmlDataProcessor $dataProcessor)
     {
@@ -39,52 +38,44 @@ class ImportZetcomData extends Command
         $this->dataProcessor = $dataProcessor;
     }
 
+
     /**
-     * Execute the console command.
-     *
      * @return int
+     * @throws \Exception
      */
     public function handle()
     {
-        $moduleName = ucfirst(strtolower($this->option('module')));
+        $this->importObjects();
 
-        if ($moduleName) {
-            $this->importModule($moduleName);
-        } else {
-            $this->importAllModules();
-        }
+        return Command::SUCCESS;
     }
 
 
-    public function importModule($moduleName)
+    /**
+     * @return int|void
+     * @throws \Exception
+     */
+    public function importObjects()
     {
-        $modulesXml = $this->zetcomService->getModifiedModules($moduleName);
+        $all = (bool)$this->option('all');
+        $limit = $all ? (int)$this->option('limit') : null;
+        $offset = $all ? (int)$this->option('offset') : 0;
 
-//        Object de teste : de test : 43245 4532 37261 1329(IA)
-//        $module = $this->zetcomService->getSingleModule($moduleName,1329);
-
-        if ($moduleName == 'Object') {
-            $objects = $this->dataProcessor->processObjectsData($modulesXml);
-            foreach ($objects as $object) {
-                $this->info("Envoi de l'objet $moduleName (" . $object['id'] .") à la queue");
-                ImportObjectJob::dispatch($object);
-            }
-        } elseif ($moduleName == 'Person') {
-            $objects = $this->dataProcessor->processPersonsData($modulesXml);
-            foreach ($objects as $object) {
-                $this->info("Envoi de l'objet $moduleName (". $object['id'] .") à la queue");
-                ImportPersonJob::dispatch($object);
-            }
+        if ($all && !$limit) {
+            $this->error("Importer tous les produits sans limite et offset n'est pas faisable !");
+            $this->info("Veuillez spécifier --limit (ex: --limit=1000). L'offset est par defaut 0, vous pouvez l'incrémenter à chaque itération (ex 2eme itér: --offset=1000)");
+            return Command::FAILURE;
         }
 
+        $modulesXml = $this->zetcomService->getModifiedModules(self::MODULE_NAME, $all, $limit, $offset);
+
+        $objects = $this->dataProcessor->processObjectsData($modulesXml);
+        foreach ($objects as $object) {
+            $this->info("Envoi de l'objet " . self::MODULE_NAME . " (" . $object['id'] .") à la queue");
+            Log::info("Envoi de l'objet " . self::MODULE_NAME . " (" . $object['id'] .") à la queue");
+            ImportObjectJob::dispatch($object);
+        }
+
     }
 
-
-    //TODO ajout d une fonction pour un import global (une transaction): qui fait appel au imports partiels
-
-    public function importAllModules()
-    {
-        $this->importModule('Object');
-        //autre modules
-    }
 }

@@ -33,6 +33,8 @@ hooks:
   deploy: |
     set -e
     APP_ENV=prod composer run platformsh-deploy
+  post_deploy: |
+    php artisan queue:work rabbitmq --daemon &
 
 
 # The relationships of the application with services or other applications.
