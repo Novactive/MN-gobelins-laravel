@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\File;
 
 class ZetcomService
 {
@@ -125,7 +126,11 @@ class ZetcomService
             return false;
         }
 
-        $filePath = public_path('media/xl/' . $fileName);
+        $directory = public_path('media/xl/');
+        if (!File::exists($directory)) {
+            File::makeDirectory($directory, 0755, true, true);
+        }
+        $filePath = $directory . $fileName;
         $isSaved= file_put_contents($filePath, $response->body());
 
         if ($isSaved === false || !file_exists($filePath)) {
