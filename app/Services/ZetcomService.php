@@ -38,12 +38,14 @@ class ZetcomService
                 ->send($method, $this->baseUrl . $endpoint, $params);
 
             if ($response->failed()) {
-                Log::error('ZETCOM API Request Failed', [
+                $details = [
                     'url' => $this->baseUrl . $endpoint,
                     'method' => $method,
                     'status' => $response->status(),
                     'body' => $response->body(),
-                ]);
+                ];
+                Log::error('ZETCOM API Request Failed', $details);
+                echo "ZETCOM API Request Failed (" . $response->status() . "): $this->baseUrl . $endpoint";
                 throw new Exception('API request failed with status ' . $response->status());
             }
 
