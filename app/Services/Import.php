@@ -38,26 +38,26 @@ class Import
                     ['inventory_id' => $inventoryId],
                     [
                         'inventory_id' => $inventoryId,
-                        'inventory_root' => $item['inventory_root'],
-                        'inventory_number' => $item['inventory_number'] ?? 0,
-                        'inventory_suffix' => $item['inventory_suffix'] ?? 0,
-                        'inventory_suffix2' => $item['inventory_suffix2'] ?? 0,
-                        'legacy_inventory_number' => $item['legacy_inventory_number'],
-                        'height_or_thickness' => $item['height_or_thickness'],
-                        'length_or_diameter' => $item['length_or_diameter'],
-                        'depth_or_width' => $item['depth_or_width'],
-                        'conception_year' => $item['conception_year'],
-                        'acquisition_origin' => $item['acquisition_origin'],
+                        'inventory_root' => (string)$item['inventory_root'],
+                        'inventory_number' => (int)$item['inventory_number'] ?? 0,
+                        'inventory_suffix' => (int)$item['inventory_suffix'] ?? 0,
+                        'inventory_suffix2' => (int)$item['inventory_suffix2'] ?? 0,
+                        'legacy_inventory_number' => (string)$item['legacy_inventory_number'],
+                        'height_or_thickness' => (float)$item['height_or_thickness'],
+                        'length_or_diameter' => (float)$item['length_or_diameter'],
+                        'depth_or_width' => (float)$item['depth_or_width'],
+                        'conception_year' => (int)$item['conception_year'],
+                        'acquisition_origin' => (string)$item['acquisition_origin'],
                         'acquisition_date' => $item['acquisition_date'],
-                        'listed_as_historic_monument' => $item['listed_as_historic_monument'],
+                        'listed_as_historic_monument' => (bool)$item['listed_as_historic_monument'],
                         'listed_on' => $item['listed_on'],
-                        'category' => $item['category'],
-                        'denomination' => $item['denomination'],
-                        'title_or_designation' => $item['title_or_designation'],
-                        'description' => $item['description'],
-                        'bibliography' => $item['bibliography'],
-                        'is_published' => $item['is_publishable'],
-                        'publication_code' => $item['publication_code'],
+                        'category' => (string)$item['category'],
+                        'denomination' => (string)$item['denomination'],
+                        'title_or_designation' => (string)$item['title_or_designation'],
+                        'description' => (string)$item['description'],
+                        'bibliography' => (string)$item['bibliography'],
+                        'is_published' => (bool)$item['is_publishable'],
+                        'publication_code' => (string)$item['publication_code'],
                         'legacy_updated_on' => $item['legacy_updated_on'],
                     ]
                 );
@@ -139,7 +139,7 @@ class Import
                 );
 
                 if ($style) {
-                    $product->entryMode()->associate($style);
+                    $product->style()->associate($style);
                 }
             }
 
@@ -150,14 +150,14 @@ class Import
                     ['mapping_key' => 'Test']
                 );
                 if ($productionOrigin) {
-                    $product->productType()->associate($productionOrigin);
+                    $product->productionOrigin()->associate($productionOrigin);
                 }
             }
 
             $product->save();
 
-            echo "Le produit $inventoryId a été mis à jour/ajouté\n";
-            Log::error("Le produit $inventoryId a été mis à jour/ajouté");
+            echo "Le produit $inventoryId a été mis à jour/ajouté" . (!$item['is_publishable'] ? ", mais il est non publiable" : "") . "\n";
+            Log::error("Le produit $inventoryId a été mis à jour/ajouté" . (!$item['is_publishable'] ? ", mais il est non publiable" : "") . "\n");
 
         } catch (\Exception $exception) {
             echo "[IMPORT ERROR (Product(" . $item['id'] . ")]" . $exception->getMessage() . "\n";
