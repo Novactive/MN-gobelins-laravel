@@ -75,6 +75,9 @@ mounts:
   "/.config":
     source: local
     source_path: "config"
+  "public/media/xl":
+    source: local
+    source_path: "media_xl"
 
 # The configuration of app when it is exposed to the web.
 web:
