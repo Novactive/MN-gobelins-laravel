@@ -101,3 +101,10 @@ crons:
   scheduler:
     spec: '*/5 * * * *'
     cmd: 'php artisan schedule:run'
+
+workers:
+  # Run the consumer to cosume messages on the queue
+  rabbitmq-consumer:
+    commands:
+      start: php artisan queue:work rabbitmq --daemon
+
