@@ -47,7 +47,8 @@ class XmlDataProcessor
             $isInvNumber = $this->isInvNumber(
                 $this->extractValue($item,'//zetcom:vocabularyReference[@name="DenominationVoc"]/zetcom:vocabularyReferenceItem//@name')
             );
-            $inventoryRoot = $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjObjectNumberGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="Part1Txt"]/zetcom:value', $key);
+
+            $inventoryRoot = $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjObjectNumberGrp"]/zetcom:repeatableGroupItem[zetcom:dataField[@name="SortLnu"]/zetcom:value="1"]/zetcom:dataField[@name="Part1Txt"]/zetcom:value', $key);
             $diffusion = $this->extractValue($item,'//zetcom:vocabularyReference[@name="ObjInternetVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue', $key);
             $dimensions = [
                 'WidthNum' => $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjDimAllGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="WidthNum"]/zetcom:value', $key),
@@ -88,13 +89,15 @@ class XmlDataProcessor
                 'style_legacy_id' => $this->extractValue($item,'//zetcom:vocabularyReference[@name="ObjStyleVoc"]/zetcom:vocabularyReferenceItem/@name', $key),
                 'style_name' => $this->extractValue($item,'//zetcom:vocabularyReference[@name="ObjStyleVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue', $key),
                 'production_origin' => $this->extractValue($item,'//zetcom:vocabularyReference[@name="ObjCategoryVoc"]/zetcom:vocabularyReferenceItem/@name', $key),
-                'is_publishable' => $this->isPublishable(
-                    $diffusion,
-                    '',
-                    $inventoryRoot
-                ),
+                //for tests reasons : we mention temporary all products publishable
+                'is_publishable' => true,
+//                'is_publishable' => $this->isPublishable(
+//                    $diffusion,
+//                    '',
+//                    $inventoryRoot
+//                ),
                 'publication_code' => null,
-                'legacy_inventory_number' => null,
+                'legacy_inventory_number' => "",
                 'entry_mode_legacy_id' => $this->extractValue($item,'//zetcom:vocabularyReference[@name="ObjAcquisitionMethodVoc"]/zetcom:vocabularyReferenceItem/@name', $key),
                 'entry_mode_name' => $this->extractValue($item,'//zetcom:vocabularyReference[@name="ObjAcquisitionMethodVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue', $key),
                 'legacy_updated_on' => null,

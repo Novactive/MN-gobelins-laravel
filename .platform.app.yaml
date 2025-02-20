@@ -33,6 +33,8 @@ hooks:
   deploy: |
     set -e
     APP_ENV=prod composer run platformsh-deploy
+    # execute migrations
+    php artisan migrate
 
 
 # The relationships of the application with services or other applications.
