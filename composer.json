@@ -38,7 +38,8 @@
     "spatie/laravel-image-optimizer": "^1.6",
     "symfony/psr-http-message-bridge": "~2.0",
     "vladimir-yuldashev/laravel-queue-rabbitmq": "^10.0",
-    "zendframework/zend-diactoros": "^2.2"
+    "zendframework/zend-diactoros": "^2.2",
+    "doctrine/dbal": "^2.13"
   },
   "require-dev": {
     "laravel/homestead": "^9",

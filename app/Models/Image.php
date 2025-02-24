@@ -17,31 +17,13 @@ class Image extends Model
         'has_privacy_issue',
         'has_marking',
         'is_reviewed',
+        'photographer'
     ];
 
     protected $touches = ['product'];
 
     protected $hidden = [
         'pivot', // Hide from toArray()
-    ];
-
-    // Maps the directory name to a human name.
-    const IDENTIFIED_PHOTOGRAPHERS = [
-        'BERSANI' => 'Marie-Hélène Bersani',
-        'BIDEAU' => 'Isabelle Bideau',
-        // 'BOHL' => 'Thomas Bohl',
-        'BROUILLET' => 'Stéphanie Brouillet',
-        // 'CAVALIE' => 'Hélène Cavalié',
-        'CINQPEYRES' => 'Muriel Cinqpeyres',
-        'DELAMOTTE' => 'Céline Delamotte',
-        'DENIS' => 'Arnaud Denis',
-        // 'GAUTIER' => 'Jean-Jacques Gautier',
-        'GLOMET' => 'Valérie Glomet',
-        'ISAKOVITCH' => 'Sandra Isakovitch',
-        'MANCEL' => 'Nicolas Mancel',
-        // 'MONTAGNE' => 'Lucile Montagne',
-        // 'SARASA' => 'Marina Sarasa',
-        'THARAUD' => 'Marie-Amélie Tharaud',
     ];
 
     public function product()
@@ -72,21 +54,6 @@ class Image extends Model
             'has_marking' => $this->has_marking,
             'license' => $this->license,
         ];
-    }
-
-    /**
-     * Photographer's name
-     * Derive the name of the photographer from the storage path.
-     *
-     * @return string|null
-     */
-    public function getPhotographerAttribute()
-    {
-        $re = '/(' . collect(self::IDENTIFIED_PHOTOGRAPHERS)->keys()->implode('|') . ')/';
-        if (preg_match($re, $this->path, $matches) > 0) {
-            return self::IDENTIFIED_PHOTOGRAPHERS[$matches[1]];
-        }
-        return null;
     }
 
     /**
