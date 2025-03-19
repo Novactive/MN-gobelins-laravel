@@ -224,7 +224,6 @@ class Product extends Model
         'entry_mode_id',
         'legacy_updated_on',
         'historic',
-        'about_author'
     ];
 
     // Eloquent scopes
@@ -297,14 +296,14 @@ class Product extends Model
             'id' => $this->id,
             'title_or_designation' => $this->title_or_designation,
             'denomination' => $this->denomination,
-            'description' => in_array($this->publication_code, ['P+D', 'P+D+P', 'P+D+O']) ? $this->description : null,
+            'description' => $this->description,
             'historic' => $this->historic,
-            'about_author' => $this->about_author,
+            'about_author' => $this->authors->pluck('biography')->filter()->implode("\n"),
             'bibliography' => $this->bibliography,
-            'acquisition_origin' => $this->publication_code === 'P+D+O' ? $this->acquisition_origin : null,
+            'acquisition_origin' => $this->acquisition_origin,
             'acquisition_date' => $this->acquisition_date,
             'acquisition_mode' => $this->searchableEntryMode,
-            'inventory_id' => $this->inventory_id,
+            'inventory_id' => $this->formatInventoryId($this->inventory_id),
             'inventory_id_as_keyword' => strtoupper($this->inventory_id),
             'product_types' => $this->searchableProductTypes,
             'authors' => $this->searchableAuthors,
@@ -332,4 +331,15 @@ class Product extends Model
     {
         return $this->is_published;
     }
+
+    function formatInventoryId($inventoryId) {
+        $inventoryId = preg_replace('/^([A-Z]+)-(\d+)/', '$1 $2', $inventoryId);
+        $inventoryId = preg_replace_callback('/-(\d{3})$/', function ($matches) {
+            return ($matches[1] === "000") ? '' : "/{$matches[1]}";
+        }, $inventoryId);
+        $inventoryId = preg_replace('/-(\d{3})/', '/$1', $inventoryId);
+
+        return $inventoryId;
+    }
+
 }
