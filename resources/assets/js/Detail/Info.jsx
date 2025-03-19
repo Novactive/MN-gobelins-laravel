@@ -24,7 +24,10 @@ function Description(props) {
 
 function Historic(props) {
   return props.historic ? (
-    <InfoUnitTemplate label="Historique" value={nl2br(props.historic)} />
+      <>
+        <InfoUnitTemplate label="Historique" value={nl2br(props.historic)} />
+        <hr className="DetailInfo__separator" />
+      </>
   ) : null;
 }
 
@@ -83,7 +86,6 @@ class Info extends Component {
       <dl className="DetailInfo">
         <Description description={this.props.product.description} />
         <Historic historic={this.props.product.historic}></Historic>
-        <hr className="DetailInfo__separator" />
         <AboutAuthor about_author={this.props.product.about_author}></AboutAuthor>
         <Bibliography bibliography={this.props.product.bibliography} />
         <div className="DetailInfo__unit DetailInfo__sharing">
