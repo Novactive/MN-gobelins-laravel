@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddNewColumnsToProducts extends Migration
+class ChangeConceptionYearToStringInProductsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AddNewColumnsToProducts extends Migration
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->text('historic')->nullable();
+            $table->string('conception_year')->change();
         });
     }
 
@@ -26,7 +26,7 @@ class AddNewColumnsToProducts extends Migration
     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn(['historic']);
+            $table->integer('conception_year')->change();
         });
     }
 }
