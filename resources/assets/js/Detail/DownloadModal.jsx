@@ -20,7 +20,7 @@ class DownloadModal extends Component {
           className="DetailDownloadModal__window"
           onClick={e => e.stopPropagation()}
         >
-          {this.props.license === "LO 2.0" ? (
+          {this.props.license === "pub" ? (
             <div className="DetailDownloadModal__scroller">
               <header>
                 <b className="DetailDownloadModal__headline">
@@ -85,7 +85,7 @@ class DownloadModal extends Component {
                   <br />
                   <br />
                   Veillez aussi à <b>contacter l’auteur</b> de l’objet ou ses{" "}
-                  <b>ayants droit</b> afin de respecter les droits d’auteur.
+                  <b>ayants droit</b> et/ou <b>l’auteur de la photographie</b> afin de respecter les droits d’auteur.
                 </p>
                 <div className="DetailDownloadModal__button-holder">
                   <button onClick={this.props.onClose}>OK</button>

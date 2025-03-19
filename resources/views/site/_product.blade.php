@@ -198,11 +198,14 @@ $orientation = $first_img['width'] < $first_img['height'] ? 'portrait' : 'landsc
                                 {!! nl2br($product['historic']) !!}
                             </dd>
                         </div>
+                        <hr class="DetailInfo__separator" />
                     @endunless
-                    <hr class="DetailInfo__separator" />
                     @unless(empty($product['about_author']))
                         <div class="DetailInfo__unit">
-                            <dt class="DetailData__label">A propos de l'auteur</dt>
+                            <dt class="DetailData__label">
+                                A propos de
+                                {{ count($product['authors']) > 1 ? 'des auteurs' : 'l\'auteur' }}
+                            </dt>
                             <dd class="DetailData__datum">
                                 {!! nl2br($product['about_author']) !!}
                             </dd>

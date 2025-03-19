@@ -11,9 +11,16 @@ function DataUnitTemplate(props) {
   );
 }
 
+function formatInventoryId(inventoryId) {
+  return inventoryId
+      .replace(/^([A-Z]+)-(\d+)/, "$1 $2")
+      .replace(/-(\d{3})$/, (match, p1) => (p1 === "000" ? "" : `/${p1}`))
+      .replace(/-(\d{3})/g, "/$1");
+}
+
 function InventoryId(props) {
   return props.inventoryId ? (
-    <DataUnitTemplate label="Numéro d’inventaire" value={props.inventoryId} />
+    <DataUnitTemplate label="Numéro d’inventaire" value={formatInventoryId(props.inventoryId)} />
   ) : null;
 }
 
