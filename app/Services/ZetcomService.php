@@ -13,7 +13,8 @@ class ZetcomService
     const FIELDS_CONFIG = [
         'Object' => 'products.fields',
         'Person' => 'authors.fields',
-        'Multimedia' => 'images.fields'
+        'Multimedia' => 'images.fields',
+        'Conservation' => 'conservation.fields'
     ];
     protected $baseUrl;
     protected $username;

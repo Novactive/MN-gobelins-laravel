@@ -158,12 +158,11 @@ $orientation = $first_img['width'] < $first_img['height'] ? 'portrait' : 'landsc
                         <dd class="DetailData__datum">{{ $product['production_origin']['name'] }}</dd>
                     </div>
                     @endunless
-                    @unless(empty(array_filter([ $product['length_or_diameter'], $product['height_or_thickness'],
-                    $product['depth_or_width'] ])))
+                    @unless(empty($product['formatted_dimensions']))
                     <div class="DetailData__unit">
-                        <dt class="DetailData__label">Dimensions (L × l × h) mètres</dt>
+                        <dt class="DetailData__label">{{$product['formatted_dimensions']['label']}}</dt>
                         <dd class="DetailData__datum">
-                            {{ join(' × ',array_filter([ $product['length_or_diameter'], $product['height_or_thickness'], $product['depth_or_width'] ])) }}
+                            {{$product['formatted_dimensions']['dimensions']}}
                         </dd>
                     </div>
                     @endunless
