@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\File;
 
 class ZetcomService
 {
+    const FIELDS_CONFIG = [
+        'Object' => 'products.fields',
+        'Person' => 'authors.fields',
+        'Multimedia' => 'images.fields',
+        'Conservation' => 'conservation.fields'
+    ];
     protected $baseUrl;
     protected $username;
     protected $password;
@@ -71,7 +77,15 @@ class ZetcomService
      */
     public function getSingleModule(string $moduleName, int $moduleRecordId)
     {
-        return $this->callEndpoint('get', "/module/$moduleName/$moduleRecordId")->body();
+        $requestXml = $this->buildSearchRequestXml(
+            $moduleName,
+            ['__id' => [
+                'operator' => 'equalsField',
+                'operand' => $moduleRecordId,
+            ]],
+        );
+
+        return $this->callEndpoint('post', "/module/$moduleName/search", ['body' => $requestXml])->body();
     }
 
     /**
@@ -159,6 +173,7 @@ class ZetcomService
      */
     private function buildSearchRequestXml(string $moduleName, array $expertConditions = [], bool $all = false, int $limit = null, int $offset = 0): string
     {
+        $fields = isset(self::FIELDS_CONFIG[$moduleName]) ? config(self::FIELDS_CONFIG[$moduleName]) : [];
         $xmlNamespaces = [
             'xmlns' => "http://www.zetcom.com/ria/ws/module/search",
             'xmlns:xsi' => "http://www.w3.org/2001/XMLSchema-instance",
@@ -172,13 +187,28 @@ class ZetcomService
             "      <search " . ($all && $limit ? "limit='$limit' " : "") . "offset='$offset'>",
             '        <sort>',
             '            <field fieldPath="__lastModified" direction="Descending"/>',
-            '        </sort>',
+            '        </sort>'
         ];
 
+        if (!empty($fields)){
+            $xmlParts[] = '        <select>';
+            foreach ($fields as $field) {
+                $xmlParts[] = "                <field fieldPath='$field'/>";
+            }
+            $xmlParts[] = '        </select>';
+        }
         if (!$all && !empty($expertConditions)) {
             $xmlParts[] = '        <expert>';
             foreach ($expertConditions as $field => $condition) {
-                $xmlParts[] = "          <{$condition['operator']} fieldPath=\"$field\" operand1=\"{$condition['operand1']}\" operand2=\"{$condition['operand2']}\" />";
+                $operator = $condition['operator'];
+                unset($condition['operator']);
+
+                $attributes = [];
+                foreach ($condition as $key => $value) {
+                    $attributes[] = "$key=\"$value\"";
+                }
+
+                $xmlParts[] = "          <{$operator} fieldPath=\"$field\" " . implode(' ', $attributes) . " />";
             }
             $xmlParts[] = '        </expert>';
         }

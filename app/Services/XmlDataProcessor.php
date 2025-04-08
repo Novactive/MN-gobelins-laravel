@@ -42,69 +42,72 @@ class XmlDataProcessor
         $moduleItems = $this->parseXml($moduleXml);
         $objects = [];
 
-        foreach ($moduleItems as $key => $item) {
+        foreach ($moduleItems as $item) {
 
-            $isInvNumber = $this->isInvNumber(
-                $this->extractValue($item,'//zetcom:vocabularyReference[@name="DenominationVoc"]/zetcom:vocabularyReferenceItem//@name')
-            );
-
-            $inventoryRoot = $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjObjectNumberGrp"]/zetcom:repeatableGroupItem[zetcom:dataField[@name="SortLnu"]/zetcom:value="1"]/zetcom:dataField[@name="Part1Txt"]/zetcom:value', $key);
-            $diffusion = $this->extractValue($item,'//zetcom:vocabularyReference[@name="ObjInternetVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue', $key);
+            $inventoryRoot = $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjObjectNumberGrp"]/zetcom:repeatableGroupItem[zetcom:vocabularyReference[@name="DenominationVoc"]/zetcom:vocabularyReferenceItem[@name="objInvNumber"]]/zetcom:dataField[@name="Part1Txt"]/zetcom:value');
+            $diffusion = $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjInternetVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue');
             $dimensions = [
-                'WidthNum' => $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjDimAllGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="WidthNum"]/zetcom:value', $key),
-                'HeightNum' => $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjDimAllGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="HeightNum"]/zetcom:value', $key),
-                'DepthNum' => $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjDimAllGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="DepthNum"]/zetcom:value', $key)
+                'WidthNum' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDimAllGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="WidthNum"]/zetcom:value'),
+                'HeightNum' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDimAllGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="HeightNum"]/zetcom:value'),
+                'DepthNum' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDimAllGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="DepthNum"]/zetcom:value')
             ];
 
+            preg_match(
+                '/\((.*?)\)/',
+                $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDimAllGrp"]/zetcom:repeatableGroupItem/zetcom:moduleReference[@name="TypeDimRef"]/zetcom:moduleReferenceItem/zetcom:formattedValue'),
+                $matches
+            );
+
             $objects[] = [
-                'id' => $this->extractValue($item, '//zetcom:systemField[@name="__id"]/zetcom:value', $key),
-                'inventory_id' => $this->extractValue($item, '//zetcom:systemField[@name="__id"]/zetcom:value', $key),
+                'id' => $this->extractValue($item, './zetcom:systemField[@name="__id"]/zetcom:value'),
                 'inventory_root' => $inventoryRoot,
-                'inventory_number' => $isInvNumber ? $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjObjectNumberGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="Part2Txt"]/zetcom:value', $key) : 0,
-                'inventory_suffix' => $isInvNumber ? $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjObjectNumberGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="Part3Txt"]/zetcom:value', $key) : 0,
-                'inventory_suffix2' => $isInvNumber ? $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjObjectNumberGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="Part4Txt"]/zetcom:value', $key) : 0,
+                'inventory_number' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjObjectNumberGrp"]/zetcom:repeatableGroupItem[zetcom:vocabularyReference[@name="DenominationVoc"]/zetcom:vocabularyReferenceItem[@name="objInvNumber"]]/zetcom:dataField[@name="Part2Txt"]/zetcom:value') ?: 0,
+                'inventory_suffix' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjObjectNumberGrp"]/zetcom:repeatableGroupItem[zetcom:vocabularyReference[@name="DenominationVoc"]/zetcom:vocabularyReferenceItem[@name="objInvNumber"]]/zetcom:dataField[@name="Part3Txt"]/zetcom:value') ?: 0,
+                'inventory_suffix2' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjObjectNumberGrp"]/zetcom:repeatableGroupItem[zetcom:vocabularyReference[@name="DenominationVoc"]/zetcom:vocabularyReferenceItem[@name="objInvNumber"]]/zetcom:dataField[@name="Part4Txt"]/zetcom:value') ?: 0,
                 'height_or_thickness' => $dimensions['HeightNum'],
                 'length_or_diameter' => $dimensions['WidthNum'],
                 'depth_or_width' => $dimensions['DepthNum'],
-                'conception_year' => $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjDateGrp"]/zetcom:repeatableGroupItem/zetcom:virtualField[@name="PreviewVrt"]/zetcom:value', $key),
-                'acquisition_origin' => $this->extractValue($item,'//zetcom:vocabularyReference[@name="ObjAcquisitionMethodVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue', $key),
-                'acquisition_date' => $this->formatDatesInString($this->extractValue($item,'//zetcom:dataField[@name="ObjAcquisitionDateDat"]/zetcom:value', $key)),
-                'listed_as_historic_monument' => $this->extractValue($item, '//zetcom:vocabularyReference[@name="ObjClaTypeVoc"]/zetcom:vocabularyReferenceItem/@name', $key) == "Monuments historiques",
-                'listed_on' => null,
-                'category' => $this->extractValue($item,'//zetcom:vocabularyReference[@name="ObjCategoryVoc"]/zetcom:vocabularyReferenceItem/@name', $key),
-                'denomination' => $this->extractValue($item, '//zetcom:vocabularyReference[@name="ObjClassificationVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue', $key),
-                'title_or_designation' => $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjObjectTitleGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="TitleTxt"]/zetcom:value', $key),
-                'period_legacy_id' => $this->extractValue($item, '//zetcom:vocabularyReference[@name="ObjPeriodVoc"]/zetcom:vocabularyReferenceItem/@name', $key)
-                    ?: $this->extractValue($item,'//zetcom:vocabularyReference[@name="PeriodVoc"]/zetcom:vocabularyReferenceItem/@name', $key),
-                'period_name' => $this->extractValue($item, '//zetcom:vocabularyReference[@name="ObjPeriodVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue', $key)
-                    ?: $this->extractValue($item,'//zetcom:vocabularyReference[@name="PeriodVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue', $key),
-                'period_start_year' => $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjDateGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="DateFromTxt"]/zetcom:value', $key),
-                'period_end_year' => $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjDateGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="DateToTxt"]/zetcom:value', $key),
-                'product_type' => $this->extractValue($item,'//zetcom:vocabularyReference[@name="ObjCategoryOnlineVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue', $key),
-                'description' => $this->extractValue($item, '//zetcom:repeatableGroup[@name="ObjCurrentDescriptionGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="DescriptionClb"]/zetcom:value', $key),
-                'bibliography' => $this->extractValue($item,'//zetcom:moduleReference[@name="ObjLiteratureRef"]/zetcom:moduleReferenceItem/zetcom:formattedValue', $key) . "\n" .
-                    $this->extractValue($item,'//zetcom:dataField[@name="ObjLiteratureClb"]/zetcom:value', $key),
-                'created_at' => $this->extractValue($item,'//zetcom:systemField[@name="__created"]/zetcom:value', $key),
-                'updated_at' => $this->extractValue($item,'//zetcom:systemField[@name="__lastModified"]/zetcom:value', $key),
-                'style_legacy_id' => $this->extractValue($item,'//zetcom:vocabularyReference[@name="ObjStyleVoc"]/zetcom:vocabularyReferenceItem/@name', $key),
-                'style_name' => $this->extractValue($item,'//zetcom:vocabularyReference[@name="ObjStyleVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue', $key),
-                'production_origin' => $this->extractValue($item,'//zetcom:vocabularyReference[@name="ObjCategoryVoc"]/zetcom:vocabularyReferenceItem/@name', $key),
-                //for tests reasons : we mention temporary all products publishable
-                'is_publishable' => true,
-//                'is_publishable' => $this->isPublishable(
-//                    $diffusion,
-//                    '',
-//                    $inventoryRoot
-//                ),
+                'conception_year' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDateGrp"]/zetcom:repeatableGroupItem/zetcom:virtualField[@name="PreviewVrt"]/zetcom:value'),
+                'acquisition_origin' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjAcquisitionMethodVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
+                'acquisition_date' => stripos($diffusion, 'origine détail') !== false ? $this->formatDatesInString($this->extractValue($item,'./zetcom:dataField[@name="ObjAcquisitionDateDat"]/zetcom:value')) : '',
+                'listed_as_historic_monument' => $this->extractValue($item, './zetcom:vocabularyReference[@name="ObjClaTypeVoc"]/zetcom:vocabularyReferenceItem/@name') == "Monuments historiques",
+                'category' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjCategoryVoc"]/zetcom:vocabularyReferenceItem/@name'),
+                'denomination' => $this->extractValue($item, './zetcom:vocabularyReference[@name="ObjClassificationVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
+                'title_or_designation' => implode("\n", $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjObjectTitleGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="TitleTxt"]/zetcom:value', true) ?? []),
+                'period_legacy_id' => $this->extractValue($item, './zetcom:vocabularyReference[@name="ObjPeriodVoc"]/zetcom:vocabularyReferenceItem/@name')
+                    ?: $this->extractValue($item,'./zetcom:vocabularyReference[@name="PeriodVoc"]/zetcom:vocabularyReferenceItem/@name'),
+                'period_name' => $this->extractValue($item, './zetcom:vocabularyReference[@name="ObjPeriodVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue')
+                    ?: $this->extractValue($item,'./zetcom:vocabularyReference[@name="PeriodVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
+                'period_start_year' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDateGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="DateFromTxt"]/zetcom:value'),
+                'period_end_year' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDateGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="DateToTxt"]/zetcom:value'),
+                'product_type' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjCategoryOnlineVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
+                'description' => stripos($diffusion, 'description') !== false ? $this->extractValue($item, './zetcom:repeatableGroup[@name="ObjCurrentDescriptionGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="DescriptionClb"]/zetcom:value') : '',
+                'obj_literature_ref' => $this->extractValue($item,'./zetcom:moduleReference[@name="ObjLiteratureRef"]/zetcom:moduleReferenceItem/@moduleItemId', true),
+                'obj_literature_clb' => $this->extractValue($item,'./zetcom:dataField[@name="ObjLiteratureClb"]/zetcom:value'),
+                'pages_ref_txt' => $this->extractValue($item,'./zetcom:moduleReference[@name="ObjLiteratureRef"]/zetcom:moduleReferenceItem/zetcom:dataField[@name="PageRefTxt"]/zetcom:value', true),
+                'created_at' => $this->extractValue($item,'./zetcom:systemField[@name="__created"]/zetcom:value'),
+                'updated_at' => $this->extractValue($item,'./zetcom:systemField[@name="__lastModified"]/zetcom:value'),
+                'style_legacy_id' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjStyleVoc"]/zetcom:vocabularyReferenceItem/@name'),
+                'style_name' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjStyleVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
+                'production_origin' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjCategoryVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
+                'is_publishable' => $this->isPublishable(
+                    $diffusion,
+                    $this->extractValue($item, './zetcom:systemField[@name="__orgUnit"]/zetcom:value'),
+                    $inventoryRoot
+                ),
                 'publication_code' => null,
-                'legacy_inventory_number' => "",
-                'entry_mode_legacy_id' => $this->extractValue($item,'//zetcom:vocabularyReference[@name="ObjAcquisitionMethodVoc"]/zetcom:vocabularyReferenceItem/@name', $key),
-                'entry_mode_name' => $this->extractValue($item,'//zetcom:vocabularyReference[@name="ObjAcquisitionMethodVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue', $key),
-                'legacy_updated_on' => null,
-                'deleted_at' => null,
-                'history' => stripos($diffusion, 'historique') !== false ? $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjHistoryGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="HistoryClb"]/zetcom:value', $key) : null,
-                'authors' => $this->getMultiple($item, './zetcom:moduleReference[@name="ObjPerAssociationRef"]/zetcom:moduleReferenceItem/@uuid'),
-                'images' => $this->getMultiple($item,'./zetcom:moduleReference[@name="ObjMultimediaRef"]/zetcom:moduleReferenceItem/@uuid'),
+                'legacy_inventory_number' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjObjectNumberGrp"]/zetcom:repeatableGroupItem[zetcom:vocabularyReference[@name="DenominationVoc"]/zetcom:vocabularyReferenceItem[@name="old"]]/zetcom:virtualField[@name="NumberVrt"]/zetcom:value') ."\n" .
+                    $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjInscriptionGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="TransliterationClb"]/zetcom:value'),
+                'entry_mode_legacy_id' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjAcquisitionMethodVoc"]/zetcom:vocabularyReferenceItem/@name'),
+                'entry_mode_name' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjAcquisitionMethodVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
+                'history' => stripos($diffusion, 'historique') !== false ? $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjHistoryGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="HistoryClb"]/zetcom:value') : null,
+                'mat_tech' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjMaterialTechniqueGrp"]/zetcom:repeatableGroupItem/zetcom:vocabularyReference[@name="MatTechVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue', true) ?? [],
+                'obj_garn' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjGarnVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
+                'conservation' => $this->extractValue($item, './zetcom:moduleReference[@name="ObjConservationRef"]/zetcom:moduleReferenceItem/@moduleItemId', true) ?? [],
+                'obj_new_trim_dpl' => $this->extractValue($item,'./zetcom:virtualField[@name="ObjNewTrimVrt"]/zetcom:value'),
+                'authors' => $this->extractValue($item, './zetcom:moduleReference[@name="ObjPerAssociationRef"]/zetcom:moduleReferenceItem/@moduleItemId', true) ?? [],
+                'images' => $this->extractValue($item,'./zetcom:moduleReference[@name="ObjMultimediaRef"]/zetcom:moduleReferenceItem/@moduleItemId', true) ?? [],
+                'dim_order' => $matches[1] ?? "Height x Width x Depth"
             ];
         }
 
@@ -115,7 +118,7 @@ class XmlDataProcessor
      * @param $moduleXml
      * @return array
      */
-    public function processPersonData($moduleXml)
+    public function processPersonData($moduleXml, int $productId)
     {
         $PersonItem = $this->parseXml($moduleXml)[0];
 
@@ -142,49 +145,56 @@ class XmlDataProcessor
             'birthplace' => $this->extractValue($PersonItem,'//zetcom:repeatableGroup[@name="PerDateGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="PlaceBirthTxt"]/zetcom:value'),
             'deathplace' => $this->extractValue($PersonItem,'//zetcom:repeatableGroup[@name="PerDateGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="PlaceDeathTxt"]/zetcom:value'),
             'isni_uri' => $this->extractValue($PersonItem,'//zetcom:repeatableGroup[@name="PerURLGrp"]/zetcom:repeatableGroupItem[zetcom:vocabularyReference[@name="TypeVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue="ISNI"]/zetcom:dataField[@name="AddressTxt"]/zetcom:value'),
-            'biography' => $this->extractValue($PersonItem,'//zetcom:dataField[@name="PerNotesClb"]/zetcom:value')
+            'biography' => $this->extractValue($PersonItem,'//zetcom:dataField[@name="PerNotesClb"]/zetcom:value'),
+            'right_type' => $this->extractValue($PersonItem,'//zetcom:repeatableGroup[@name="PerRightsGrp"]/zetcom:repeatableGroupItem/zetcom:vocabularyReference[@name="TypeVoc" and @id="'.$productId.'"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue')
         ];
     }
 
     /**
-     * @param $xml
-     * @param $xpath
-     * @param $key
-     * @return string|null
-     */
-    private function extractValue($xml, $xpath,$key = 0) {
-        $xml->registerXPathNamespace('zetcom', $this->moduleNamspace);
-        $result = $xml->xpath($xpath);
-        return $result && isset($result[$key]) ? (string)$result[$key] : null;
-    }
-
-    /**
-     * @param $objInvNumber
-     * @return bool
-     */
-    private function isInvNumber($objInvNumber) {
-
-        if ($objInvNumber === "objInvNumber") {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param $xml
-     * @param $xpath
+     * @param $moduleXml
      * @return array
      */
-    private function getMultiple($xml, $xpath)
+    public function processMultimediaData($moduleXml): array
     {
-        $items = $xml->xpath($xpath);
-        $images = [];
+        $multimediaItem = $this->parseXml($moduleXml)[0];
 
-        foreach ($items as $item) {
-            $images[] = (int)$item['uuid'];
+        return [
+            'photographer' => $this->extractValue($multimediaItem, '//zetcom:dataField[@name="MulPhotocreditTxt"]/zetcom:value') ?? null,
+            'is_poster' => $this->extractValue($multimediaItem, '//zetcom:dataField[@name="ThumbnailBoo"]/zetcom:value'),
+            'is_prime_quality' => $this->extractValue($multimediaItem, '//zetcom:vocabularyReference[@name="MulCommunicationVoc"]/zetcom:value')
+        ];
+    }
+
+    /**
+     * @param $moduleXml
+     * @return array|string|null
+     */
+    public function processConservationData($moduleXml)
+    {
+        $multimediaItem = $this->parseXml($moduleXml)[0];
+
+        return $this->extractValue($multimediaItem, '//zetcom:vocabularyReference[@name="ConCoveringVoc"]/zetcom:vocabularyReferenceItem/@name') ?? null;
+    }
+
+
+    /**
+     * @param $xml
+     * @param $xpath
+     * @param int $key
+     * @param bool $isMultiVal
+     * @return array|string|null
+     */
+    private function extractValue($xml, $xpath, bool $isMultiVal = false) {
+        $xml->registerXPathNamespace('zetcom', $this->moduleNamspace);
+        $results = $xml->xpath($xpath);
+        if ($results && $isMultiVal) {
+            $values = [];
+            foreach ($results as $result) {
+                $values[] = (string)$result;
+            }
+            return $values;
         }
-
-        return $images;
+        return $results && isset($results[0]) ? (string)$results[0] : null;
     }
 
     /**
@@ -193,13 +203,13 @@ class XmlDataProcessor
      * @param $invRoot
      * @return bool
      */
-    private function isPublishable($diffusion, $domain, $invRoot)
+    private function isPublishable($diffusion, $orgUnit, $invRoot)
     {
         if (stripos($diffusion, 'Publiable') === false) {
             return false;
         }
 
-        $isCollectionMN = ($domain === 'collection du MN');
+        $isCollectionMN = ($orgUnit === 'ObjectOrgUnit');
 
         $isIA = (strpos($invRoot, 'IA') === 0);
 
@@ -247,12 +257,12 @@ class XmlDataProcessor
 
     /**
      * @param $moduleXml
-     * @return string|null
+     * @return array|string
      */
-    public function getPhotographer($moduleXml)
+    public function getLiteratureItem($moduleXml)
     {
-        $multimediaItem = $this->parseXml($moduleXml)[0];
+        $LiteratureItem = $this->parseXml($moduleXml)[0];
 
-        return $this->extractValue($multimediaItem, '//zetcom:dataField[@name="MulPhotocreditTxt"]/zetcom:value') ?? null;
+        return $this->extractValue($LiteratureItem, '//zetcom:dataField[@name="LitCitationClb"]/zetcom:value') ?? "";
     }
 }
