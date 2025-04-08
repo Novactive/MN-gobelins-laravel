@@ -17,7 +17,8 @@ class Image extends Model
         'has_privacy_issue',
         'has_marking',
         'is_reviewed',
-        'photographer'
+        'photographer',
+        'license'
     ];
 
     protected $touches = ['product'];
@@ -52,29 +53,7 @@ class Image extends Model
             'is_prime_quality' => $this->is_prime_quality,
             'is_documentation_quality' => $this->is_documentation_quality,
             'has_marking' => $this->has_marking,
-            'license' => $this->license,
+            'license' => $this->license
         ];
-    }
-
-    /**
-     * Distribution license
-     * Only the production of internal photographers, of objects that have fallen
-     * in the public domain, can be (at this point) safely licensed as License
-     * Ouverte 2.0.
-     *
-     * @return string|null
-     */
-    public function getLicenseAttribute()
-    {
-        $public_domain_horizon = getdate()['year'] - 70;
-        if ($this->photographer && preg_match('/CINQPEYRES|BIDEAU/i', $this->photographer) > 0) {
-            if ($this->product && (
-                ($this->product->period && $this->product->period->end_year && $this->product->period->end_year < $public_domain_horizon) ||
-                ($this->product->conception_year && $this->product->conception_year < $public_domain_horizon)
-            )) {
-                return 'LO 2.0';
-            }
-        }
-        return null;
     }
 }

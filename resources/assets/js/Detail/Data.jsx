@@ -11,9 +11,16 @@ function DataUnitTemplate(props) {
   );
 }
 
+function formatInventoryId(inventoryId) {
+  return inventoryId
+      .replace(/^([A-Z]+)-(\d+)/, "$1 $2")
+      .replace(/-(\d{3})$/, (match, p1) => (p1 === "000" ? "" : `/${p1}`))
+      .replace(/-(\d{3})/g, "/$1");
+}
+
 function InventoryId(props) {
   return props.inventoryId ? (
-    <DataUnitTemplate label="Numéro d’inventaire" value={props.inventoryId} />
+    <DataUnitTemplate label="Numéro d’inventaire" value={formatInventoryId(props.inventoryId)} />
   ) : null;
 }
 
@@ -113,24 +120,14 @@ function ProductionOrigin(props) {
 
 /* By default, values are in meters. */
 function Dimensions(props) {
-  const has_dims = props.l || props.w || props.h; // values can be null!
-  let dims = [
-    parseFloat(props.l || 0),
-    parseFloat(props.w || 0),
-    parseFloat(props.h || 0)
-  ];
-  const is_small = has_dims && dims.filter(d => d > 0 && d < 1).length > 0;
-  dims = is_small
-    ? dims
-        .map(d => parseFloat((d * 100).toFixed(2)))
-        .map(d => (Number.isInteger(d) ? parseInt(d) : d))
-    : dims;
-  const unit = is_small ? "cm" : "m";
+  // console.log(props.product);
+  console.log('TESTTT');
+  const has_dims = props.dimensions && props.dimensions.trim().length > 0;
   return has_dims ? (
     <DataUnitTemplate
-      label="Dimensions (L × l × h)"
+      label={props.label}
       value={
-        dims.map(d => d.toString().replace(".", ",")).join(" × ") + " " + unit
+        props.dimensions
       }
     />
   ) : null;
@@ -203,9 +200,8 @@ function Data(props) {
         <Materials materials={props.product.materials} />
         <ProductionOrigin productionOrigin={props.product.production_origin} />
         <Dimensions
-          l={props.product.length_or_diameter}
-          w={props.product.depth_or_width}
-          h={props.product.height_or_thickness}
+          label={props.product.label}
+          dimensions={props.product.dimensions}
         />
         <Acquisition
           acquisitionDate={props.product.acquisition_date}

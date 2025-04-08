@@ -172,7 +172,7 @@ class Product extends Model
         'entry_mode_id',
         'legacy_updated_on',
         'historic',
-        'about_author'
+        'dim_order'
     ];
 
     // Eloquent scopes
@@ -240,14 +240,14 @@ class Product extends Model
             'id' => $this->id,
             'title_or_designation' => $this->title_or_designation,
             'denomination' => $this->denomination,
-            'description' => in_array($this->publication_code, ['P+D', 'P+D+P', 'P+D+O']) ? $this->description : null,
+            'description' => $this->description,
             'historic' => $this->historic,
-            'about_author' => $this->about_author,
+            'about_author' => $this->authors->pluck('biography')->filter()->implode("\n"),
             'bibliography' => $this->bibliography,
-            'acquisition_origin' => $this->publication_code === 'P+D+O' ? $this->acquisition_origin : null,
+            'acquisition_origin' => $this->acquisition_origin,
             'acquisition_date' => $this->acquisition_date,
             'acquisition_mode' => $this->searchableEntryMode,
-            'inventory_id' => $this->inventory_id,
+            'inventory_id' => $this->formatInventoryId($this->inventory_id),
             'inventory_id_as_keyword' => strtoupper($this->inventory_id),
             'product_types' => $this->searchableProductTypes,
             'authors' => $this->searchableAuthors,
@@ -265,6 +265,7 @@ class Product extends Model
             'depth_or_width' => $this->depth_or_width,
             'height_or_thickness' => $this->height_or_thickness,
             'legacy_inventory_number' => $this->legacy_inventory_number,
+            'formatted_dimensions' => $this->getFormattedDimensions($this->dim_order)
         ];
     }
 
@@ -275,4 +276,52 @@ class Product extends Model
     {
         return $this->is_published;
     }
+
+    private function formatInventoryId($inventoryId) {
+        $inventoryId = preg_replace('/^([A-Z]+)-(\d+)/', '$1 $2', $inventoryId);
+        $inventoryId = preg_replace_callback('/-(\d{3})$/', function ($matches) {
+            return ($matches[1] === "000") ? '' : "/{$matches[1]}";
+        }, $inventoryId);
+        $inventoryId = preg_replace('/-(\d{3})/', '/$1', $inventoryId);
+
+        return $inventoryId;
+    }
+
+    private function getFormattedDimensions($TypeDimRef) {
+        if (!$this->height_or_thickness && !$this->length_or_diameter && !$this->depth_or_width ) {
+            return null;
+        }
+
+        $dimensionsMap = [
+            'Height' => (float) $this->height_or_thickness,
+            'Width' => (float) $this->length_or_diameter,
+            'Depth' => (float) $this->depth_or_width,
+        ];
+
+        $isSmall = count(array_filter($dimensionsMap, fn($d) => $d > 0 && $d < 1)) > 0;
+
+        if ($isSmall) {
+            $dimensionsMap = array_map(fn($d) => round($d * 100, 2), $dimensionsMap);
+        }
+
+        $unit = $isSmall ? 'cm' : 'm';
+        $dimensionsOrder = explode(' x ', $TypeDimRef);
+        $orderedDimensions = array_map(fn($dim) => $dimensionsMap[$dim] ?? null, $dimensionsOrder);
+        $formattedDimensions = implode(' x ', $orderedDimensions) . ' ' . $unit;
+
+        $labelMap = [
+            'Height' => 'h',
+            'Width' => 'l',
+            'Depth' => 'L',
+        ];
+
+        $orderedLabels = array_map(fn($dim) => $labelMap[$dim] ?? null, $dimensionsOrder);
+        $formattedLabel = 'Dimensions (' . implode(' × ', array_filter($orderedLabels)) . ')';
+
+        return [
+            'dimensions' => $formattedDimensions,
+            'label' => $formattedLabel
+        ];
+    }
+
 }

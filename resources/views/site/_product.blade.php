@@ -158,12 +158,11 @@ $orientation = $first_img['width'] < $first_img['height'] ? 'portrait' : 'landsc
                         <dd class="DetailData__datum">{{ $product['production_origin']['name'] }}</dd>
                     </div>
                     @endunless
-                    @unless(empty(array_filter([ $product['length_or_diameter'], $product['height_or_thickness'],
-                    $product['depth_or_width'] ])))
+                    @unless(empty($product['formatted_dimensions']))
                     <div class="DetailData__unit">
-                        <dt class="DetailData__label">Dimensions (L × l × h) mètres</dt>
+                        <dt class="DetailData__label">{{$product['formatted_dimensions']['label']}}</dt>
                         <dd class="DetailData__datum">
-                            {{ join(' × ',array_filter([ $product['length_or_diameter'], $product['height_or_thickness'], $product['depth_or_width'] ])) }}
+                            {{$product['formatted_dimensions']['dimensions']}}
                         </dd>
                     </div>
                     @endunless
@@ -198,11 +197,14 @@ $orientation = $first_img['width'] < $first_img['height'] ? 'portrait' : 'landsc
                                 {!! nl2br($product['historic']) !!}
                             </dd>
                         </div>
+                        <hr class="DetailInfo__separator" />
                     @endunless
-                    <hr class="DetailInfo__separator" />
                     @unless(empty($product['about_author']))
                         <div class="DetailInfo__unit">
-                            <dt class="DetailData__label">A propos de l'auteur</dt>
+                            <dt class="DetailData__label">
+                                A propos de
+                                {{ count($product['authors']) > 1 ? 'des auteurs' : 'l\'auteur' }}
+                            </dt>
                             <dd class="DetailData__datum">
                                 {!! nl2br($product['about_author']) !!}
                             </dd>

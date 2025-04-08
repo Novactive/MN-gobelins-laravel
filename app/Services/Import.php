@@ -29,8 +29,9 @@ class Import
         try {
             // First save the Product object, without posting to ES.
             // We only post to ES once we have all the relationships saved (see below).
-            $inventoryId = $item['inventory_root'] . '-' . ($item['inventory_number'] ?? "000") . '-' .
-                ($item['inventory_suffix'] ?? "000") .($item['inventory_suffix2'] ? "-" . $item['inventory_suffix2'] : '');
+            $inventoryId = $item['inventory_root'] . '-' . ((!isset($item['inventory_number']) || $item['inventory_number'] == 0) ? "000" : $item['inventory_number']) . '-' .
+                ((!isset($item['inventory_suffix']) || $item['inventory_suffix'] == 0) ? "000" : $item['inventory_suffix']) .($item['inventory_suffix2'] ? "-" . $item['inventory_suffix2'] : '');
+
             $product = null;
             \App\Models\Product::withoutSyncingToSearch(function () use (&$product, $item, $inventoryId) {
                 $product = \App\Models\Product::updateOrCreate(
@@ -46,36 +47,21 @@ class Import
                         'height_or_thickness' => (float)$item['height_or_thickness'],
                         'length_or_diameter' => (float)$item['length_or_diameter'],
                         'depth_or_width' => (float)$item['depth_or_width'],
-                        'conception_year' => (int)$item['conception_year'],
+                        'conception_year' => (string)$item['conception_year'],
                         'acquisition_origin' => (string)$item['acquisition_origin'],
                         'acquisition_date' => $item['acquisition_date'],
                         'listed_as_historic_monument' => (bool)$item['listed_as_historic_monument'],
-                        'listed_on' => $item['listed_on'],
                         'category' => (string)$item['category'],
                         'denomination' => (string)$item['denomination'],
                         'title_or_designation' => (string)$item['title_or_designation'],
                         'description' => (string)$item['description'],
-                        'bibliography' => (string)$item['bibliography'],
+                        'bibliography' => $this->getBibliography($item['obj_literature_ref'] ?? [], $item['pages_ref_txt'] ?? [], $item['obj_literature_clb'] ?? ''),
                         'is_published' => (bool)$item['is_publishable'],
                         'publication_code' => (string)$item['publication_code'],
-                        'legacy_updated_on' => $item['legacy_updated_on'],
+                        'dim_order' => (string)$item['dim_order'],
                     ]
                 );
             });
-
-            // Images
-            $product->images->map(function ($img) {
-                $img->delete();
-            });
-            $this->importImages($product, $item['images']);
-
-            //Product Type
-            if ($item['product_type']) {
-                $productType = \App\Models\ProductType::where('name', $item['product_type'])->first();
-                if ($productType) {
-                    $product->productType()->associate($productType);
-                }
-            }
 
             //Drop all authorships
             $product->authorships->map(function ($as) {
@@ -83,7 +69,7 @@ class Import
             });
 
             // Create authors
-            $authors = $this->importAuthors($item['authors']);
+            $authors = $this->importAuthors($item['authors'], (int)$item['id']);
 
             // Create Authorships
             \App\Models\Authorship::unguard();
@@ -95,6 +81,22 @@ class Import
                 })->toArray()
             );
             \App\Models\Authorship::reguard();
+
+            $isPublicDomain = $this->isPublicDomain($authors);
+
+            // Images
+            $product->images->map(function ($img) {
+                $img->delete();
+            });
+            $this->importImages($product, $item['images'], $isPublicDomain);
+
+            //Product Type
+            if ($item['product_type']) {
+                $productType = \App\Models\ProductType::where('name', $item['product_type'])->first();
+                if ($productType) {
+                    $product->productType()->associate($productType);
+                }
+            }
 
             // Period
             if ($item['period_legacy_id']) {
@@ -130,11 +132,12 @@ class Import
 
             //Style
             if ($item['style_legacy_id']) {
+                $styleName = in_array($item['style_name'], ['Directoire', 'Consulat']) ? 'Directoire - Consulat' : $item['style_name'];
                 $style = \App\Models\EntryMode::updateOrCreate(
                     ['legacy_id' => $item['style_legacy_id']],
                     [
                         'legacy_id' => $item['style_legacy_id'],
-                        'name' => $item['style_name'],
+                        'name' => $styleName ?? 'Années ' . $item['period_start_year'],
                     ]
                 );
 
@@ -143,11 +146,41 @@ class Import
                 }
             }
 
+            // Materials
+            $conservation = !empty($item['conservation']) ? array_map(function ($id) {
+                $moduleXml = $this->zetcomService->getSingleModule('Conservation', (int)$id);
+                return $this->dataProcessor->processConservationData($moduleXml);
+            }, $item['conservation']) : [];
+
+            $materials = $item['mat_tech'];
+            $upholstery = array_filter(array_merge($conservation, [$item['obj_garn']], [$item['obj_new_trim_dpl']]), function ($value) {
+                return $value !== null && $value !== "";
+            });
+
+            $material_ids = collect($materials)
+                ->map(function ($legacy_mat) {
+                    return \App\Models\Material::mappedFrom('mat', $legacy_mat)->get()->all();
+                })
+                ->flatten()
+                ->pluck('id')
+                ->all();
+
+            $upholstery_ids = collect($upholstery)
+                ->map(function ($legacy_mat) {
+                    return \App\Models\Material::mappedFrom('gar', $legacy_mat)->get()->all();
+                })
+                ->flatten()
+                ->pluck('id')
+                ->all();
+
+
+            $product->materials()->sync(array_merge($material_ids, $upholstery_ids));
+
             //Production Origin
             if ($item['production_origin']) {
                 $productionOrigin = \App\Models\ProductionOrigin::firstOrCreate(
-                    ['name' => "ARC2"],
-                    ['mapping_key' => 'Test']
+                    ['name' => $item['production_origin']],
+                    ['mapping_key' => str_replace(" ", "_", $item['production_origin'])]
                 );
                 if ($productionOrigin) {
                     $product->productionOrigin()->associate($productionOrigin);
@@ -172,7 +205,7 @@ class Import
      * @param array $images
      * @return void
      */
-    private function importImages(&$product, array $images) {
+    private function importImages(&$product, array $images, bool $isPublicDomain = false) {
 
         $images = collect($images)
             ->map(function ($imgId) {
@@ -185,11 +218,15 @@ class Import
             ->filter(function ($img) {
                 return $this->dataProcessor->isImagePublishable($img['moduleXml']);
             })
-            ->map(function ($img) {
+            ->map(function ($img) use ($isPublicDomain) {
+                $imageDetails = $this->dataProcessor->processMultimediaData($img['moduleXml']);
                 return [
                     'path' => $this->zetcomService->getImage($img['imgId']),
-                    'photographer' => $this->dataProcessor->getPhotographer($img['moduleXml']),
-                    'is_published' => true
+                    'is_published' => true,
+                    'photographer' => $imageDetails['photographer'] ?? '',
+                    'is_poster' => $imageDetails['is_poster'],
+                    'is_prime_quality' => $imageDetails['is_prime_quality'],
+                    'license' => $isPublicDomain && strpos($imageDetails['photographer'], 'Bideau') !== false ? 'pub' : 'perso'
                 ];
             })
             ->map(function ($img) use ($product) {
@@ -219,15 +256,15 @@ class Import
      * @param array $authorIds
      * @return \Illuminate\Support\Collection
      */
-    private function importAuthors(array $authorIds) {
-
-        return collect($authorIds)->map(function ($auId) {
+    private function importAuthors(array $authorIds, int $productId) {
+        return collect($authorIds)->map(function ($auId) use ($productId) {
                 $authorXml = $this->zetcomService->getSingleModule('Person', $auId);
-                $author = $this->dataProcessor->processPersonData($authorXml);
-                \App\Models\Author::updateOrCreate(
-                    ['legacy_id' => (int)$author['legacy_id']],
+                $author = $this->dataProcessor->processPersonData($authorXml, $productId);
+                $legacyId = $author['legacy_id'] ? (int)$author['legacy_id'] : (int)$author['id'];
+                $author = \App\Models\Author::updateOrCreate(
+                    ['legacy_id' => $legacyId],
                     [
-                        'legacy_id' => (int) $author['legacy_id'],
+                        'legacy_id' => $legacyId,
                         'name' => (string) $author['name'],
                         'first_name' => (string) $author['first_name'],
                         'last_name' => (string) $author['last_name'],
@@ -248,6 +285,39 @@ class Import
 
                 return $author;
             });
+    }
+
+    /**
+     * @param array $objLiteratureRef
+     * @param array $pagesRefTxt
+     * @param string $objLiteratureClb
+     * @return string
+     * @throws \Exception
+     */
+    private function getBibliography(array $objLiteratureRef, array $pagesRefTxt, string $objLiteratureClb) {
+
+        $bibliography = "";
+
+        foreach ($objLiteratureRef as $key => $objLiteratureId) {
+            $literatureXml = $this->zetcomService->getSingleModule('Literature', (int)$objLiteratureId);
+            $litCitationClb = $this->dataProcessor->getLiteratureItem($literatureXml);
+            $bibliography .= $litCitationClb . (isset($pagesRefTxt[$key]) ? ", p.$pagesRefTxt[$key] " : "") . "\n";
+        }
+
+        $bibliography .= $objLiteratureClb;
+
+        return $bibliography;
+
+    }
+
+    public function isPublicDomain($authors)
+    {
+        foreach ($authors as $author) {
+            if (strpos($author['right_type'], 'domaine public') === false) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
