@@ -15,12 +15,17 @@ return [
         'ObjObjectNumberGrp.Part2Txt',
         'ObjObjectNumberGrp.Part3Txt',
         'ObjObjectNumberGrp.Part4Txt',
+        'ObjObjectTitleGrp',
+        'ObjObjectTitleGrp.repeatableGroupItem',
+        'ObjObjectTitleGrp.TitleTxt',
         'ObjInternetVoc',
         'ObjDimAllGrp',
         'ObjDimAllGrp.repeatableGroupItem',
         'ObjDimAllGrp.WidthNum',
         'ObjDimAllGrp.HeightNum',
         'ObjDimAllGrp.DepthNum',
+        'ObjDimAllGrp.TypeDimRef.',
+        'ObjDimAllGrp.TypeDimRef.formattedValue',
         'ObjDateGrp',
         'ObjDateGrp.repeatableGroupItem',
         'ObjDateGrp.PreviewVrt',
@@ -52,6 +57,13 @@ return [
         'ObjPerAssociationRef.moduleReferenceItem',
         'ObjMultimediaRef',
         'ObjMultimediaRef.moduleReferenceItem',
+        'ObjMaterialTechniqueGrp',
+        'ObjMaterialTechniqueGrp.repeatableGroupItem',
+        'ObjMaterialTechniqueGrp.MatTechVoc',
+        'ObjGarnVoc',
+        'ObjConservationRef',
+        'ObjConservationRef.moduleReferenceItem',
+        'ObjNewTrimVrt'
     ]
 
 ];
