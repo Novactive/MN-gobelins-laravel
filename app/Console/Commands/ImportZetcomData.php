@@ -66,8 +66,9 @@ class ImportZetcomData extends Command
             $this->info("Veuillez spécifier --limit (ex: --limit=1000). L'offset est par defaut 0, vous pouvez l'incrémenter à chaque itération (ex 2eme itér: --offset=1000)");
             return Command::FAILURE;
         }
+        //module pour teste
         //$modulesXml = $this->zetcomService->getSingleModule('Multimedia', 637457);
-        //dd($this->dataProcessor->processMultimediaData($modulesXml));
+
         $modulesXml = $this->zetcomService->getModifiedModules(self::MODULE_NAME, $all, $limit, $offset);
         $objects = $this->dataProcessor->processObjectsData($modulesXml);
         foreach ($objects as $object) {
