@@ -57,7 +57,8 @@ class Import
                         'description' => (string)$item['description'],
                         'bibliography' => $this->getBibliography($item['obj_literature_ref'] ?? [], $item['pages_ref_txt'] ?? [], $item['obj_literature_clb'] ?? ''),
                         'is_published' => (bool)$item['is_publishable'],
-                        'publication_code' => (string)$item['publication_code']
+                        'publication_code' => (string)$item['publication_code'],
+                        'dim_order' => (string)$item['dim_order'],
                     ]
                 );
             });
@@ -131,11 +132,12 @@ class Import
 
             //Style
             if ($item['style_legacy_id']) {
+                $styleName = in_array($item['style_name'], ['Directoire', 'Consulat']) ? 'Directoire - Consulat' : $item['style_name'];
                 $style = \App\Models\EntryMode::updateOrCreate(
                     ['legacy_id' => $item['style_legacy_id']],
                     [
                         'legacy_id' => $item['style_legacy_id'],
-                        'name' => $item['style_name'],
+                        'name' => $styleName ?? 'Années ' . $item['period_start_year'],
                     ]
                 );
 
@@ -144,11 +146,41 @@ class Import
                 }
             }
 
+            // Materials
+            $conservation = !empty($item['conservation']) ? array_map(function ($id) {
+                $moduleXml = $this->zetcomService->getSingleModule('Conservation', (int)$id);
+                return $this->dataProcessor->processConservationData($moduleXml);
+            }, $item['conservation']) : [];
+
+            $materials = $item['mat_tech'];
+            $upholstery = array_filter(array_merge($conservation, [$item['obj_garn']], [$item['obj_new_trim_dpl']]), function ($value) {
+                return $value !== null && $value !== "";
+            });
+
+            $material_ids = collect($materials)
+                ->map(function ($legacy_mat) {
+                    return \App\Models\Material::mappedFrom('mat', $legacy_mat)->get()->all();
+                })
+                ->flatten()
+                ->pluck('id')
+                ->all();
+
+            $upholstery_ids = collect($upholstery)
+                ->map(function ($legacy_mat) {
+                    return \App\Models\Material::mappedFrom('gar', $legacy_mat)->get()->all();
+                })
+                ->flatten()
+                ->pluck('id')
+                ->all();
+
+
+            $product->materials()->sync(array_merge($material_ids, $upholstery_ids));
+
             //Production Origin
             if ($item['production_origin']) {
                 $productionOrigin = \App\Models\ProductionOrigin::firstOrCreate(
-                    ['name' => "ARC2"],
-                    ['mapping_key' => 'Test']
+                    ['name' => $item['production_origin']],
+                    ['mapping_key' => str_replace(" ", "_", $item['production_origin'])]
                 );
                 if ($productionOrigin) {
                     $product->productionOrigin()->associate($productionOrigin);
@@ -225,13 +257,14 @@ class Import
      * @return \Illuminate\Support\Collection
      */
     private function importAuthors(array $authorIds, int $productId) {
-        return collect($authorIds)->map(function ($auId) use ($productId){
+        return collect($authorIds)->map(function ($auId) use ($productId) {
                 $authorXml = $this->zetcomService->getSingleModule('Person', $auId);
                 $author = $this->dataProcessor->processPersonData($authorXml, $productId);
-                \App\Models\Author::updateOrCreate(
-                    ['legacy_id' => (int)$author['legacy_id']],
+                $legacyId = $author['legacy_id'] ? (int)$author['legacy_id'] : (int)$author['id'];
+                $author = \App\Models\Author::updateOrCreate(
+                    ['legacy_id' => $legacyId],
                     [
-                        'legacy_id' => (int) $author['legacy_id'],
+                        'legacy_id' => $legacyId,
                         'name' => (string) $author['name'],
                         'first_name' => (string) $author['first_name'],
                         'last_name' => (string) $author['last_name'],
