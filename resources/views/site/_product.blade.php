@@ -141,7 +141,7 @@ $orientation = $first_img['width'] < $first_img['height'] ? 'portrait' : 'landsc
                     @endunless
                     @unless(empty($product['materials']))
                     <div class="DetailData__unit">
-                        <dt class="DetailData__label">Types</dt>
+                        <dt class="DetailData__label">Matières</dt>
                         <dd class="DetailData__datum">
                             {{ 
                                 collect($product['materials'])
