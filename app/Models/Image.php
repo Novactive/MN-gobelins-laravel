@@ -18,7 +18,8 @@ class Image extends Model
         'has_marking',
         'is_reviewed',
         'photographer',
-        'license'
+        'license',
+        'update_date'
     ];
 
     protected $touches = ['product'];
@@ -53,7 +54,8 @@ class Image extends Model
             'is_prime_quality' => $this->is_prime_quality,
             'is_documentation_quality' => $this->is_documentation_quality,
             'has_marking' => $this->has_marking,
-            'license' => $this->license
+            'license' => $this->license,
+            'update_date' => $this->update_date
         ];
     }
 }
