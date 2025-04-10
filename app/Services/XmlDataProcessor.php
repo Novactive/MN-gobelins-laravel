@@ -161,7 +161,8 @@ class XmlDataProcessor
         return [
             'photographer' => $this->extractValue($multimediaItem, '//zetcom:dataField[@name="MulPhotocreditTxt"]/zetcom:value') ?? null,
             'is_poster' => $this->extractValue($multimediaItem, '//zetcom:dataField[@name="ThumbnailBoo"]/zetcom:value'),
-            'is_prime_quality' => $this->extractValue($multimediaItem, '//zetcom:vocabularyReference[@name="MulCommunicationVoc"]/zetcom:value')
+            'is_prime_quality' => $this->extractValue($multimediaItem, '//zetcom:vocabularyReference[@name="MulCommunicationVoc"]/zetcom:value'),
+            'update_date' => $this->extractValue($multimediaItem, '//zetcom:dataField[@name="MulDateTxt"]/zetcom:value'),
         ];
     }
 
