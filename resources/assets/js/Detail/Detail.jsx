@@ -215,6 +215,10 @@ class Detail extends Component {
               this.hasImages &&
               this.props.product.images[this.state.mainImageIndex].license
             }
+            update_date={
+                this.hasImages &&
+                this.props.product.images[this.state.mainImageIndex].update_date
+            }
           />
         )}
       </React.Fragment>
