@@ -60,7 +60,7 @@ class DownloadModal extends Component {
                     »{" "}
                   </b>
                   et la date de dernière mise à jour ici,{" "}
-                  <b>« janvier 2019 »</b>.
+                  <b>« {this.props.update_date} »</b>.
                 </p>
                 <div className="DetailDownloadModal__button-holder">
                   <button onClick={this.props.onClose}>OK</button>
