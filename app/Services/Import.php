@@ -301,6 +301,11 @@ class Import
         foreach ($objLiteratureRef as $key => $objLiteratureId) {
             $literatureXml = $this->zetcomService->getSingleModule('Literature', (int)$objLiteratureId);
             $litCitationClb = $this->dataProcessor->getLiteratureItem($literatureXml);
+
+            if ($litCitationClb === ""){
+                continue;
+            }
+
             $bibliography .= $litCitationClb . (isset($pagesRefTxt[$key]) ? ", p.$pagesRefTxt[$key] " : "") . "\n";
         }
 
