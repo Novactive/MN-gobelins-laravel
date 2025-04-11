@@ -43,7 +43,7 @@ class Import
                         'inventory_number' => (int)$item['inventory_number'] ?? 0,
                         'inventory_suffix' => (int)$item['inventory_suffix'] ?? 0,
                         'inventory_suffix2' => (int)$item['inventory_suffix2'] ?? 0,
-                        'legacy_inventory_number' => (string)$item['legacy_inventory_number'],
+                        'legacy_inventory_number' => trim($item['legacy_inventory_number']) !== '' ? (string)$item['legacy_inventory_number'] : null,
                         'height_or_thickness' => (float)$item['height_or_thickness'],
                         'length_or_diameter' => (float)$item['length_or_diameter'],
                         'depth_or_width' => (float)$item['depth_or_width'],
@@ -59,6 +59,7 @@ class Import
                         'is_published' => (bool)$item['is_publishable'],
                         'publication_code' => (string)$item['publication_code'],
                         'dim_order' => (string)$item['dim_order'],
+                        'historic' => (string)$item['history'],
                     ]
                 );
             });
@@ -133,7 +134,7 @@ class Import
             //Style
             if ($item['style_legacy_id']) {
                 $styleName = in_array($item['style_name'], ['Directoire', 'Consulat']) ? 'Directoire - Consulat' : $item['style_name'];
-                $style = \App\Models\EntryMode::updateOrCreate(
+                $style = \App\Models\Style::updateOrCreate(
                     ['legacy_id' => $item['style_legacy_id']],
                     [
                         'legacy_id' => $item['style_legacy_id'],
