@@ -19,6 +19,7 @@ class Author extends Model
         'birthplace',
         'deathplace',
         'isni_uri',
+        'biography'
     ];
 
     protected $touches = ['products'];
