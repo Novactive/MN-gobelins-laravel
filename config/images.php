@@ -7,6 +7,7 @@ return [
         'MulObjectRef',
         'MulObjectRef.moduleReferenceItem',
         'MulObjectRef.ThumbnailBoo',
-        'MulCommunicationVoc'
+        'MulCommunicationVoc',
+        'MulDateTxt'
     ]
 ];

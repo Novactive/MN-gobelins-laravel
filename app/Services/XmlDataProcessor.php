@@ -68,7 +68,7 @@ class XmlDataProcessor
                 'length_or_diameter' => $dimensions['WidthNum'],
                 'depth_or_width' => $dimensions['DepthNum'],
                 'conception_year' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDateGrp"]/zetcom:repeatableGroupItem/zetcom:virtualField[@name="PreviewVrt"]/zetcom:value'),
-                'acquisition_origin' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjAcquisitionMethodVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
+                'acquisition_origin' => $this->extractValue($item,'./zetcom:dataField[@name="ObjAcquisitionNotesClb"]/zetcom:value'),
                 'acquisition_date' => stripos($diffusion, 'origine détail') !== false ? $this->formatDatesInString($this->extractValue($item,'./zetcom:dataField[@name="ObjAcquisitionDateDat"]/zetcom:value')) : '',
                 'listed_as_historic_monument' => $this->extractValue($item, './zetcom:vocabularyReference[@name="ObjClaTypeVoc"]/zetcom:vocabularyReferenceItem/@name') == "Monuments historiques",
                 'category' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjCategoryVoc"]/zetcom:vocabularyReferenceItem/@name'),
@@ -161,7 +161,8 @@ class XmlDataProcessor
         return [
             'photographer' => $this->extractValue($multimediaItem, '//zetcom:dataField[@name="MulPhotocreditTxt"]/zetcom:value') ?? null,
             'is_poster' => $this->extractValue($multimediaItem, '//zetcom:dataField[@name="ThumbnailBoo"]/zetcom:value'),
-            'is_prime_quality' => $this->extractValue($multimediaItem, '//zetcom:vocabularyReference[@name="MulCommunicationVoc"]/zetcom:value')
+            'is_prime_quality' => $this->extractValue($multimediaItem, '//zetcom:vocabularyReference[@name="MulCommunicationVoc"]/zetcom:value'),
+            'update_date' => $this->extractValue($multimediaItem, '//zetcom:dataField[@name="MulDateTxt"]/zetcom:value'),
         ];
     }
 
