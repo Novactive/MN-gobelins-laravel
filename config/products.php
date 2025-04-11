@@ -63,7 +63,8 @@ return [
         'ObjGarnVoc',
         'ObjConservationRef',
         'ObjConservationRef.moduleReferenceItem',
-        'ObjNewTrimVrt'
+        'ObjNewTrimVrt',
+        'ObjAcquisitionNotesClb'
     ]
 
 ];

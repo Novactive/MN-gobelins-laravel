@@ -18,7 +18,7 @@ class MainImage extends Component {
       ? `/media/xl/${encodeURIComponent(this.props.image.path)}`
       : "";
     let downloadUrl = this.props.image
-      ? `${location.origin}/media/orig/${encodeURIComponent(
+      ? `${location.origin}/media/xl/${encodeURIComponent(
           this.props.image.path
         )}`
       : "";
