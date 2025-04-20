@@ -15,6 +15,7 @@ class UpdateDatabaseSeeder extends Seeder
             ProductTypesUpdateSeeder::class,
             MaterialUpdateSeeder::class,
             ProductionOriginUpdateSeeder::class,
+            RenameDirectoireStyleSeeder::class
         ]);
     }
 }

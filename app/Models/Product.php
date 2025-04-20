@@ -85,9 +85,11 @@ class Product extends Model
      */
     public function getSearchableMaterialsAttribute()
     {
-        return $this->materials->map(function ($mat) {
+        return array_values(
+            $this->materials->map(function ($mat) {
             return $mat->toSearchableAncestorsAndSelf();
-        })->flatten(1)->unique('id')->all();
+        })->flatten(1)->unique('id')->all()
+        );
     }
 
     public function getSearchableProductTypesAttribute()
@@ -247,7 +249,8 @@ class Product extends Model
             'acquisition_origin' => $this->acquisition_origin,
             'acquisition_date' => $this->acquisition_date,
             'acquisition_mode' => $this->searchableEntryMode,
-            'inventory_id' => $this->formatInventoryId($this->inventory_id),
+            'inventory_id' => $this->inventory_id,
+            'formatted_inventory_id' => $this->formatInventoryId($this->inventory_id),
             'inventory_id_as_keyword' => strtoupper($this->inventory_id),
             'product_types' => $this->searchableProductTypes,
             'authors' => $this->searchableAuthors,
@@ -274,7 +277,7 @@ class Product extends Model
      */
     public function shouldBeSearchable()
     {
-        return $this->is_published;
+        return false;
     }
 
     private function formatInventoryId($inventoryId) {
