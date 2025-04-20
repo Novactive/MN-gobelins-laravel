@@ -97,7 +97,7 @@ class XmlDataProcessor
                 ),
                 'publication_code' => null,
                 'legacy_inventory_number' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjObjectNumberGrp"]/zetcom:repeatableGroupItem[zetcom:vocabularyReference[@name="DenominationVoc"]/zetcom:vocabularyReferenceItem[@name="old"]]/zetcom:virtualField[@name="NumberVrt"]/zetcom:value') ."\n" .
-                    $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjInscriptionGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="TransliterationClb"]/zetcom:value'),
+                    implode("\n", $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjInscriptionGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="TransliterationClb"]/zetcom:value', true) ?? []),
                 'entry_mode_legacy_id' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjAcquisitionMethodVoc"]/zetcom:vocabularyReferenceItem/@name'),
                 'entry_mode_name' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjAcquisitionMethodVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
                 'history' => stripos($diffusion, 'historique') !== false ? $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjHistoryGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="HistoryClb"]/zetcom:value') : null,
@@ -193,7 +193,7 @@ class XmlDataProcessor
             foreach ($results as $result) {
                 $values[] = (string)$result;
             }
-            return $values;
+            return array_unique($values);
         }
         return $results && isset($results[0]) ? (string)$results[0] : null;
     }
