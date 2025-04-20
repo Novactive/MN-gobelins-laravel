@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\Product;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class Import
 {
@@ -26,9 +28,24 @@ class Import
      */
     public function execute($item)
     {
+
+        $productsToBeIndexed = Redis::smembers('products_to_be_indexed');
+
+        if ($item['id'] === 0) {
+            if (empty($productsToBeIndexed)) {
+                echo "Pas de produits à indexer...\n";
+                return;
+            }
+            $products = Product::whereIn('inventory_id', $productsToBeIndexed)->get();
+            $products->searchable();
+            echo "Réindexation des produits en cours...\n";
+            Redis::del('products_to_be_indexed');
+            return;
+        }
+
         try {
             // First save the Product object, without posting to ES.
-            // We only post to ES once we have all the relationships saved (see below).
+            // We only post to ES once we have all the products saved (see above).
             $inventoryId = $item['inventory_root'] . '-' . ((!isset($item['inventory_number']) || $item['inventory_number'] == 0) ? "000" : $item['inventory_number']) . '-' .
                 ((!isset($item['inventory_suffix']) || $item['inventory_suffix'] == 0) ? "000" : $item['inventory_suffix']) .($item['inventory_suffix2'] ? "-" . $item['inventory_suffix2'] : '');
 
@@ -43,7 +60,7 @@ class Import
                         'inventory_number' => (int)$item['inventory_number'] ?? 0,
                         'inventory_suffix' => (int)$item['inventory_suffix'] ?? 0,
                         'inventory_suffix2' => (int)$item['inventory_suffix2'] ?? 0,
-                        'legacy_inventory_number' => trim($item['legacy_inventory_number']) !== '' ? (string)$item['legacy_inventory_number'] : null,
+                        'legacy_inventory_number' => trim($item['legacy_inventory_number']) !== '' ? trim($item['legacy_inventory_number']) : null,
                         'height_or_thickness' => (float)$item['height_or_thickness'],
                         'length_or_diameter' => (float)$item['length_or_diameter'],
                         'depth_or_width' => (float)$item['depth_or_width'],
@@ -133,17 +150,35 @@ class Import
 
             //Style
             if ($item['style_legacy_id']) {
-                $styleName = in_array($item['style_name'], ['Directoire', 'Consulat']) ? 'Directoire - Consulat' : $item['style_name'];
-                $style = \App\Models\Style::updateOrCreate(
-                    ['legacy_id' => $item['style_legacy_id']],
-                    [
-                        'legacy_id' => $item['style_legacy_id'],
-                        'name' => $styleName ?? 'Années ' . $item['period_start_year'],
-                    ]
-                );
+                $foreignStyles = [
+                    'Chinois', 'Oriental', 'Hollandais', 'Anglais',
+                    'Autrichien', 'Italien', 'Japonais', 'Espagnol', 'Flamand',
+                ];
+
+                $style = \App\Models\Style::where('legacy_id', $item['style_legacy_id'])->first();
 
                 if ($style) {
                     $product->style()->associate($style);
+                } elseif (in_array($item['style_name'], ['Directoire', 'Consulat'])) {
+                    $product->style()->associate(\App\Models\Style::where('name', 'Directoire - Consulat')->first());
+                } elseif ($foreignStyles) {
+                    // We consolidate the English, Chinese, Japanese, etc, styles into one "Foreign" one.
+                    $product->style()->associate(\App\Models\Style::where('name', 'Étranger')->first());
+                }
+            } elseif ($item['period_legacy_id'] &&
+                $style = \App\Models\Style::mappedFrom('numepo', (string) $item['period_legacy_id'])->first()) {
+                // associate the product to the style related to the period
+                $product->style()->associate($style);
+            } else {
+                // Fallback to conception year.
+                if ($item['conception_year']) {
+                    $style = \App\Models\Style::where([
+                        ['start_year', '<=', (int)$item['conception_year']],
+                        ['end_year', '>=', (int)$item['conception_year']]
+                    ])->first();
+                    if ($style) {
+                        $product->style()->associate($style);
+                    }
                 }
             }
 
@@ -174,7 +209,6 @@ class Import
                 ->pluck('id')
                 ->all();
 
-
             $product->materials()->sync(array_merge($material_ids, $upholstery_ids));
 
             //Production Origin
@@ -189,6 +223,10 @@ class Import
             }
 
             $product->save();
+
+            if ($item['is_publishable']) {
+                Redis::sadd('products_to_be_indexed', $inventoryId);
+            }
 
             echo "Le produit $inventoryId a été mis à jour/ajouté" . (!$item['is_publishable'] ? ", mais il est non publiable" : "") . "\n";
             Log::error("Le produit $inventoryId a été mis à jour/ajouté" . (!$item['is_publishable'] ? ", mais il est non publiable" : "") . "\n");

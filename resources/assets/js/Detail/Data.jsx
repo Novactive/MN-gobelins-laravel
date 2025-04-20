@@ -120,8 +120,6 @@ function ProductionOrigin(props) {
 
 /* By default, values are in meters. */
 function Dimensions(props) {
-  // console.log(props.product);
-  console.log('TESTTT');
   const has_dims = props.dimensions && props.dimensions.trim().length > 0;
   return has_dims ? (
     <DataUnitTemplate
@@ -200,8 +198,8 @@ function Data(props) {
         <Materials materials={props.product.materials} />
         <ProductionOrigin productionOrigin={props.product.production_origin} />
         <Dimensions
-          label={props.product.label}
-          dimensions={props.product.dimensions}
+          label={props.product.formatted_dimensions.label}
+          dimensions={props.product.formatted_dimensions.dimensions}
         />
         <Acquisition
           acquisitionDate={props.product.acquisition_date}

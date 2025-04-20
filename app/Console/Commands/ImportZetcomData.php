@@ -77,6 +77,7 @@ class ImportZetcomData extends Command
             ImportObjectJob::dispatch($object);
         }
 
+        ImportObjectJob::dispatch(['id' => 0]);
     }
 
 }
