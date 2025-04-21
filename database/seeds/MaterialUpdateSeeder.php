@@ -17,7 +17,7 @@ class MaterialUpdateSeeder extends Seeder
     ];
 
     private $toRemove = [
-        'Métal > Graphite'
+        //'Métal > Graphite'
     ];
 
     /**
