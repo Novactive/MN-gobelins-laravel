@@ -160,6 +160,15 @@ class ZetcomService
             throw new \Exception("Le fichier enregistré n'est pas une image valide : $filePath");
         }
 
+        // Redimensionner l'image à max 1500px (largeur ou hauteur)
+        exec("convert \"$filePath\" -resize '1500x1500>' \"$filePath\"");
+
+        // Supprimer les métadonnées EXIF
+        exec("exiftool -overwrite_original -all= \"$filePath\"");
+
+        // Optimiser l'image JPEG
+        exec("jpegoptim --strip-all --max=80 \"$filePath\"");
+
         return $fileName;
     }
 
