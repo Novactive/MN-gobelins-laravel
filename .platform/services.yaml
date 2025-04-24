@@ -21,4 +21,4 @@ cache:
 
 rabbitmq:
   type: rabbitmq:3.12
-  disk: 1024
+  disk: 256
