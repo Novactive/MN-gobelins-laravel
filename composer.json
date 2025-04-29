@@ -54,7 +54,7 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/nedbaldessin/elasticsearch"
+      "url": "https://github.com/Amazighettal/elasticsearch"
     },
     {
       "type": "vcs",

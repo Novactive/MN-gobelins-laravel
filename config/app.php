@@ -217,7 +217,7 @@ return [
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
         'FolkloreImage' => Folklore\Image\Facades\Image::class,
         'SEO' => Artesaos\SEOTools\Facades\SEOTools::class,
-
+        'Str' => Illuminate\Support\Str::class,
     ],
 
     'datasource_baseuri' => env('DATASOURCE_BASEURI'),

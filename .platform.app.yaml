@@ -49,13 +49,16 @@ relationships:
   rabbitmq: "rabbitmq:rabbitmq"
 
 # The size of the persistent disk of the application (in MB).
-disk: 3584
+disk: 7680
 
 # The mounts that will be performed when the package is deployed.
 mounts:
   "storage/app/public":
     source: local
     source_path: "public"
+  "storage/app/glide_cache":
+    source: local
+    source_path: "glide_cache"
   "storage/framework/views":
     source: local
     source_path: "views"
@@ -92,8 +95,13 @@ web:
       scripts: false
 
 variables:
+  php:
+    memory_limit: "256M"
   env:
     N_PREFIX: /app/.global
+    MEDIA_LIBRARY_ENDPOINT_TYPE: local
+    MEDIA_LIBRARY_IMAGE_SERVICE: A17\Twill\Services\MediaLibrary\Glide
+    FILE_LIBRARY_ENDPOINT_TYPE: local
 
 crons:
   # Run Laravel's scheduler every 5 minutes, which is often as crons can run on Professional plans.
