@@ -133,30 +133,15 @@ class ArticleRepository extends ModuleRepository
      */
     public function searchFor($q)
     {
-        // return $this->model
-        //     ->join('blocks', 'articles.id', '=', 'blocks.blockable_id')
-        //     ->where(function ($query) use ($q) {
-        //         return $query->whereRaw("unaccent(title) ILIKE unaccent('%$q%')")
-        //             ->orWhereRaw("unaccent(subtitle) ILIKE unaccent('%$q%')")
-        //             ->orWhereRaw("unaccent(lead) ILIKE unaccent('%$q%')")
-        //             ->orWhereRaw("unaccent(byline) ILIKE unaccent('%$q%')");
-        //     })
-        //     ->where('published', '=', true)
-        //     ->paginate($this->listingPaginationAmount);
-
         return $this->model
-            ->select('articles.*')
-            ->join('blocks', 'blocks.blockable_id', '=', 'articles.id')
             ->where(function ($query) use ($q) {
-                return $query->whereRaw("unaccent(articles.title) ILIKE unaccent('%$q%')") //unaccent remove accents from the search string
-                    ->orWhereRaw("unaccent(articles.subtitle) ILIKE unaccent('%$q%')")
-                    ->orWhereRaw("unaccent(articles.lead) ILIKE unaccent('%$q%')")
-                    ->orWhereRaw("unaccent(blocks.content->>'body') ILIKE unaccent('%$q%')") // search in the content body field of the blocks table
-                    ->orWhereRaw("unaccent(blocks.content->>'heading2') ILIKE unaccent('%$q%')"); // search in the content heading2 field of the blocks table
+                return $query->where('title', 'ILIKE', '%' . $q . '%')
+                    ->orWhere('subtitle', 'ILIKE', '%' . $q . '%')
+                    ->orWhere('lead', 'ILIKE', '%' . $q . '%')
+                    ->orWhere('byline', 'ILIKE', '%' . $q . '%');
             })
-            ->where('articles.published', '=', true)
-            ->select('articles.*')
-            ->groupBy('articles.id')
+            ->where('published', '=', true)
             ->paginate($this->listingPaginationAmount);
     }
+
 }
