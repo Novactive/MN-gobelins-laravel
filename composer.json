@@ -9,6 +9,7 @@
   "type": "project",
   "require": {
     "php": "^7.4.8",
+    "area17/twill": "^2.12",
     "ext-SimpleXML": "^7.4",
     "artesaos/seotools": "^0.18.0",
     "basemkhirat/elasticsearch": "dev-dev-scout-engine",
@@ -39,7 +40,7 @@
     "symfony/psr-http-message-bridge": "~2.0",
     "vladimir-yuldashev/laravel-queue-rabbitmq": "^10.0",
     "zendframework/zend-diactoros": "^2.2",
-    "doctrine/dbal": "^2.13"
+    "doctrine/dbal": "^3.5"
   },
   "require-dev": {
     "laravel/homestead": "^9",

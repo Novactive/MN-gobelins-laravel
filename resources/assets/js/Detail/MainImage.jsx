@@ -18,16 +18,24 @@ class MainImage extends Component {
     // ${location.origin}/media/xl/${encodeURIComponent(this.props.image.path)}
     // ${location.origin}/media/orig/${encodeURIComponent(this.props.image.path)}`
     let imgUrl = this.props.image
-      ?
-        !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
-          ? `https://collection.mobiliernational.culture.gouv.fr/media/xl/${encodeURIComponent(this.props.image.path)}`
-          : `${location.origin}/media/xl/${encodeURI(this.props.image.path)}`
-      : "";
+        ? `/media/xl/${encodeURIComponent(this.props.image.path)}`
+        : "";
     let downloadUrl = this.props.image
-      ? !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
-        ? `https://collection.mobiliernational.culture.gouv.fr/media/xl/${encodeURIComponent(this.props.image.path)}`
-        : `${location.origin}/media/xl/${encodeURI(this.props.image.path)}`
-      : "";
+        ? `${location.origin}/media/xl/${encodeURIComponent(
+            this.props.image.path
+        )}`
+        : "";
+    // let imgUrl = this.props.image
+    //   ?
+    //     !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+    //       ? `https://collection.mobiliernational.culture.gouv.fr/media/xl/${encodeURIComponent(this.props.image.path)}`
+    //       : `${location.origin}/media/xl/${encodeURI(this.props.image.path)}`
+    //   : "";
+    // let downloadUrl = this.props.image
+    //   ? !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+    //     ? `https://collection.mobiliernational.culture.gouv.fr/media/xl/${encodeURIComponent(this.props.image.path)}`
+    //     : `${location.origin}/media/xl/${encodeURI(this.props.image.path)}`
+    //   : "";
     let downloadFilename = "";
     let downloadFilenameRes = this.props.image
       ? this.props.image.path.match(/.*\/(.+)(\.jpg)$/i)
