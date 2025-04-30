@@ -104,11 +104,11 @@ variables:
     MEDIA_LIBRARY_IMAGE_SERVICE: A17\Twill\Services\MediaLibrary\Glide
     FILE_LIBRARY_ENDPOINT_TYPE: local
 
-crons:
-  # Run Laravel's scheduler every 5 minutes, which is often as crons can run on Professional plans.
-  scheduler:
-    spec: '*/5 * * * *'
-    cmd: 'php artisan schedule:run'
+# crons:
+#   # Run Laravel's scheduler every 5 minutes, which is often as crons can run on Professional plans.
+#   scheduler:
+#     spec: '*/5 * * * *'
+#     cmd: 'php artisan schedule:run'
 
 workers:
   # Run the consumer to cosume messages on the queue
