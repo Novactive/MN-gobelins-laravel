@@ -34,8 +34,9 @@ hooks:
     set -e
     APP_ENV=prod composer run platformsh-deploy
     # execute migrations
-    php artisan migrate
-
+    php artisan migrate --force
+    # Exécuter le seeder
+    php artisan db:seed --class=UpdateDatabaseSeeder --force
 
 # The relationships of the application with services or other applications.
 # The left-hand side is the name of the relationship as it will be exposed
@@ -49,7 +50,7 @@ relationships:
   rabbitmq: "rabbitmq:rabbitmq"
 
 # The size of the persistent disk of the application (in MB).
-disk: 4000
+disk: 4500
 
 # The mounts that will be performed when the package is deployed.
 mounts:
