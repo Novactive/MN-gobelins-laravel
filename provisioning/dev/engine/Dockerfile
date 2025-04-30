@@ -22,10 +22,19 @@ RUN apt-get install -y libpq-dev libssl-dev && \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --2
 
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - &&  \
-    apt-get install -y nodejs && \
-    npm install --global yarn
+	apt-get install -y nodejs && \
+	npm install --global yarn
 
 RUN apt-get install -y git zip
+
+RUN apt-get install -y \
+	libfreetype6-dev \
+	libjpeg62-turbo-dev \
+	libpng-dev \
+	&& docker-php-ext-configure gd --with-freetype --with-jpeg \
+	&& docker-php-ext-install -j$(nproc) gd \
+	&& docker-php-ext-configure exif \
+	&& docker-php-ext-install exif
 
 RUN apt-get clean
 

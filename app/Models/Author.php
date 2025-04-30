@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use A17\Twill\Models\Model;
 
 class Author extends Model
 {
@@ -28,7 +28,7 @@ class Author extends Model
     {
         return $this->hasMany(Authorship::class);
     }
-    
+
     public function products()
     {
         return $this->belongsToMany(Product::class, 'authorships')->using(Authorship::class);
@@ -79,7 +79,7 @@ class Author extends Model
         if (preg_match('/^([- A-Z]+)\b((?:[A-Z](?:\p{L}|-| )+)*)$/u', $fullName, $matches) === 1) {
             return [
                 trim($matches[2]),
-                trim($matches[1])
+                trim($matches[1]),
             ];
         } else {
             return [
@@ -88,7 +88,7 @@ class Author extends Model
             ];
         }
     }
-    
+
     /**
      * Extract a lastName from the legacy (datasource) 'name' attribute
      *
@@ -99,5 +99,10 @@ class Author extends Model
     {
         $first_last = self::splitNameSegments($name);
         return $first_last[1];
+    }
+
+    public function getFullNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
     }
 }

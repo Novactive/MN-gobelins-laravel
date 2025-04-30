@@ -77,7 +77,7 @@ const LoaderOverlay = (props) => {
 };
 
 class RegisterAction extends React.Component {
-  static contextType = AuthContext;
+  static contextType = AuthContext; 
   constructor(props) {
     super(props);
     this.state = {

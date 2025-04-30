@@ -6,7 +6,7 @@
   right: 0;
   height: 100%;
   width: 100%;
-  z-index: 2;
+  z-index: 5;
 }
 .MobileSearch__overlay {
   position: absolute;
@@ -35,7 +35,7 @@
 
 .MobileSearch__form {
   display: flex;
-  height: 62px;
+  height: 70px;
   padding: 0;
   margin: 0;
   background-color: #fff;
@@ -54,6 +54,8 @@
     height: 35px;
     background-color: transparent;
     border: 0;
+    // I don't like the rounded search input on iOS.
+    -webkit-appearance: none;
 
     @include f-serif;
     font-size: rem(16px);
@@ -74,6 +76,7 @@
     height: 50px;
     width: 50px;
     background-color: #fff;
+    color: #000;
     border: none;
     margin: 0;
     padding: 0;

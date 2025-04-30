@@ -1,0 +1,62 @@
+.CenteredImage {
+  @extend %article-grid;
+  position: relative;
+  z-index: 0;
+  padding: 0;
+  margin: 80px 0;
+  @include breakpoint($a-xxlarge-up) {
+    margin: 100px 0;
+  }
+
+  &.on-dark-bg {
+    @include dark-margin-top(80px);
+    @include dark-margin-bottom(80px);
+    @include breakpoint($a-xxlarge-up) {
+      @include dark-margin-top(100px);
+      @include dark-margin-bottom(100px);
+    }
+  }
+}
+
+.CenteredImage__img {
+  display: block;
+  width: 100%;
+  grid-column: main;
+  @include breakpoint(768px) {
+    grid-column: 4 / -4;
+  }
+  @include breakpoint($a-xxlarge-up) {
+    grid-column: 6 / 13;
+  }
+}
+.CenteredImage__figcaption {
+  @extend %image-caption;
+  grid-column: main;
+  @include breakpoint($medium-up) {
+    grid-column: 6 / 11;
+  }
+  @include breakpoint($a-xxlarge-up) {
+    grid-column: 6 / 13;
+  }
+}
+
+.CenteredImage.CenteredImage--full-width {
+  margin: 0;
+  &:before {
+    display: none;
+  }
+  &:after {
+    // display: none; // what was this for ? Commenting out, because creates a white strip when followed by another block with black background.
+  }
+  .CenteredImage__img {
+    grid-column: 1 / -1;
+  }
+  .CenteredImage__figcaption {
+    @include breakpoint(768px) {
+      grid-column: 3 / -3;
+    }
+    @include breakpoint($a-xxlarge-up) {
+      grid-column: 4 / -4;
+    }
+  }
+}

@@ -1,0 +1,89 @@
+.TextImage {
+  @extend %article-grid;
+  position: relative;
+  z-index: 0; // Handle stacking of has-decorative-bg
+  margin: 80px 0;
+  @include breakpoint($a-xxlarge-up) {
+    margin: 100px 0;
+  }
+
+  @extend %rich-text;
+
+  &.on-dark-bg {
+    @include dark-margin-top(80px);
+    @include dark-margin-bottom(80px);
+    @include breakpoint($a-xxlarge-up) {
+      @include dark-margin-top(100px);
+      @include dark-margin-bottom(100px);
+    }
+  }
+
+
+}
+:not(.on-dark-bg) + .TextImage.on-dark-bg {
+  z-index: initial;
+}
+
+.TextImage__figure {
+  display: block;
+  margin: 0 0 40px;
+  padding: 0;
+}
+.TextImage__img {
+  display: block;
+  width: 100%;
+}
+.TextImage__figcaption {
+  @extend %image-caption;
+}
+
+.TextImage--img-right {
+  .TextImage__body {
+    grid-column: main;
+    @include breakpoint(768px) {
+      grid-row: 1;
+      grid-column: 3 / 8;
+    }
+    @include breakpoint($a-xxlarge-up) {
+      grid-column: 4 / 9;
+    }
+  }
+  .TextImage__images {
+    grid-column: main;
+    @include breakpoint(768px) {
+      grid-row: 1;
+      grid-column: 9 / -3;
+    }
+    @include breakpoint($a-xxlarge-up) {
+      grid-column: 10 / -4;
+    }
+  }
+}
+
+.TextImage--img-left {
+  .TextImage__body {
+    grid-column: main;
+    @include breakpoint(768px) {
+      grid-row: 1;
+      grid-column: 9 / -3;
+    }
+    @include breakpoint($a-xxlarge-up) {
+      grid-column: 10 / -4;
+    }
+  }
+  .TextImage__images {
+    grid-column: main;
+    @include breakpoint(768px) {
+      grid-row: 1;
+      grid-column: 3 / 8;
+    }
+    @include breakpoint($a-xxlarge-up) {
+      grid-column: 4 / 9;
+    }
+  }
+}
+
+.TextImage__body blockquote,
+.TextImage__body em {
+  @extend %definition-blockquote;
+}

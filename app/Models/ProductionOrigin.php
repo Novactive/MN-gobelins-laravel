@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use A17\Twill\Models\Model;
 use App\Models\Traits\Mappable;
 
 class ProductionOrigin extends Model
@@ -16,7 +16,8 @@ class ProductionOrigin extends Model
 
     protected $touches = ['products'];
     public $timestamps = false;
-    
+
+
     public function products()
     {
         return $this->hasMany(Product::class);
