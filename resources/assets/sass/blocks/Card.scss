@@ -1,0 +1,203 @@
+.Card {
+    max-width: 100%;
+    display: flex;
+    flex-flow: column;
+    justify-items: start;
+    align-items: flex-start;
+    position: relative;
+    cursor: pointer;
+
+    &.flickity-cell {
+        position: absolute;
+        top: 0;
+    }
+}
+
+.Card.is-new::before {
+    content: 'Nouveau';
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 10px 7px 10px;
+    position: absolute;
+    top: -12.5px;
+    left: 0;
+    z-index: 1;
+    background: #3338BA;
+    border-radius: 50px;
+    @include f-sans;
+    font-style: normal;
+    font-weight: 400;
+    font-size: rem(13px);
+    line-height: 100%;
+    font-feature-settings: 'pnum' on, 'onum' on;
+    color: #FFFFFF;
+}
+@media (hover: hover) {
+    .Card:hover .Card__title,
+    .Card:hover .Card__subtitle {
+        color: #3338BA;
+    }
+    .Card:hover .Card__img {
+        transform: scale(102%);
+    }
+}
+
+.Card__text {
+    order: 2;
+    margin-top: 14px;
+    // margin-bottom: 30px;
+}
+
+.Card__title,
+.Card__subtitle  {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    @include f-sans;
+    font-style: normal;
+    font-weight: 400;
+    font-size: var(--Card-title-font-size, rem(14.4px));
+    line-height: 150%;
+    color: #000000;
+    
+    @include breakpoint(768px) {
+        font-size: var(--Card-title-font-size, rem(18px));
+    }
+    @include breakpoint($a-xxlarge-up) {
+        font-size: var(--Card-title-font-size, rem(24px));
+    }
+}
+.Card__title {
+    @include breakpoint(768px) {
+        margin-right: 10px;
+    }
+}
+.Card__subtitle  {
+    font-style: italic;
+
+    &::before {
+        content: ' | ';
+        display: inline;
+        font-style: normal;
+    }
+}
+
+.Card__link {
+    text-decoration: none;
+    color: inherit;
+    // Make the whold card clickable.
+    // Downside: user can't select text properly.
+    &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+}
+
+.Card__meta {
+    display: block;
+    margin: 7px 0 0 0;
+    padding: 0;
+    @include breakpoint(768px) {
+        display: inline;
+        line-height: 33px;
+    }
+}
+.Card__reading-time {
+    display: inline-flex;
+    height: 23px;
+    margin: 0 5px 0 0;
+    position: relative;
+    top: -3px;
+    border: 1px solid #000;
+    border-radius: 11.5px;
+    align-items: center;
+    user-select: none;
+    @media (hover: hover) {
+        .Card:hover & {
+            opacity: 0.87;
+        }
+    }
+}
+
+.Card__reading-time-icon {
+    width: 22px;
+    height: 9px;
+    color: #000;
+    margin: 0 5px 0 9px;
+}
+
+.Card__reading-time-label {
+    @include f-sans;
+    font-size: rem(13px);
+    font-weight: normal;
+    color: #000;
+    margin-right: 9px;
+}
+
+.Card__tag {
+    display: none;
+    @include breakpoint(768px) {
+        display: inline-flex;
+        margin-right: 4px;
+    }
+    max-width: calc(100% - 40px);
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 10px 4px 10px;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 50px;
+    // To match the reading time capsule, we add a border.
+    border: 1px solid #EDEDED;
+    user-select: none;
+    text-decoration: none;
+    @include f-sans;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 100%;
+    font-feature-settings: 'pnum' on, 'onum' on;
+    color: #000000;
+    position: relative;
+    top: -3px;
+    z-index: 1;
+    @media (hover: hover) {
+        &:hover {
+            background-color: #E8E7E7;
+            border-color: #E8E7E7;
+        }
+    }
+}
+.Card__tag-inner {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding-bottom: 1px;
+    &::first-letter {
+        text-transform: uppercase;
+        display: inline;
+    }
+}
+
+.Card__fig {
+    order: 1;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow: hidden;
+}
+
+.Card__img {
+    display: block;
+    width: 100%;
+    aspect-ratio: calc(3 / 4);
+    object-fit: cover;
+    transition: transform 150ms ease-in-out;
+}

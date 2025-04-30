@@ -15,7 +15,9 @@
 @import "shared/typography";
 
 // Blocks
-@import "blocks/Info";
+@import "layouts/Info";
+@import "layouts/SiteFooter";
+@import "blocks/Nav";
 
 // React components
 @import "../js/Auth/AuthModal.scss";

@@ -1,6 +1,6 @@
 db:
   type: postgresql:10
-  disk: 512
+  disk: 1048
   configuration:
     databases:
       - gobelins
@@ -10,14 +10,14 @@ db:
           gobelins: admin
 
 es:
-  type: elasticsearch:6.8
+  type: elasticsearch:7.10
   disk: 256
   configuration:
     plugins:
       - analysis-icu
 
 cache:
-  type: redis:5.0
+  type: redis:7.0
 
 rabbitmq:
   type: rabbitmq:3.12

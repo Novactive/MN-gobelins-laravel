@@ -14,13 +14,19 @@ class MainImage extends Component {
   }
 
   render() {
+    // ${location.origin}
+    // ${location.origin}/media/xl/${encodeURIComponent(this.props.image.path)}
+    // ${location.origin}/media/orig/${encodeURIComponent(this.props.image.path)}`
     let imgUrl = this.props.image
-      ? `/media/xl/${encodeURIComponent(this.props.image.path)}`
+      ?
+        !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+          ? `https://collection.mobiliernational.culture.gouv.fr/media/xl/${encodeURIComponent(this.props.image.path)}`
+          : `${location.origin}/media/xl/${encodeURI(this.props.image.path)}`
       : "";
     let downloadUrl = this.props.image
-      ? `${location.origin}/media/xl/${encodeURIComponent(
-          this.props.image.path
-        )}`
+      ? !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+        ? `https://collection.mobiliernational.culture.gouv.fr/media/orig/${encodeURIComponent(this.props.image.path)}`
+        : `${location.origin}/media/xl/${encodeURI(this.props.image.path)}`
       : "";
     let downloadFilename = "";
     let downloadFilenameRes = this.props.image
@@ -32,6 +38,7 @@ class MainImage extends Component {
         " © Mobilier national" +
         downloadFilenameRes[2];
     }
+    console.log(`downloadFilename ${downloadFilename}`);
     return (
       <section className="DetailMainImage">
         {this.props.image ? (

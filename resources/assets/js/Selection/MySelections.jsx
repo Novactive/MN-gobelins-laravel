@@ -261,7 +261,9 @@ function NotAuthenticated(props) {
   const handleLoginCallback = () => {
     selectionsContext.fetchMine();
   };
-  const handleRegisterCallback = () => {};
+  const handleRegisterCallback = () => {
+    selectionsContext.fetchMine();
+  };
   const handleModalClose = () => {
     setAuthModalOpen(false);
   };
