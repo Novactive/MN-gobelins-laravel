@@ -43,6 +43,17 @@ php artisan scout:flush "App\Models\Product"
 php artisan scout:import "App\Models\Product"
 ```
 
+### Deployment Scripts
+
+The `scripts` folder contains the following deployment scripts, which are executed automatically by Jenkins during deployment:
+
+- **pre-deploy.sh**: This script is executed before deployment to prepare the environment. You can specify commands to run before deployment in this file. If no commands are needed, leave the file empty.
+- **post-deploy.sh**: This script is executed after deployment to finalize setup or perform post-deployment tasks. You can specify commands to run after deployment in this file. If no commands are needed, leave the file empty.
+
+#### Usage in Jenkins
+
+Jenkins will automatically execute these scripts during the deployment pipeline. Ensure that the scripts are properly configured and executable.
+
 ### Cache stategy
 
 #### Image caching
