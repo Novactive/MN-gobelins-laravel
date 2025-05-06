@@ -1,0 +1,20 @@
+<?php
+
+namespace {{namespace}};
+
+use {{baseController}} as BaseModuleController;
+
+class {{controllerClassName}} extends BaseModuleController
+{
+    protected $moduleName = '{{moduleName}}';
+
+    protected $indexOptions = [
+        {{permalinkOption}}
+        {{reorderOption}}
+    ];{{hasNesting}}
+
+    protected $showOnlyParentItemsInBrowsers = true;
+
+    protected $nestedItemsDepth = 1;
+    {{/hasNesting}}
+}
