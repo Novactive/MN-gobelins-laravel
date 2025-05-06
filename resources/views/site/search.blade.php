@@ -2,7 +2,7 @@
 
 @section('content')
 
-{{--@include('site._nav')--}}
+@include('site._nav')
 
 <div id="root">
 
