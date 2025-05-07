@@ -1,6 +1,6 @@
 db:
   type: postgresql:10
-  disk: 512
+  disk: 1024
   configuration:
     databases:
       - gobelins
@@ -21,4 +21,4 @@ cache:
 
 rabbitmq:
   type: rabbitmq:3.12
-  disk: 256
+  disk: 1024
