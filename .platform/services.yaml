@@ -1,6 +1,6 @@
 db:
   type: postgresql:10
-  disk: 1024
+  disk: 512
   configuration:
     databases:
       - gobelins
