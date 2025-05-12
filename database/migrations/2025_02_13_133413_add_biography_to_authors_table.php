@@ -13,9 +13,11 @@ class AddBiographyToAuthorsTable extends Migration
      */
     public function up()
     {
-        Schema::table('authors', function (Blueprint $table) {
-            $table->text('biography')->nullable();
-        });
+        if (!Schema::hasColumn('authors', 'biography')) {
+            Schema::table('authors', function (Blueprint $table) {
+                $table->text('biography')->nullable();
+            });
+        }
     }
 
     /**
