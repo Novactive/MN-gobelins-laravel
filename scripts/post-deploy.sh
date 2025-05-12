@@ -10,5 +10,5 @@ echo "⚠️  Merci de ne pas supprimer ce fichier, même s’il est vide."
 echo "==================================="
 echo ""
 
-php artisan migrate
-php artisan db:seed --class=UpdateDatabaseSeeder
+# php artisan migrate
+# php artisan db:seed --class=UpdateDatabaseSeeder
