@@ -74,11 +74,11 @@ return [
 
             'hosts' => [
                 [
-                    'host' => $rabbitmq['host'] ?? 'rabbitmq',
-                    'port' => $rabbitmq['port'] ?? 5672,
-                    'user' => $rabbitmq['username'] ?? 'guest',
-                    'password' => $rabbitmq['password'] ?? 'guest',
-                    'vhost' => $rabbitmq['path'] ?? '/',
+                    'host' => env('RABBITMQ_HOST', 'rabbitmq'),
+                    'port' => env('RABBITMQ_PORT', 5672),
+                    'user' => env('RABBITMQ_USER', 'guest'),
+                    'password' => env('RABBITMQ_PASSWORD', 'guest'),
+                    'vhost' => env('RABBITMQ_VHOST', '/'),
                 ],
             ],
 
