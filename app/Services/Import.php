@@ -123,8 +123,8 @@ class Import
                     [
                         'legacy_id' => $item['period_legacy_id'],
                         'name' => $item['period_name'],
-                        'start_year' => $item['period_start_year'] ?? ' ',
-                        'end_year' => $item['period_end_year'] ?? ' ',
+                        'start_year' => $item['period_start_year'] ?? null,
+                        'end_year' => $item['period_end_year'] ?? null,
                     ]
                 );
 
