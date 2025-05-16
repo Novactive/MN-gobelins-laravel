@@ -24,8 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('gobelins:import:zetcom')->dailyAt('02:00');
-        $schedule->command('artisan queue:work rabbitmq --daemon')->everyMinute()->withoutOverlapping();
+        //$schedule->command('gobelins:import:zetcom')->dailyAt('02:00');
     }
 
     /**
