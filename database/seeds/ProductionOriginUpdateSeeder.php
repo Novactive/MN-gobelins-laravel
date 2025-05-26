@@ -8,19 +8,15 @@ class ProductionOriginUpdateSeeder extends Seeder
 
     private $toUpdateOrAdd = [
         [
-            'name' => 'Atelier de dentelle du Puy-en-Velay',
-            'mapping_key' => 'puy-en-velay',
-        ],
-        [
-            'name' => "Atelier de dentelle d'Alençon",
-            'mapping_key' => 'alencon',
-        ],
-        [
-            'name' => 'Atelier de Recherche et de Création (ARC)',
+            'name' => 'ARC',
+            'label' => 'Atelier de recherche et création de mobilier',
+            'label_md' => 'Atelier de recherche et création de mobilier',
             'mapping_key' => 'arc',
         ],
         [
             'name' => 'Manufacture de Sèvres',
+            'label' => "Création d'œuvres et objets d'art en porcelaine",
+            'label_md' => "Création d'œuvres et objets d'art en porcelaine",
             'mapping_key' => 'sevres',
         ],
     ];
@@ -35,7 +31,11 @@ class ProductionOriginUpdateSeeder extends Seeder
         foreach ($this->toUpdateOrAdd as $item) {
             ProductionOrigin::updateOrCreate(
                 ['mapping_key' => $item['mapping_key']],
-                ['name' => $item['name']]
+                [
+                    'name' => $item['name'],
+                    'label' => $item['label'],
+                    'label_md' => $item['label_md']
+                ]
             );
         }
 
