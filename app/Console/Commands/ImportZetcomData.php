@@ -69,7 +69,7 @@ class ImportZetcomData extends Command
         //module pour teste
         //$modulesXml = $this->zetcomService->getSingleModule('Multimedia', 637457);
 
-        $queueName = env('RABBITMQ_QUEUE', 'default');
+        $queueName = config('queue.connections.rabbitmq.queue');
         $modulesXml = $this->zetcomService->getModifiedModules(self::MODULE_NAME, $all, $limit, $offset);
         $objects = $this->dataProcessor->processObjectsData($modulesXml);
 
