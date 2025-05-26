@@ -18,12 +18,6 @@
             <div class="Nav__layout">
                 <div class="Nav__top">
 
-                     <div class="Nav__destination">
-                        <a href="#" class="Nav__destination-title">
-                            Accueil
-                        </a>
-                    </div>
-
                     <div class="Nav__destination">
                         <a href="{{ route('search') }}"
                             class="Nav__destination-title @route('search')
