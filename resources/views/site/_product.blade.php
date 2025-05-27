@@ -218,7 +218,6 @@ $orientation = $first_img['width'] < $first_img['height'] ? 'portrait' : 'landsc
                                 {!! nl2br($product['historic']) !!}
                             </dd>
                         </div>
-                        <hr class="DetailInfo__separator" />
                     @endunless
                     @unless(empty($product['about_author']))
                         <div class="DetailInfo__unit">
