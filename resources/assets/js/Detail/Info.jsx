@@ -26,7 +26,6 @@ function Historic(props) {
   return props.historic ? (
       <>
         <InfoUnitTemplate label="Historique" value={nl2br(props.historic)} />
-        <hr className="DetailInfo__separator" />
       </>
   ) : null;
 }
