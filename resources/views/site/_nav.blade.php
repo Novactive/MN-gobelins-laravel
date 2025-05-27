@@ -28,7 +28,7 @@ is-active
 is-active
 @endroute">Collection</a>
                         <div class="Nav__destination-sections">
-                            <a href="{{ route('search') }}" class="Nav__destination-section is-full-width">85 000
+                            <a href="{{ route('search') }}" class="Nav__destination-section is-full-width">95 000
                                 meubles, textiles, objets d’art</a>
                             <div
                                 class="Nav__destination-section-linebreak @route('selections')
