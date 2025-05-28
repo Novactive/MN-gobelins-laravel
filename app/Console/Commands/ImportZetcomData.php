@@ -69,15 +69,21 @@ class ImportZetcomData extends Command
         //module pour teste
         //$modulesXml = $this->zetcomService->getSingleModule('Multimedia', 637457);
 
+        $queueName = config('queue.connections.rabbitmq.queue');
         $modulesXml = $this->zetcomService->getModifiedModules(self::MODULE_NAME, $all, $limit, $offset);
         $objects = $this->dataProcessor->processObjectsData($modulesXml);
+
         foreach ($objects as $object) {
-            $this->info("Envoi de l'objet " . self::MODULE_NAME . " (" . $object['id'] .") à la queue");
-            Log::info("Envoi de l'objet " . self::MODULE_NAME . " (" . $object['id'] .") à la queue");
-            ImportObjectJob::dispatch($object);
+            $this->info("Envoi de l'objet " . self::MODULE_NAME . " (" . $object['id'] . ") à la queue");
+            Log::info("Envoi de l'objet " . self::MODULE_NAME . " (" . $object['id'] . ") à la queue");
+
+            $job = new ImportObjectJob($object);
+            dispatch($job)->onConnection('rabbitmq')->onQueue($queueName);
         }
 
-        ImportObjectJob::dispatch(['id' => 0]);
+        $job = new ImportObjectJob(['id' => 0]);
+        dispatch($job)->onConnection('rabbitmq')->onQueue($queueName);
     }
+
 
 }
