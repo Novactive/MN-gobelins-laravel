@@ -100,7 +100,7 @@ class XmlDataProcessor
                     implode("\n", $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjInscriptionGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="TransliterationClb"]/zetcom:value', true) ?? []),
                 'entry_mode_legacy_id' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjAcquisitionMethodVoc"]/zetcom:vocabularyReferenceItem/@name'),
                 'entry_mode_name' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjAcquisitionMethodVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
-                'history' => stripos($diffusion, 'historique') !== false ? $this->extractValue($item,'//zetcom:repeatableGroup[@name="ObjHistoryGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="HistoryClb"]/zetcom:value') : null,
+                'history' => stripos($diffusion, 'historique') !== false ? $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjHistoryGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="HistoryClb"]/zetcom:value') : null,
                 'mat_tech' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjMaterialTechniqueGrp"]/zetcom:repeatableGroupItem/zetcom:vocabularyReference[@name="MatTechVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue', true) ?? [],
                 'obj_garn' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjGarnVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
                 'conservation' => $this->extractValue($item, './zetcom:moduleReference[@name="ObjConservationRef"]/zetcom:moduleReferenceItem/@moduleItemId', true) ?? [],
@@ -206,7 +206,7 @@ class XmlDataProcessor
      */
     private function isPublishable($diffusion, $orgUnit, $invRoot)
     {
-        if (stripos($diffusion, 'Publiable') === false) {
+        if (stripos($diffusion, 'Non publiable') !== false) {
             return false;
         }
 
