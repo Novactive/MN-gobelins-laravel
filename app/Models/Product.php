@@ -156,6 +156,17 @@ class Product extends Model
         })->all();
     }
 
+    public function getAboutAuthorAttribute()
+    {
+        return $this->authors->map(function ($author) {
+            $text = $author->name;
+            if ($author->biography) {
+                $text .= "\n" . $author->biography;
+            }
+            return $text;
+        })->filter()->implode("\n\n");
+    }
+
     public function getSearchableImagesAttribute()
     {
         return $this->images()
@@ -301,7 +312,7 @@ class Product extends Model
             'denomination' => $this->denomination,
             'description' => $this->description,
             'historic' => $this->historic,
-            'about_author' => $this->authors->pluck('biography')->filter()->implode("\n"),
+            'about_author' => $this->getAboutAuthorAttribute(),
             'bibliography' => $this->bibliography,
             'acquisition_origin' => $this->acquisition_origin,
             'acquisition_date' => $this->acquisition_date,
