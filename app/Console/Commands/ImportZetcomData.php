@@ -71,21 +71,28 @@ class ImportZetcomData extends Command
         //$modulesXml = $this->zetcomService->getSingleModule('Multimedia', 637457);
         if ($objectIds) {
             $aObjectIds = explode(",", $objectIds);
+            $objects = [];
             foreach ($aObjectIds as $objectId) {
                 $modulesXml = $this->zetcomService->getSingleModule('Object', $objectId);
-                $objects = $this->dataProcessor->processObjectsData($modulesXml);
-                $this->objectsImport($objects);
+                $aObject = $this->dataProcessor->processObjectsData($modulesXml);
+                if (!empty($aObject[0])) {
+                    $objects[] = $aObject[0];
+                }
             }
         } else {
             $modulesXml = $this->zetcomService->getModifiedModules(self::MODULE_NAME, $all, $limit, $offset);
             $objects = $this->dataProcessor->processObjectsData($modulesXml);
-            $this->objectsImport($objects);
         }
+
+        $this->objectsImport($objects);
 
     }
 
     public function objectsImport($objects)
     {
+        if (empty($objects)) {
+            return;
+        }
         $queueName = config('queue.connections.rabbitmq.queue');
         foreach ($objects as $object) {
             $this->info("Envoi de l'objet " . self::MODULE_NAME . " (" . $object['id'] . ") à la queue");
@@ -98,5 +105,4 @@ class ImportZetcomData extends Command
         $job = new ImportObjectJob(['id' => 0]);
         dispatch($job)->onConnection('rabbitmq')->onQueue($queueName);
     }
-    
 }
