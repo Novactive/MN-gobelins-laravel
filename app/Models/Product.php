@@ -325,7 +325,7 @@ class Product extends Model
             'period_name' => $this->period ? $this->period->name : null,
             'period_start_year' => $this->period ? $this->period->start_year : null,
             'period_end_year' => $this->period ? $this->period->end_year : null,
-            'conception_year' => $this->conception_year,
+            'conception_year' => $this->extractYear($this->conception_year),
             'conception_year_as_text' => $this->conception_year ? (string) $this->conception_year : null,
             'images' => $this->searchableImages,
             'image_quality_score' => $this->imageQualityScore,
@@ -340,6 +340,10 @@ class Product extends Model
         ];
     }
 
+    function extractYear(string $text): ?int
+    {
+        return is_numeric($text) ? $text : (preg_match('/\d+/', $text, $m) ? $m[0] : null);
+    }
     /***
      * Determine if a model should be indexed in Elasticsearch, or not.
      */
