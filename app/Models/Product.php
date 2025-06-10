@@ -368,9 +368,9 @@ class Product extends Model
         }
 
         $dimensionsMap = [
-            'Height' => (float) $this->height_or_thickness,
-            'Width' => (float) $this->length_or_diameter,
-            'Depth' => (float) $this->depth_or_width,
+            'Height' => str_replace('.', ',', (float)$this->height_or_thickness),
+            'Width' => str_replace('.', ',', (float)$this->length_or_diameter),
+            'Depth' => str_replace('.', ',', (float)$this->depth_or_width),
         ];
 
         $isSmall = count(array_filter($dimensionsMap, fn($d) => $d > 0 && $d < 1)) > 0;
