@@ -156,6 +156,17 @@ class Product extends Model
         })->all();
     }
 
+    public function getAboutAuthorAttribute()
+    {
+        return $this->authors->map(function ($author) {
+            $text = $author->name;
+            if ($author->biography) {
+                $text .= "\n" . $author->biography;
+            }
+            return $text;
+        })->filter()->implode("\n\n");
+    }
+
     public function getSearchableImagesAttribute()
     {
         return $this->images()
@@ -301,7 +312,7 @@ class Product extends Model
             'denomination' => $this->denomination,
             'description' => $this->description,
             'historic' => $this->historic,
-            'about_author' => $this->authors->pluck('biography')->filter()->implode("\n"),
+            'about_author' => $this->getAboutAuthorAttribute(),
             'bibliography' => $this->bibliography,
             'acquisition_origin' => $this->acquisition_origin,
             'acquisition_date' => $this->acquisition_date,
@@ -314,7 +325,7 @@ class Product extends Model
             'period_name' => $this->period ? $this->period->name : null,
             'period_start_year' => $this->period ? $this->period->start_year : null,
             'period_end_year' => $this->period ? $this->period->end_year : null,
-            'conception_year' => $this->conception_year,
+            'conception_year' => $this->extractYear($this->conception_year),
             'conception_year_as_text' => $this->conception_year ? (string) $this->conception_year : null,
             'images' => $this->searchableImages,
             'image_quality_score' => $this->imageQualityScore,
@@ -329,6 +340,10 @@ class Product extends Model
         ];
     }
 
+    function extractYear(string $text): ?int
+    {
+        return is_numeric($text) ? $text : (preg_match('/\d+/', $text, $m) ? $m[0] : null);
+    }
     /***
      * Determine if a model should be indexed in Elasticsearch, or not.
      */
