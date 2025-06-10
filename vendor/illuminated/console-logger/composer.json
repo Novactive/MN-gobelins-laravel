@@ -1,0 +1,51 @@
+{
+    "name": "illuminated/console-logger",
+    "description": "Logging and Notifications for Laravel Console Commands.",
+    "keywords": ["laravel", "console", "command", "logger", "notifications", "email-notifications", "error-handling", "guzzle-middleware"],
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/dmitry-ivanov/laravel-console-logger/issues",
+        "source": "https://github.com/dmitry-ivanov/laravel-console-logger"
+    },
+    "authors": [{
+        "name": "Dmitry Ivanov",
+        "email": "dmitry.g.ivanov@gmail.com"
+    }],
+    "require": {
+        "php": "^7.2.5|^8.0",
+        "ext-json": "*",
+        "illuminate/support": "^7.0",
+        "illuminate/console": "^7.0",
+        "illuminated/helper-functions": "^7.0",
+        "monolog/monolog": "^2.0",
+        "psr/http-message": "^1.0",
+        "psr/log": "^1.0",
+        "symfony/finder": "^5.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.4|^9.0",
+        "mockery/mockery": "^1.3.1",
+        "guzzlehttp/guzzle": "^6.3.1|^7.0",
+        "orchestra/testbench": "^5.0",
+        "illuminated/testing-tools": "^7.0"
+    },
+    "autoload": {
+        "files": [
+            "integrations/autoload.php"
+        ],
+        "psr-4": {
+            "Illuminated\\Console\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Illuminated\\Console\\Tests\\": "tests/",
+            "Illuminated\\Console\\Tests\\App\\": "tests/fixture/app/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
