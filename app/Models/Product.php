@@ -7,6 +7,7 @@ use A17\Twill\Models\Model;
 use App\Models\Presenters\Admin\ProductPresenter as AdminProductPresenter;
 use App\Models\Presenters\ProductPresenter;
 use Laravel\Scout\Searchable;
+use Carbon\Carbon;
 
 class Product extends Model
 {
@@ -152,8 +153,46 @@ class Product extends Model
     public function getSearchableAuthorsAttribute()
     {
         return $this->authors->map(function ($author) {
-            return $author->toSearchableArray();
-        })->all();
+            $birth_date = null;
+            $death_date = null;
+
+            if (!empty($author->date_of_birth)) {
+                $birth_date = Carbon::parse($author->date_of_birth)->locale('fr')->isoFormat('D MMMM Y');
+            } elseif (!empty($author->year_of_birth)) {
+                $birth_date = $author->year_of_birth;
+            }
+
+            if (!empty($author->date_of_death)) {
+                $death_date = Carbon::parse($author->date_of_death)->locale('fr')->isoFormat('D MMMM Y');
+            } elseif (!empty($author->year_of_death)) {
+                $death_date = $author->year_of_death;
+            }
+
+            $dates = null;
+            if ($birth_date || $death_date) {
+                if ($birth_date && $death_date) {
+                    $dates = '(' . $birth_date . ' - ' . $death_date . ')';
+                } elseif ($birth_date) {
+                    $dates = '(' . $birth_date . ')';
+                } elseif ($death_date) {
+                    $dates = '(' . $death_date . ')';
+                }
+            }
+            if ($dates === null && !empty($author->name)) {
+                if (preg_match('/\((\d{4})-(\d{4})\)/', $author->name, $matches)) {
+                    $dates = '(' . $matches[1] . ' - ' . $matches[2] . ')';
+                } elseif (preg_match('/\((\d{4})\)/', $author->name, $matches)) {
+                    $dates = '(' . $matches[1] . ')';
+                }
+            }
+
+            return [
+                'id' => $author->id,
+                'first_name' => $author->first_name,
+                'last_name' => $author->last_name,
+                'dates' => $dates,
+            ];
+        })->toArray();
     }
 
     public function getAboutAuthorAttribute()
