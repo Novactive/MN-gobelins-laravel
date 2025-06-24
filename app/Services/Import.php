@@ -265,7 +265,7 @@ class Import
                     'path' => $this->zetcomService->getImage($img['imgId']),
                     'is_published' => true,
                     'photographer' => $imageDetails['photographer'] ?? '',
-                    'is_poster' => $imageDetails['is_poster'],
+                    'is_poster' => $imageDetails['is_poster'] ?? false,
                     'is_prime_quality' => $imageDetails['is_prime_quality'],
                     'license' => $isPublicDomain && strpos($imageDetails['photographer'], 'Bideau') !== false ? 'pub' : 'perso',
                     'update_date' => $imageDetails['update_date']
