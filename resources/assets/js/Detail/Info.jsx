@@ -31,9 +31,13 @@ function Historic(props) {
 }
 
 function AboutAuthor(props) {
-  return props.about_author ? (
-    <InfoUnitTemplate label="A propos de l’auteur" value={nl2br(props.about_author)} />
-  ) : null;
+  if (!props.about_author) return null;
+  const authorCount = (props.about_author.match(/\n\n/g) || []).length + 1;
+  const label = authorCount > 1 ? "A propos des auteurs" : "A propos de l'auteur";
+
+  return (
+    <InfoUnitTemplate label={label} value={nl2br(props.about_author)} />
+  );
 }
 
 function Bibliography(props) {

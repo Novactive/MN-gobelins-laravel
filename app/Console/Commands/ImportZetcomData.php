@@ -16,7 +16,7 @@ class ImportZetcomData extends Command
      *
      * @var string
      */
-    protected $signature = 'gobelins:import:zetcom {--all : Import globale} {--offset=} {--limit=}';
+    protected $signature = 'gobelins:import:zetcom {--all : Import globale} {--offset=} {--limit=} {--objectIds=}';
 
     /**
      * The console command description.
@@ -60,6 +60,7 @@ class ImportZetcomData extends Command
         $all = (bool)$this->option('all');
         $limit = $all ? (int)$this->option('limit') : null;
         $offset = $all ? (int)$this->option('offset') : 0;
+        $objectIds = !empty($this->option('objectIds')) ? $this->option('objectIds') : null;
 
         if ($all && !$limit) {
             $this->error("Importer tous les produits sans limite et offset n'est pas faisable !");
@@ -68,16 +69,40 @@ class ImportZetcomData extends Command
         }
         //module pour teste
         //$modulesXml = $this->zetcomService->getSingleModule('Multimedia', 637457);
-
-        $modulesXml = $this->zetcomService->getModifiedModules(self::MODULE_NAME, $all, $limit, $offset);
-        $objects = $this->dataProcessor->processObjectsData($modulesXml);
-        foreach ($objects as $object) {
-            $this->info("Envoi de l'objet " . self::MODULE_NAME . " (" . $object['id'] .") à la queue");
-            Log::info("Envoi de l'objet " . self::MODULE_NAME . " (" . $object['id'] .") à la queue");
-            ImportObjectJob::dispatch($object);
+        if ($objectIds) {
+            $aObjectIds = explode(",", $objectIds);
+            $objects = [];
+            foreach ($aObjectIds as $objectId) {
+                $modulesXml = $this->zetcomService->getSingleModule('Object', $objectId);
+                $aObject = $this->dataProcessor->processObjectsData($modulesXml);
+                if (!empty($aObject[0])) {
+                    $objects[] = $aObject[0];
+                }
+            }
+        } else {
+            $modulesXml = $this->zetcomService->getModifiedModules(self::MODULE_NAME, $all, $limit, $offset);
+            $objects = $this->dataProcessor->processObjectsData($modulesXml);
         }
 
-        ImportObjectJob::dispatch(['id' => 0]);
+        $this->objectsImport($objects);
+
     }
 
+    public function objectsImport($objects)
+    {
+        if (empty($objects)) {
+            return;
+        }
+        $queueName = config('queue.connections.rabbitmq.queue');
+        foreach ($objects as $object) {
+            $this->info("Envoi de l'objet " . self::MODULE_NAME . " (" . $object['id'] . ") à la queue");
+            Log::info("Envoi de l'objet " . self::MODULE_NAME . " (" . $object['id'] . ") à la queue");
+
+            $job = new ImportObjectJob($object);
+            dispatch($job)->onConnection('rabbitmq')->onQueue($queueName);
+        }
+
+        $job = new ImportObjectJob(['id' => 0]);
+        dispatch($job)->onConnection('rabbitmq')->onQueue($queueName);
+    }
 }

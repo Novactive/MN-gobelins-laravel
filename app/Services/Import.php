@@ -229,7 +229,7 @@ class Import
             }
 
             echo "Le produit $inventoryId a été mis à jour/ajouté" . (!$item['is_publishable'] ? ", mais il est non publiable" : "") . "\n";
-            Log::error("Le produit $inventoryId a été mis à jour/ajouté" . (!$item['is_publishable'] ? ", mais il est non publiable" : "") . "\n");
+            Log::info("Le produit $inventoryId a été mis à jour/ajouté" . (!$item['is_publishable'] ? ", mais il est non publiable" : "") . "\n");
 
         } catch (\Exception $exception) {
             echo "[IMPORT ERROR (Product(" . $item['id'] . ")]" . $exception->getMessage() . "\n";

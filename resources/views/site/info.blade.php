@@ -55,9 +55,9 @@
             <h1><span>Projet</span></h1>
 
             <p>
-                Ce projet a pour objectif de rendre accessible la collection du Mobilier national portail des
-                collections, ses objets, œuvres, meubles, textiles… et permettre à chacun de consulter les
-                informations relatives à ceux-ci.
+                Ce projet de portail des collections a pour objectif de rendre accessible la collection
+                du Mobilier national, ses objets, œuvres, meubles, textiles… et permettre à chacun de
+                consulter les informations relatives à ceux-ci.
             </p>
 
             <p>
