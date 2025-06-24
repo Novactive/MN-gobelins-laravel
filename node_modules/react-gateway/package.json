@@ -1,0 +1,61 @@
+{
+  "name": "react-gateway",
+  "version": "3.0.0",
+  "description": "Render React DOM into a new context",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "babel src -d lib",
+    "example": "browserify example/browser.js -o example/bundle.js -t babelify --debug && babel-node example/server.js",
+    "format": "jsfmt -w *.js src/ test/",
+    "lint": "eslint src/ test/",
+    "prepublish": "npm run build",
+    "test": "karma start"
+  },
+  "keywords": [
+    "react",
+    "gateway",
+    "portal",
+    "modal",
+    "dialog"
+  ],
+  "author": "James Kyle <me@thejameskyle.com>",
+  "repository": "https://github.com/cloudflare/react-gateway",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "prop-types": "^15.5.0",
+    "react-prop-types": "^0.4.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.1.1",
+    "babel-core": "^6.0.20",
+    "babel-eslint": "^6.0.2",
+    "babel-preset-cf": "^1.2.0",
+    "babelify": "^7.2.0",
+    "browserify-istanbul": "^0.2.1",
+    "chai": "^3.4.1",
+    "defined": "^1.0.0",
+    "eslint": "^1.8.0",
+    "eslint-plugin-cflint": "^1.0.0",
+    "express": "^4.13.3",
+    "jsfmt": "^0.5.2",
+    "karma": "^0.13.15",
+    "karma-beep-reporter": "^0.1.4",
+    "karma-browserify": "^4.4.0",
+    "karma-chrome-launcher": "^0.2.1",
+    "karma-coverage": "^0.5.3",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-mocha": "^0.2.0",
+    "karma-mocha-reporter": "^1.1.1",
+    "karma-safari-launcher": "^0.1.1",
+    "karma-sauce-launcher": "^0.3.0",
+    "karma-tape-reporter": "^1.0.3",
+    "minimist": "^1.2.0",
+    "mocha": "^2.3.3",
+    "react-addons-test-utils": "^15.0.0-0",
+    "react": "^15.0.0-0",
+    "react-dom": "^15.0.0-0"
+  },
+  "peerDependencies": {
+    "react": "^0.14.0 || ^15.0.0 || ^16.0.0"
+  }
+}
