@@ -155,16 +155,14 @@ class Import
                     'Autrichien', 'Italien', 'Japonais', 'Espagnol', 'Flamand',
                 ];
 
-                $style = null;
-                if (is_numeric($item['style_legacy_id'])) {
-                    $style = \App\Models\Style::where('legacy_id', $item['style_legacy_id'])->first();
-                }
+                $style = \App\Models\Style::where('legacy_id', $item['style_legacy_id'])->first();
 
                 if ($style) {
                     $product->style()->associate($style);
                 } elseif (in_array($item['style_name'], ['Directoire', 'Consulat'])) {
                     $product->style()->associate(\App\Models\Style::where('name', 'Directoire - Consulat')->first());
-                } elseif (in_array($item['style_name'], $foreignStyles)) {
+                } elseif ($foreignStyles) {
+                    // We consolidate the English, Chinese, Japanese, etc, styles into one "Foreign" one.
                     $product->style()->associate(\App\Models\Style::where('name', 'Étranger')->first());
                 }
             } elseif ($item['period_legacy_id'] &&
@@ -265,7 +263,7 @@ class Import
                     'path' => $this->zetcomService->getImage($img['imgId']),
                     'is_published' => true,
                     'photographer' => $imageDetails['photographer'] ?? '',
-                    'is_poster' => $imageDetails['is_poster'] ?? false,
+                    'is_poster' => $imageDetails['is_poster'],
                     'is_prime_quality' => $imageDetails['is_prime_quality'],
                     'license' => $isPublicDomain && strpos($imageDetails['photographer'], 'Bideau') !== false ? 'pub' : 'perso',
                     'update_date' => $imageDetails['update_date']
