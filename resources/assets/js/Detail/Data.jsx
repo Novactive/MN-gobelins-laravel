@@ -37,7 +37,7 @@ function Authors(props) {
       <DataUnitTemplate
         label={label}
         value={props.authors
-          .map(a => [a.first_name, a.last_name, a.dates].join(" "))
+          .map(a => [a.first_name, a.last_name].join(" "))
           .join(", ")}
       />
     );
