@@ -7,7 +7,6 @@ use A17\Twill\Models\Model;
 use App\Models\Presenters\Admin\ProductPresenter as AdminProductPresenter;
 use App\Models\Presenters\ProductPresenter;
 use Laravel\Scout\Searchable;
-use Carbon\Carbon;
 
 class Product extends Model
 {
@@ -153,46 +152,8 @@ class Product extends Model
     public function getSearchableAuthorsAttribute()
     {
         return $this->authors->map(function ($author) {
-            $birth_date = null;
-            $death_date = null;
-
-            if (!empty($author->date_of_birth)) {
-                $birth_date = Carbon::parse($author->date_of_birth)->locale('fr')->isoFormat('D MMMM Y');
-            } elseif (!empty($author->year_of_birth)) {
-                $birth_date = $author->year_of_birth;
-            }
-
-            if (!empty($author->date_of_death)) {
-                $death_date = Carbon::parse($author->date_of_death)->locale('fr')->isoFormat('D MMMM Y');
-            } elseif (!empty($author->year_of_death)) {
-                $death_date = $author->year_of_death;
-            }
-
-            $dates = null;
-            if ($birth_date || $death_date) {
-                if ($birth_date && $death_date) {
-                    $dates = '(' . $birth_date . ' - ' . $death_date . ')';
-                } elseif ($birth_date) {
-                    $dates = '(' . $birth_date . ')';
-                } elseif ($death_date) {
-                    $dates = '(' . $death_date . ')';
-                }
-            }
-            if ($dates === null && !empty($author->name)) {
-                if (preg_match('/\((\d{4})-(\d{4})\)/', $author->name, $matches)) {
-                    $dates = '(' . $matches[1] . ' - ' . $matches[2] . ')';
-                } elseif (preg_match('/\((\d{4})\)/', $author->name, $matches)) {
-                    $dates = '(' . $matches[1] . ')';
-                }
-            }
-
-            return [
-                'id' => $author->id,
-                'first_name' => $author->first_name,
-                'last_name' => $author->last_name,
-                'dates' => $dates,
-            ];
-        })->toArray();
+            return $author->toSearchableArray();
+        })->all();
     }
 
     public function getAboutAuthorAttribute()
@@ -379,7 +340,7 @@ class Product extends Model
         ];
     }
 
-    function extractYear($text): ?int
+    function extractYear(string $text): ?int
     {
         return is_numeric($text) ? $text : (preg_match('/\d+/', $text, $m) ? $m[0] : null);
     }
@@ -407,9 +368,9 @@ class Product extends Model
         }
 
         $dimensionsMap = [
-            'Height' => str_replace('.', ',', (float)$this->height_or_thickness),
-            'Width' => str_replace('.', ',', (float)$this->length_or_diameter),
-            'Depth' => str_replace('.', ',', (float)$this->depth_or_width),
+            'Height' => (float) $this->height_or_thickness,
+            'Width' => (float) $this->length_or_diameter,
+            'Depth' => (float) $this->depth_or_width,
         ];
 
         $isSmall = count(array_filter($dimensionsMap, fn($d) => $d > 0 && $d < 1)) > 0;
