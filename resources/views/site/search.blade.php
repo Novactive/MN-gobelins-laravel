@@ -15,32 +15,42 @@
 </div>
 
 <script>
-    var __INITIAL_STATE__ = @json($filters ?? []);
+    var __INITIAL_STATE__ = @json($filters ?? []); // Celle-ci est déjà corrigée, parfait !
 
 
-        @isset($product)
-            var PRODUCT = {!! json_encode($product) !!};
-        @endisset
+    @isset($product)
+        var PRODUCT = @json($product); // <-- Modifiez ici
+    @else
+        var PRODUCT = {}; // Ajout d'une valeur par défaut si $product n'est pas défini
+    @endisset
 
-        @isset($mob_nat_selections, $user_selections)
-            var SELECTIONS = {
-                "mySelections": @json($my_selections),
-                "mobNatSelections": @json($mob_nat_selections),
-                "userSelections": @json($user_selections)
-            };
-        @endisset
+    @isset($mob_nat_selections, $user_selections)
+        var SELECTIONS = {
+            "mySelections": @json($my_selections),
+            "mobNatSelections": @json($mob_nat_selections),
+            "userSelections": @json($user_selections)
+        };
+    @else
+        var SELECTIONS = {}; // Ajout d'une valeur par défaut si les sélections ne sont pas définies
+    @endisset
 
-        @isset($selection_detail)
-            var SELECTION_DETAIL = {!! json_encode($selection_detail) !!};
-        @endisset
+    @isset($selection_detail)
+        var SELECTION_DETAIL = @json($selection_detail); // <-- Modifiez ici
+    @else
+        var SELECTION_DETAIL = {}; // Ajout d'une valeur par défaut
+    @endisset
 
-        @isset($currentUser)
-            var CURRENT_USER = {!! json_encode($currentUser) !!};
-        @endisset
+    @isset($currentUser)
+        var CURRENT_USER = @json($currentUser); // <-- Modifiez ici
+    @else
+        var CURRENT_USER = {}; // Ajout d'une valeur par défaut
+    @endisset
 
-        @if (session('status'))
-            var SESSION_STATUS = {!! json_encode(session('status')) !!};
-        @endif
+    @if (session('status'))
+        var SESSION_STATUS = @json(session('status')); // <-- Modifiez ici
+    @else
+        var SESSION_STATUS = null; // Valeur par défaut si pas de statut de session
+    @endif
 
 </script>
 
