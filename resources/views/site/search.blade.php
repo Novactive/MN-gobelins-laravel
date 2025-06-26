@@ -15,7 +15,7 @@
 </div>
 
 <script>
-    var __INITIAL_STATE__ = {!! $filters->toJson() !!};
+    var __INITIAL_STATE__ = @json($filters ?? []);
 
 
         @isset($product)
