@@ -15,12 +15,12 @@ setupDialogs();
  */
 window.Bricks = Bricks;
 
-if (process.env.MIX_SENTRY_ENV != "local") {
+/*if (process.env.MIX_SENTRY_ENV != "local") {
   Sentry.init({
     dsn: "https://7995837ee4464e6589efb4ebdb9ea6b8@sentry.io/1725163",
     environment: process.env.MIX_SENTRY_ENV
   });
-}
+}*/
 
 if (document.getElementById("root")) {
   ReactDOM.render(<AppRouter />, document.getElementById("root"));
