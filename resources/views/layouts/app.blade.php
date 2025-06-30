@@ -40,7 +40,6 @@
         })();
     </script>
     <!-- End Matomo Code -->
-    @endif
 </head>
 
 <body>
