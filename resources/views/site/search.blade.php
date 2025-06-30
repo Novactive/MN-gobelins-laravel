@@ -15,9 +15,24 @@
 </div>
 
 <script>
-    @isset($filters)
-    var __INITIAL_STATE__ = {!! $filters->toJson() !!};
-    @else
+{{--    @isset($filters)--}}
+{{--    var __INITIAL_STATE__ = {!! $filters->toJson() !!};--}}
+{{--    @else--}}
+{{--    var __INITIAL_STATE__ = {--}}
+{{--        productTypes: [],--}}
+{{--        styles: [],--}}
+{{--        authors: [],--}}
+{{--        authors_offsets: {},--}}
+{{--        periods: [],--}}
+{{--        materials: [],--}}
+{{--        productionOrigins: [],--}}
+{{--        dimensions: {--}}
+{{--            max_height_or_thickness: 0,--}}
+{{--            max_depth_or_width: 0,--}}
+{{--            max_length_or_diameter: 0--}}
+{{--        }--}}
+{{--    };--}}
+{{--    @endisset--}}
     var __INITIAL_STATE__ = {
         productTypes: [],
         styles: [],
@@ -32,7 +47,6 @@
             max_length_or_diameter: 0
         }
     };
-    @endisset
 
 
         @isset($product)
