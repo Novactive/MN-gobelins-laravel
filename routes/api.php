@@ -21,6 +21,11 @@ Route::get('/product/{inventory_id}', [
     'as' => 'product_endpoint', 'uses' => 'ProductController@show',
 ]);
 
+Route::get('/filters', [
+    'as' => 'api.filters', 
+    'uses' => 'FiltersController@index',
+]);
+
 Route::get('selections', [
     'as' => 'api.selections', 'uses' => 'SelectionsController@index',
 ]);

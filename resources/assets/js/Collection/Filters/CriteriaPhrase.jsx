@@ -63,6 +63,34 @@ class CriteriaPhrase extends Component {
     this.extractProductionOrigins = this.extractProductionOrigins.bind(this);
     this.renderResetButton = this.renderResetButton.bind(this);
     this.handleRemoveAll = this.handleRemoveAll.bind(this);
+    this.handleFiltersLoaded = this.handleFiltersLoaded.bind(this);
+  }
+
+  componentDidMount() {
+    window.addEventListener('filtersLoaded', this.handleFiltersLoaded);
+    window.addEventListener('filtersUpdated', this.handleFiltersLoaded);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('filtersLoaded', this.handleFiltersLoaded);
+    window.removeEventListener('filtersUpdated', this.handleFiltersLoaded);
+  }
+
+  handleFiltersLoaded(event) {
+    this.setState({
+      productTypes: window.__INITIAL_STATE__.productTypes,
+      flatProductTypes: flatMap(window.__INITIAL_STATE__.productTypes, pt => {
+        return treeFlatten(pt, "children");
+      }),
+      styles: window.__INITIAL_STATE__.styles,
+      authors: window.__INITIAL_STATE__.authors,
+      periods: window.__INITIAL_STATE__.periods,
+      materials: window.__INITIAL_STATE__.materials,
+      flatMaterials: flatMap(window.__INITIAL_STATE__.materials, m => {
+        return treeFlatten(m, "children");
+      }),
+      productionOrigins: window.__INITIAL_STATE__.productionOrigins,
+    });
   }
 
   componentDidUpdate() {
@@ -172,7 +200,7 @@ class CriteriaPhrase extends Component {
             <Criterion
               type="production_origin"
               paramName="production_origin_ids"
-              label={s.name.charAt(0) === "A" ? "l’" + s.name : "la " + s.name}
+              label={s.name.charAt(0) === "A" ? "l' " + s.name : "la " + s.name}
               id={s.id}
               key={"production_origin_" + s.id}
               onFilterRemove={this.props.onFilterRemove}
