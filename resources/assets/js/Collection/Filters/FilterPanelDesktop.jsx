@@ -40,12 +40,35 @@ class FilterPanelDesktop extends Component {
     this.handleSearchFieldBlur = this.handleSearchFieldBlur.bind(this);
     this.handleFullTextSearch = this.handleFullTextSearch.bind(this);
     this.renderOverlayContent = this.renderOverlayContent.bind(this);
+    this.handleFiltersLoaded = this.handleFiltersLoaded.bind(this);
     this.hot_keys = {
       esc: {
         priority: 1,
         handler: this.closeFilterPanels,
       },
     };
+  }
+
+  componentDidMount() {
+    window.addEventListener('filtersLoaded', this.handleFiltersLoaded);
+    window.addEventListener('filtersUpdated', this.handleFiltersLoaded);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('filtersLoaded', this.handleFiltersLoaded);
+    window.removeEventListener('filtersUpdated', this.handleFiltersLoaded);
+  }
+
+  handleFiltersLoaded(event) {
+    this.setState({
+      productTypes: window.__INITIAL_STATE__.productTypes,
+      styles: window.__INITIAL_STATE__.styles,
+      authors: window.__INITIAL_STATE__.authors,
+      periods: window.__INITIAL_STATE__.periods,
+      materials: window.__INITIAL_STATE__.materials,
+      productionOrigins: window.__INITIAL_STATE__.productionOrigins,
+      dimensions: window.__INITIAL_STATE__.dimensions,
+    });
   }
 
   openPanel(panel, ev) {
@@ -153,7 +176,7 @@ class FilterPanelDesktop extends Component {
                   }
                   onClick={(ev) => this.openPanel("ProductTypes", ev)}
                 >
-                  Type d’objet
+                  Type d'objet
                 </button>
               </li>
               <li>
