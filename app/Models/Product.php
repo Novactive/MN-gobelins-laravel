@@ -388,7 +388,7 @@ class Product extends Model
      */
     public function shouldBeSearchable()
     {
-        return false;
+        return $this->is_published;
     }
 
     private function formatInventoryId($inventoryId) {

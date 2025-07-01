@@ -33,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer(
-            ['site.search', 'site.selection'],
+            ['site.selection'],
             'App\Http\View\Composers\FiltersComposer'
         );
 
