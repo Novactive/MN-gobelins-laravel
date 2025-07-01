@@ -20,13 +20,15 @@ class FiltersComposer
     {
         $this->filters = Cache::rememberForever('collection_filters', function () {
             $authors = Author::has('products')
-                                ->orderBy('last_name', 'asc')
-                                ->select('id', 'first_name', 'last_name')->get()
-                                ->map(function ($item) {
-                                    $item->last_name = ucwords(strtolower($item->last_name));
-                                    return $item;
-                                });
-            
+                ->orderBy('last_name', 'asc')
+                ->select('id', 'first_name', 'last_name')->get()
+                ->map(function ($item) {
+                    $item->first_name = mb_convert_encoding($item->first_name, 'UTF-8', 'UTF-8');
+                    $item->last_name = mb_convert_encoding($item->last_name, 'UTF-8', 'UTF-8');
+                    $item->last_name = ucwords(strtolower($item->last_name));
+                    return $item;
+                });
+
             // The Authors list needs to have separator items, so that the
             // virtual list can be scrolled in the frontend. It makes sense
             // to pre-process them here, once.
@@ -43,8 +45,14 @@ class FiltersComposer
 
             $i = 0;
             $authors_offsets = $separated_authors->reduce(function ($offsets, $item) use (&$i) {
-                if ($offsets->count() === 0 || $item->last_name[0] !== $offsets->keys()->last()) {
-                    $offsets->put($item->last_name[0], $i);
+                $first_char = mb_substr($item->last_name, 0, 1, 'UTF-8');
+                $clean_char = mb_convert_encoding($first_char, 'UTF-8', 'UTF-8');
+                if (!mb_check_encoding($clean_char, 'UTF-8') || $clean_char === '') {
+                    $clean_char = '_';
+                }
+
+                if ($offsets->count() === 0 || $clean_char !== $offsets->keys()->last()) {
+                    $offsets->put($clean_char, $i);
                 }
                 $i++;
                 return $offsets;
