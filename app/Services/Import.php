@@ -56,6 +56,7 @@ class Import
                     ['inventory_id' => $inventoryId],
                     [
                         'inventory_id' => $inventoryId,
+                        'zetcom_product_id' => (int)$item['id'],
                         'inventory_root' => (string)$item['inventory_root'],
                         'inventory_number' => (int)$item['inventory_number'] ?? 0,
                         'inventory_suffix' => (int)$item['inventory_suffix'] ?? 0,
