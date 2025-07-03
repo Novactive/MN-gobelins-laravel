@@ -276,7 +276,8 @@ class Product extends Model
         'entry_mode_id',
         'legacy_updated_on',
         'historic',
-        'dim_order'
+        'dim_order',
+        'zetcom_product_id'
     ];
 
     // Eloquent scopes
