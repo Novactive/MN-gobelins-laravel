@@ -12,6 +12,8 @@ function DataUnitTemplate(props) {
 }
 
 function formatInventoryId(inventoryId) {
+  if (!inventoryId) return '';
+  
   return inventoryId
       .replace(/^([A-Z]+)-(\d+)/, "$1 $2")
       .replace(/-(\d{3})$/, (match, p1) => (p1 === "000" ? "" : `/${p1}`))
