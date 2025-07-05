@@ -359,7 +359,7 @@ class Product extends Model
             'acquisition_mode' => $this->searchableEntryMode,
             'inventory_id' => $this->inventory_id,
             'formatted_inventory_id' => $this->formatInventoryId($this->inventory_id),
-            'inventory_id_as_keyword' => strtoupper($this->inventory_id),
+            'inventory_id_as_keyword' => $this->inventory_id ? strtoupper($this->inventory_id) : '',
             'product_types' => $this->searchableProductTypes,
             'authors' => $this->searchableAuthors,
             'period_name' => $this->period ? $this->period->name : null,
@@ -393,6 +393,10 @@ class Product extends Model
     }
 
     private function formatInventoryId($inventoryId) {
+        if (!$inventoryId) {
+            return '';
+        }
+        
         $inventoryId = preg_replace('/^([A-Z]+)-(\d+)/', '$1 $2', $inventoryId);
         $inventoryId = preg_replace_callback('/-(\d{3})$/', function ($matches) {
             return ($matches[1] === "000") ? '' : "/{$matches[1]}";
