@@ -33,6 +33,14 @@ class Image extends Model
         return $this->belongsTo(Product::class);
     }
 
+    /**
+     * Relation many-to-many avec Selection via la table pivot image_selection
+     */
+    public function selections()
+    {
+        return $this->belongsToMany(Selection::class)->withPivot('order');
+    }
+
     public function scopePublished($query)
     {
         return $query->where('is_published', true);
