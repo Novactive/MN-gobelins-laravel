@@ -28,16 +28,24 @@ class Selection extends JsonResource
         $product_ids = $this->resource->products()->where('is_published', true)->select('id')->get()->pluck('id')->toArray();
 
         if (sizeof($product_ids)) {
-            $es = $this->client->mget([
-                "index" => "gobelins_search",
+            // Use search query instead of mget to get products by database IDs
+            $es = $this->client->search([
+                "index" => "gobelins_search_1",
                 "type" => "products",
-                "body" => ["ids" => $product_ids],
+                "body" => [
+                    "query" => [
+                        "terms" => [
+                            "id" => $product_ids
+                        ]
+                    ],
+                    "size" => count($product_ids)
+                ]
             ]);
-            // dd($es);
-            $products = collect($es['docs'])->map(function ($d) {
-                $d['_source']['_id'] = $d['_id'];
-                return $d;
-            })->pluck('_source')->all();
+            
+            $products = collect($es['hits']['hits'])->map(function ($hit) {
+                $hit['_source']['_id'] = $hit['_id'];
+                return $hit['_source'];
+            })->all();
         } else {
             $products = [];
         }
