@@ -153,6 +153,7 @@ class ZetcomService
             Log::error("L'image n'a pas pu être enregistrée sur le chemin : $filePath");
             throw new \Exception("L'image n'a pas pu être enregistrée sur le chemin : $filePath");
         }
+        $response->getBody()->close();
 
         if (!@getimagesize($filePath)) {
             unlink($filePath);
