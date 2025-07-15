@@ -206,7 +206,7 @@ class XmlDataProcessor
      */
     private function isPublishable($diffusion, $orgUnit, $invRoot)
     {
-        if (stripos($diffusion, 'Non publiable') !== false) {
+        if (stripos($diffusion, 'Non publiable') !== false || $diffusion === 'À définir') {
             return false;
         }
 
