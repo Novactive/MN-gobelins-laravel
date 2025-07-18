@@ -69,7 +69,7 @@ class XmlDataProcessor
                 'depth_or_width' => $dimensions['DepthNum'],
                 'conception_year' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDateGrp"]/zetcom:repeatableGroupItem[zetcom:dataField[@name="SortLnu"]/zetcom:value="1"]/zetcom:virtualField[@name="PreviewVrt"]/zetcom:value'),
                 'acquisition_origin' => $this->extractValue($item,'./zetcom:dataField[@name="ObjAcquisitionNotesClb"]/zetcom:value'),
-                'acquisition_date' => stripos($diffusion, 'origine détail') !== false ? $this->formatDatesInString($this->extractValue($item,'./zetcom:dataField[@name="ObjAcquisitionDateDat"]/zetcom:value')) : '',
+                'acquisition_date' => $this->formatDatesInString($this->extractValue($item,'./zetcom:dataField[@name="ObjAcquisitionDateDat"]/zetcom:value')) ,
                 'listed_as_historic_monument' => $this->extractValue($item, './zetcom:vocabularyReference[@name="ObjClaTypeVoc"]/zetcom:vocabularyReferenceItem/@name') == "Monuments historiques",
                 'category' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjCategoryVoc"]/zetcom:vocabularyReferenceItem/@name'),
                 'denomination' => $this->extractValue($item, './zetcom:vocabularyReference[@name="ObjClassificationVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),

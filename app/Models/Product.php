@@ -198,11 +198,12 @@ class Product extends Model
     public function getAboutAuthorAttribute()
     {
         return $this->authors->map(function ($author) {
-            $text = $author->name;
-            if ($author->biography) {
+            if (!empty($author->biography)) {
+                $text = $author->name;
                 $text .= "\n" . $author->biography;
+
+                return $text;
             }
-            return $text;
         })->filter()->implode("\n\n");
     }
 
