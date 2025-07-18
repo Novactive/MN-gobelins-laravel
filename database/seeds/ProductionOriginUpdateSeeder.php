@@ -2,11 +2,41 @@
 
 use Illuminate\Database\Seeder;
 use App\Models\ProductionOrigin;
+use Illuminate\Support\Facades\DB;
 
 class ProductionOriginUpdateSeeder extends Seeder
 {
-
-    private $toUpdateOrAdd = [
+    private $toKeep = [
+        [
+            'name' => 'Manufacture des Gobelins',
+            'label' => 'Création de tapisserie, technique de point plat sur métier de haute lice',
+            'label_md' => 'Création de tapisserie, technique de point plat sur métier de haute lice',
+            'mapping_key' => 'gobelins',
+        ],
+        [
+            'name' => 'Manufacture de Beauvais',
+            'label' => 'Création de tapisserie, technique de point plat sur métier de basse lice',
+            'label_md' => 'Création de tapisserie, technique de point plat sur métier de basse lice',
+            'mapping_key' => 'beauvais',
+        ],
+        [
+            'name' => 'Manufacture de la Savonnerie',
+            'label' => 'Création de tapis, technique du point noué sur métier de haute lice',
+            'label_md' => 'Création de tapis, technique du point noué sur métier de haute lice',
+            'mapping_key' => 'savonnerie',
+        ],
+        [
+            'name' => 'Atelier Le-Puy-en-Velay',
+            'label' => 'Création de dentelle, technique aux fuseaux',
+            'label_md' => 'Création de dentelle, technique aux fuseaux',
+            'mapping_key' => 'puy-en-velay',
+        ],
+        [
+            'name' => "Atelier d'Alençon",
+            'label' => "Création de dentelle et broderie, technique à l'aiguille",
+            'label_md' => "Création de dentelle et broderie, technique à l'aiguille",
+            'mapping_key' => 'alencon',
+        ],
         [
             'name' => 'ARC',
             'label' => 'Atelier de recherche et création de mobilier',
@@ -20,6 +50,7 @@ class ProductionOriginUpdateSeeder extends Seeder
             'mapping_key' => 'sevres',
         ],
     ];
+
     /**
      * Run the database seeds.
      *
@@ -27,17 +58,20 @@ class ProductionOriginUpdateSeeder extends Seeder
      */
     public function run()
     {
+        // Supprimer tout sauf ceux à garder
+        $namesToKeep = array_column($this->toKeep, 'name');
+        DB::table('production_origins')->whereNotIn('name', $namesToKeep)->delete();
 
-        foreach ($this->toUpdateOrAdd as $item) {
+        // Upsert les lignes à garder
+        foreach ($this->toKeep as $item) {
             ProductionOrigin::updateOrCreate(
-                ['mapping_key' => $item['mapping_key']],
+                ['name' => $item['name']],
                 [
-                    'name' => $item['name'],
                     'label' => $item['label'],
-                    'label_md' => $item['label_md']
+                    'label_md' => $item['label_md'],
+                    'mapping_key' => $item['mapping_key'] ?? null,
                 ]
             );
         }
-
     }
 }
