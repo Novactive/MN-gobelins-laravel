@@ -70,12 +70,14 @@ class FiltersComposer
 
             $product_types = ProductType::withCount('products')
                                         ->with('descendants')
-                                        ->orderBy('id', 'asc')
                                         ->get()
-                                        // We must filter manually, because using ::has('products') will remove root items.
                                         ->filter(function ($pt) {
                                             return $pt->children->isNotEmpty() ||  ($pt->children->isEmpty() && $pt->products_count > 0);
-                                        })->toTree();
+                                        });
+            $collator = new \Collator('fr_FR');
+            $product_types = $product_types->sort(function($a, $b) use ($collator) {
+                return $collator->compare($a->name, $b->name);
+            })->values()->toTree();
 
             return collect([
                 'productTypes' => $product_types,

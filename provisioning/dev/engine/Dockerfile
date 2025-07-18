@@ -14,8 +14,10 @@ RUN apt-get install -y libpq-dev libssl-dev && \
     imagemagick \
     jpegoptim \
     libimage-exiftool-perl \
+    libicu-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd \
+    && docker-php-ext-install intl \
     && rm -rf /var/lib/apt/lists/*
 
 
