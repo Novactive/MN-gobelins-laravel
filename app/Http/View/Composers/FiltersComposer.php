@@ -79,12 +79,6 @@ class FiltersComposer
                 return $collator->compare($a->name, $b->name);
             })->values()->toTree();
 
-            $productionOrigins = ProductionOrigin::all();
-            $collator = new \Collator('fr_FR');
-            $productionOrigins = $productionOrigins->sort(function($a, $b) use ($collator) {
-                return $collator->compare($a->name, $b->name);
-            })->values();
-
             return collect([
                 'productTypes' => $product_types,
                 'styles' => Style::has('products')->orderBy('order', 'asc')->select('id', 'name')->get(),
@@ -153,7 +147,7 @@ class FiltersComposer
                     ],
                 ],
                 'materials' => $materials,
-                'productionOrigins' => $productionOrigins,
+                'productionOrigins' => ProductionOrigin::all(),
                 'dimensions' => [
                     'max_height_or_thickness' => ceil(Product::max('height_or_thickness')),
                     'max_depth_or_width' => ceil(Product::max('depth_or_width')),
