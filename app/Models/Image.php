@@ -19,7 +19,8 @@ class Image extends Model
         'is_reviewed',
         'photographer',
         'license',
-        'update_date'
+        'update_date',
+        'zetcom_image_id'
     ];
 
     protected $touches = ['product'];
@@ -63,7 +64,8 @@ class Image extends Model
             'is_documentation_quality' => $this->is_documentation_quality,
             'has_marking' => $this->has_marking,
             'license' => $this->license,
-            'update_date' => $this->update_date
+            'update_date' => $this->update_date,
+            'zetcom_image_id' => $this->zetcom_image_id
         ];
     }
 }

@@ -301,22 +301,19 @@ class Product extends Model
     // Temporary addition for demo purposes.
     // Todo: get score from source data (SCOM), or
     // fine tune the image quality criteria.
-    public function getImageQualityScoreAttribute()
+    public function imageQualityScore()
     {
-        $images = $this->images()->published()->get();
-        if ($images && sizeof($images) > 0) {
-            if ($images[0]->is_prime_quality) {
-                if (strstr($images[0]->path, 'BIDEAU')) {
-                    return 5;
-                } else {
-                    return 3;
-                }
-            } else {
-                return 2;
-            }
-        } else {
-            return 0;
+        if ($this->images()->published()->where('is_prime_quality', true)->exists()) {
+            return 3;
         }
+        if ($this->images()->published()->where('is_poster', true)->exists()) {
+            return 2;
+        }
+        if ($this->images()->published()->where('is_documentation_quality', true)->exists()) {
+            return 2;
+        }
+
+        return 0;
     }
 
     public function getSeoTitleAttribute()
@@ -369,7 +366,7 @@ class Product extends Model
             'conception_year' => $this->extractYear($this->conception_year),
             'conception_year_as_text' => $this->conception_year ? (string) $this->conception_year : null,
             'images' => $this->searchableImages,
-            'image_quality_score' => $this->imageQualityScore,
+            'image_quality_score' => $this->imageQualityScore(),
             'style' => $this->searchableStyle,
             'materials' => $this->searchableMaterials,
             'production_origin' => $this->searchableProductionOrigin,
