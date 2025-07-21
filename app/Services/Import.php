@@ -268,8 +268,11 @@ class Import
                     'photographer' => $imageDetails['photographer'] ?? '',
                     'is_poster' => $imageDetails['is_poster'] ?? false,
                     'is_prime_quality' => $imageDetails['is_prime_quality'],
+                    'is_documentation_quality' => $imageDetails['is_documentation_quality'],
+                    'has_marking' => $imageDetails['has_marking'],
                     'license' => $isPublicDomain && strpos($imageDetails['photographer'], 'Bideau') !== false ? 'pub' : 'perso',
-                    'update_date' => $imageDetails['update_date']
+                    'update_date' => $imageDetails['update_date'],
+                    'zetcom_image_id' => $img['imgId']
                 ];
             })
             ->map(function ($img) use ($product) {
