@@ -80,9 +80,17 @@ function Types(props) {
 }
 
 function Period(props) {
-  return props.period && props.period.name ? (
-    <DataUnitTemplate label="Époque" value={props.period.name} />
-  ) : null;
+  if (!props.period || !props.period.name) return null;
+  const { name, startYear, endYear } = props.period;
+  const hasDateAtEnd = /\(\d{4}\s*-\s*\d{4}\)$/.test(name);
+  const dateRange =
+      !hasDateAtEnd && startYear && endYear ? ` (${startYear} - ${endYear})` : '';
+  return (
+      <DataUnitTemplate
+          label="Époque"
+          value={`${name}${dateRange}`}
+      />
+  );
 }
 
 function Materials(props) {

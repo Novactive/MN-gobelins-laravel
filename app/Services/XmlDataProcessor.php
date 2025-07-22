@@ -74,12 +74,12 @@ class XmlDataProcessor
                 'category' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjCategoryVoc"]/zetcom:vocabularyReferenceItem/@name'),
                 'denomination' => $this->extractValue($item, './zetcom:vocabularyReference[@name="ObjClassificationVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
                 'title_or_designation' => implode("\n", $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjObjectTitleGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="TitleTxt"]/zetcom:value', true) ?? []),
-                'period_legacy_id' => $this->extractValue($item, './zetcom:vocabularyReference[@name="ObjPeriodVoc"]/zetcom:vocabularyReferenceItem/@name')
-                    ?: $this->extractValue($item,'./zetcom:vocabularyReference[@name="PeriodVoc"]/zetcom:vocabularyReferenceItem/@name'),
-                'period_name' => $this->extractValue($item, './zetcom:vocabularyReference[@name="ObjPeriodVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue')
-                    ?: $this->extractValue($item,'./zetcom:vocabularyReference[@name="PeriodVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
-                'period_start_year' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDateGrp"]/zetcom:repeatableGroupItem[zetcom:dataField[@name="SortLnu"]/zetcom:value="1"]/zetcom:dataField[@name="DateFromTxt"]/zetcom:value'),
-                'period_end_year' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDateGrp"]/zetcom:repeatableGroupItem[zetcom:dataField[@name="SortLnu"]/zetcom:value="1"]/zetcom:dataField[@name="DateToTxt"]/zetcom:value'),
+                'period_legacy_id' => $this->extractValue($item, './/zetcom:vocabularyReference[@name="ObjPeriodVoc"]/zetcom:vocabularyReferenceItem/@name')
+                    ?: $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDateGrp"]/zetcom:repeatableGroupItem/zetcom:vocabularyReference[@name="PeriodVoc"]/zetcom:vocabularyReferenceItem/@name'),
+                'period_name' => $this->extractValue($item, './/zetcom:vocabularyReference[@name="ObjPeriodVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue')
+                    ?: $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDateGrp"]/zetcom:repeatableGroupItem/zetcom:vocabularyReference[@name="PeriodVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
+                'period_start_year' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDateGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="DateFromTxt"]/zetcom:value'),
+                'period_end_year' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDateGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="DateToTxt"]/zetcom:value'),
                 'product_type' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjCategoryOnlineVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
                 'description' => stripos($diffusion, 'description') !== false ? $this->extractValue($item, './zetcom:repeatableGroup[@name="ObjCurrentDescriptionGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="DescriptionClb"]/zetcom:value') : '',
                 'obj_literature_ref' => $this->extractValue($item,'./zetcom:moduleReference[@name="ObjLiteratureRef"]/zetcom:moduleReferenceItem/@moduleItemId', true),

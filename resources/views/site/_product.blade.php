@@ -136,7 +136,18 @@ $orientation = $first_img['width'] < $first_img['height'] ? 'portrait' : 'landsc
                     @unless(empty($product['period_name']))
                     <div class="DetailData__unit">
                         <dt class="DetailData__label">Époque</dt>
-                        <dd class="DetailData__datum">{{ $product['period_name'] }}</dd>
+                        @php
+                            $name = $product['period_name'] ?? '';
+                            $start = $product['period_start_year'] ?? '';
+                            $end = $product['period_end_year'] ?? '';
+                            $hasDateAtEnd = preg_match('/\(\d{4}\s*-\s*\d{4}\)$/', $name);
+                        @endphp
+                        <dd class="DetailData__datum">
+                            {{ $name }}
+                            @if (!$hasDateAtEnd && !empty($start) && !empty($end))
+                                ({{ $start }} - {{ $end }})
+                            @endif
+                        </dd>
                     </div>
                     @endunless
                     @unless(empty($product['materials']))
