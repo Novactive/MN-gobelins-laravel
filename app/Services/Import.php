@@ -26,7 +26,7 @@ class Import
      * @param $item
      * @return void
      */
-    public function execute($item)
+    public function execute($item, $skipImageDownload = false)
     {
 
         $productsToBeIndexed = Redis::smembers('products_to_be_indexed');
@@ -107,7 +107,7 @@ class Import
             $product->images->map(function ($img) {
                 $img->delete();
             });
-            $this->importImages($product, $item['images'], $isPublicDomain);
+            $this->importImages($product, $item['images'], $isPublicDomain, $skipImageDownload);
 
             //Product Type
             if ($item['product_type']) {
@@ -247,7 +247,7 @@ class Import
      * @param array $images
      * @return void
      */
-    private function importImages(&$product, array $images, bool $isPublicDomain = false) {
+    private function importImages(&$product, array $images, bool $isPublicDomain = false, $skipImageDownload = false) {
 
         $images = collect($images)
             ->map(function ($imgId) {
@@ -260,10 +260,12 @@ class Import
             ->filter(function ($img) {
                 return $this->dataProcessor->isImagePublishable($img['moduleXml']);
             })
-            ->map(function ($img) use ($isPublicDomain) {
+            ->map(function ($img) use ($isPublicDomain, $skipImageDownload) {
                 $imageDetails = $this->dataProcessor->processMultimediaData($img['moduleXml']);
+                // On tente de deviner le nom du fichier à partir du moduleXml ou d'une méthode utilitaire
+                $path = $this->zetcomService->getImage($img['imgId'], $skipImageDownload);
                 return [
-                    'path' => $this->zetcomService->getImage($img['imgId']),
+                    'path' => $path,
                     'is_published' => true,
                     'photographer' => $imageDetails['photographer'] ?? '',
                     'is_poster' => $imageDetails['is_poster'] ?? false,
