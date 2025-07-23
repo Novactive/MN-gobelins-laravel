@@ -121,7 +121,7 @@ class ZetcomService
      * @return false|mixed
      * @throws Exception
      */
-    public function getImage($id)
+    public function getImage($id, $skipIfExists = false)
     {
         $response = $this->callEndpoint('get', "/module/Multimedia/$id/attachment", [
             'headers' => [
@@ -147,6 +147,9 @@ class ZetcomService
             File::makeDirectory($directory, 0755, true, true);
         }
         $filePath = $directory . $fileName;
+        if ($skipIfExists && file_exists($filePath) && @getimagesize($filePath)) {
+            return $fileName;
+        }
         $isSaved= file_put_contents($filePath, $response->body());
 
         if ($isSaved === false || !file_exists($filePath)) {

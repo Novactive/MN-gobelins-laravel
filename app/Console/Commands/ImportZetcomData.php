@@ -16,7 +16,7 @@ class ImportZetcomData extends Command
      *
      * @var string
      */
-    protected $signature = 'gobelins:import:zetcom {--all : Import globale} {--offset=} {--limit=} {--objectIds=}';
+    protected $signature = 'gobelins:import:zetcom {--all : Import globale} {--offset=} {--limit=} {--objectIds=} {--skip-image-download : Ignore le téléchargement des images si elles existent déjà}';
 
     /**
      * The console command description.
@@ -61,6 +61,7 @@ class ImportZetcomData extends Command
         $limit = $all ? (int)$this->option('limit') : null;
         $offset = $all ? (int)$this->option('offset') : 0;
         $objectIds = !empty($this->option('objectIds')) ? $this->option('objectIds') : null;
+        $skipImageDownload = (bool)$this->option('skip-image-download');
 
         if ($all && !$limit) {
             $this->error("Importer tous les produits sans limite et offset n'est pas faisable !");
@@ -76,12 +77,17 @@ class ImportZetcomData extends Command
                 $modulesXml = $this->zetcomService->getSingleModule('Object', $objectId);
                 $aObject = $this->dataProcessor->processObjectsData($modulesXml);
                 if (!empty($aObject[0])) {
-                    $objects[] = $aObject[0];
+                    $obj = $aObject[0];
+                    $obj['skip_image_download'] = $skipImageDownload;
+                    $objects[] = $obj;
                 }
             }
         } else {
             $modulesXml = $this->zetcomService->getModifiedModules(self::MODULE_NAME, $all, $limit, $offset);
             $objects = $this->dataProcessor->processObjectsData($modulesXml);
+            foreach ($objects as &$obj) {
+                $obj['skip_image_download'] = $skipImageDownload;
+            }
         }
 
         $this->objectsImport($objects);

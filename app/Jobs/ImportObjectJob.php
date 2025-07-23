@@ -34,6 +34,6 @@ class ImportObjectJob implements ShouldQueue
     public function handle()
     {
         $import = \app(Import::class);
-        $import->execute($this->object);
+        $import->execute($this->object, $this->object['skip_image_download'] ?? false);
     }
 }
