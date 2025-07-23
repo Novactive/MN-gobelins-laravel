@@ -10,7 +10,6 @@ use App\Models\ProductType;
 use App\Models\Style;
 use App\Models\ProductionOrigin;
 use App\Models\Product;
-use App\Models\Period;
 
 class FiltersComposer
 {
@@ -69,15 +68,13 @@ class FiltersComposer
                                         })->toTree();
 
             $product_types = ProductType::withCount('products')
-                                        ->with('descendants')
-                                        ->get()
-                                        ->filter(function ($pt) {
-                                            return $pt->children->isNotEmpty() ||  ($pt->children->isEmpty() && $pt->products_count > 0);
-                                        });
-            $collator = new \Collator('fr_FR');
-            $product_types = $product_types->sort(function($a, $b) use ($collator) {
-                return $collator->compare($a->name, $b->name);
-            })->values()->toTree();
+                ->with('descendants')
+                ->orderBy('id', 'asc')
+                ->get()
+                // We must filter manually, because using ::has('products') will remove root items.
+                ->filter(function ($pt) {
+                    return $pt->children->isNotEmpty() ||  ($pt->children->isEmpty() && $pt->products_count > 0);
+                })->toTree();
 
             return collect([
                 'productTypes' => $product_types,
