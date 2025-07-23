@@ -23,7 +23,7 @@ RUN apt-get install -y libpq-dev libssl-dev && \
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --2
 
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - &&  \
+RUN curl -sL https://deb.nodesource.com/setup_22.x | bash - &&  \
 	apt-get install -y nodejs && \
 	npm install --global yarn
 

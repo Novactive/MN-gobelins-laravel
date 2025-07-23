@@ -172,9 +172,8 @@ class Import
                 $style = \App\Models\Style::mappedFrom('numepo', (string) $item['period_legacy_id'])->first()) {
                 // associate the product to the style related to the period
                 $product->style()->associate($style);
-            } else {
+            } elseif (!empty($item['conception_year'])) {
                 // Fallback to conception year.
-                if ($item['conception_year']) {
                     $style = \App\Models\Style::where([
                         ['start_year', '<=', (int)$item['conception_year']],
                         ['end_year', '>=', (int)$item['conception_year']]
@@ -182,7 +181,8 @@ class Import
                     if ($style) {
                         $product->style()->associate($style);
                     }
-                }
+            }else{
+                $product->style()->dissociate();
             }
 
             // Materials
