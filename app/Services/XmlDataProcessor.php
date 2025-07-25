@@ -147,6 +147,7 @@ class XmlDataProcessor
             'isni_uri' => $this->extractValue($PersonItem,'//zetcom:repeatableGroup[@name="PerURLGrp"]/zetcom:repeatableGroupItem[zetcom:vocabularyReference[@name="TypeVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue="ISNI"]/zetcom:dataField[@name="AddressTxt"]/zetcom:value'),
             'biography' => $this->extractValue($PersonItem,'//zetcom:dataField[@name="PerNotesClb"]/zetcom:value'),
             'right_type' => $this->extractValue($PersonItem,'//zetcom:repeatableGroup[@name="PerRightsGrp"]/zetcom:repeatableGroupItem/zetcom:vocabularyReference[@name="TypeVoc" and @id="'.$productId.'"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue')
+                ?? $this->extractValue($PersonItem,'//zetcom:repeatableGroup[@name="PerRightsGrp"]/zetcom:repeatableGroupItem/zetcom:vocabularyReference[@name="TypeVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue')
         ];
     }
 
