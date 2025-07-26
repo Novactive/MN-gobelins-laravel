@@ -325,6 +325,7 @@ class Import
                         'deathplace' => (string)$author['deathplace'],
                         'isni_uri' => (string)$author['isni_uri'],
                         'biography' => (string)$author['biography'],
+                        'right_type' => (string)$author['right_type'],
                     ]
                 );
 
@@ -363,14 +364,15 @@ class Import
 
     }
 
-    public function isPublicDomain($authors)
+    public function isPublicDomain($authors): bool
     {
         foreach ($authors as $author) {
-            if (strpos($author['right_type'], 'domaine public') === false) {
-                return false;
+            if (stripos($author->right_type, 'domaine public') !== false) {
+                return true;
             }
         }
-        return true;
+
+        return false;
     }
 
 }
