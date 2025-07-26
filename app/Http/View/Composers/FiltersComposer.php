@@ -144,7 +144,7 @@ class FiltersComposer
                     ],
                 ],
                 'materials' => $materials,
-                'productionOrigins' => ProductionOrigin::all(),
+                'productionOrigins' => ProductionOrigin::allowed()->get(),
                 'dimensions' => [
                     'max_height_or_thickness' => ceil(Product::max('height_or_thickness')),
                     'max_depth_or_width' => ceil(Product::max('depth_or_width')),
