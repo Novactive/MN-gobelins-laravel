@@ -308,6 +308,13 @@ class Import
         return collect($authorIds)->map(function ($auId) use ($productId) {
                 $authorXml = $this->zetcomService->getSingleModule('Person', $auId);
                 $author = $this->dataProcessor->processPersonData($authorXml, $productId);
+                
+                // Vérifier si processPersonData a retourné null
+                if ($author === null) {
+                    Log::error("Impossible de traiter les données de l'auteur $auId pour le produit $productId");
+                    return null;
+                }
+                
                 $legacyId = $author['legacy_id'] ? (int)$author['legacy_id'] : (int)$author['id'];
                 $author = \App\Models\Author::updateOrCreate(
                     ['legacy_id' => $legacyId],
@@ -333,6 +340,9 @@ class Import
                 Log::info("L'auteur " . $author['id'] . " a été mis à jour/ajouté");
 
                 return $author;
+            })
+            ->filter(function ($author) {
+                return $author !== null; // Filtrer les auteurs null
             });
     }
 
