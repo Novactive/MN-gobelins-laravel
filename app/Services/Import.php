@@ -124,8 +124,8 @@ class Import
                     [
                         'legacy_id' => $item['period_legacy_id'],
                         'name' => $item['period_name'],
-                        'start_year' => $item['period_start_year'] ?? null,
-                        'end_year' => $item['period_end_year'] ?? null,
+                        'start_year' => $this->extractYearFromDate($item['period_start_year']),
+                        'end_year' => $this->extractYearFromDate($item['period_end_year']),
                     ]
                 );
 
@@ -375,4 +375,27 @@ class Import
         return false;
     }
 
+    /**
+     * Extract year from a date string
+     *
+     * @param string|null $dateString
+     * @return int|null
+     */
+    private function extractYearFromDate($dateString)
+    {
+        if (empty($dateString)) {
+            return null;
+        }
+
+        try {
+            $date = new \DateTime($dateString);
+            return (int) $date->format('Y');
+        } catch (\Exception $e) {
+            // If the date format is invalid, try to extract year using regex
+            if (preg_match('/(\d{4})/', $dateString, $matches)) {
+                return (int) $matches[1];
+            }
+            return null;
+        }
+    }
 }

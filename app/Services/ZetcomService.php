@@ -123,60 +123,75 @@ class ZetcomService
      */
     public function getImage($id, $skipIfExists = false)
     {
-        $response = $this->callEndpoint('get', "/module/Multimedia/$id/attachment", [
-            'headers' => [
-                'Accept' => 'application/octet-stream'
-            ]
-        ]);
+        try{
+            $response = $this->callEndpoint('get', "/module/Multimedia/$id/attachment", [
+                'headers' => [
+                    'Accept' => 'application/octet-stream'
+                ]
+            ]);
 
-        $fileName = null;
-        if ($response->hasHeader('Content-Disposition')) {
-            $contentDisposition = $response->getHeader('Content-Disposition')[0];
-            if (preg_match('/filename=(.+)/', $contentDisposition, $matches)) {
-                $fileName = $matches[1];
+            $fileName = null;
+            if ($response->hasHeader('Content-Disposition')) {
+                $contentDisposition = $response->getHeader('Content-Disposition')[0];
+                if (preg_match('/filename=(.+)/', $contentDisposition, $matches)) {
+                    $fileName = $matches[1];
+                }
             }
-        }
 
-        if (!$fileName) {
-            Log::error("Image ($id) has no content ");
-            return false;
-        }
+            if (!$fileName) {
+                Log::error("Image ($id) has no content ");
+                return false;
+            }
 
-        $directory = public_path('media/xl/');
-        if (!File::exists($directory)) {
-            File::makeDirectory($directory, 0755, true, true);
-        }
-        $filePath = $directory . $fileName;
-        if ($skipIfExists && file_exists($filePath) && @getimagesize($filePath)) {
+            // Vérifier l'extension du fichier
+            $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+            if (!in_array($extension, $allowedExtensions)) {
+                Log::error("Fichier non-image détecté ($fileName) pour l'ID: $id");
+                return false;
+            }
+
+            $directory = public_path('media/xl/');
+            if (!File::exists($directory)) {
+                File::makeDirectory($directory, 0755, true, true);
+            }
+            $filePath = $directory . $fileName;
+            if ($skipIfExists && file_exists($filePath) && @getimagesize($filePath)) {
+                return $fileName;
+            }
+            $isSaved= file_put_contents($filePath, $response->body());
+
+            if ($isSaved === false || !file_exists($filePath)) {
+                Log::error("L'image n'a pas pu être enregistrée sur le chemin : $filePath");
+                throw new \Exception("L'image n'a pas pu être enregistrée sur le chemin : $filePath");
+            }
+            $response->getBody()->close();
+
+            if (!@getimagesize($filePath)) {
+                unlink($filePath);
+                Log::error("Le fichier enregistré n'est pas une image valide : $filePath");
+                throw new \Exception("Le fichier enregistré n'est pas une image valide : $filePath");
+            }
+
+            // Appliquer l’orientation réelle
+            exec("mogrify -auto-orient \"$filePath\"");
+
+            // Redimensionner l'image à max 1500px (largeur ou hauteur)
+            exec("convert \"$filePath\" -resize '1500x1500>' \"$filePath\"");
+
+            // Supprimer les métadonnées EXIF
+            exec("exiftool -overwrite_original -all= \"$filePath\"");
+
+            // Optimiser l'image JPEG
+            exec("jpegoptim --strip-all --max=100 \"$filePath\"");
+
             return $fileName;
         }
-        $isSaved= file_put_contents($filePath, $response->body());
-
-        if ($isSaved === false || !file_exists($filePath)) {
-            Log::error("L'image n'a pas pu être enregistrée sur le chemin : $filePath");
-            throw new \Exception("L'image n'a pas pu être enregistrée sur le chemin : $filePath");
-        }
-        $response->getBody()->close();
-
-        if (!@getimagesize($filePath)) {
-            unlink($filePath);
-            Log::error("Le fichier enregistré n'est pas une image valide : $filePath");
-            throw new \Exception("Le fichier enregistré n'est pas une image valide : $filePath");
+        catch (Exception $e) {
+            Log::error($e->getMessage());
         }
 
-        // Appliquer l’orientation réelle
-        exec("mogrify -auto-orient \"$filePath\"");
-
-        // Redimensionner l'image à max 1500px (largeur ou hauteur)
-        exec("convert \"$filePath\" -resize '1500x1500>' \"$filePath\"");
-
-        // Supprimer les métadonnées EXIF
-        exec("exiftool -overwrite_original -all= \"$filePath\"");
-
-        // Optimiser l'image JPEG
-        exec("jpegoptim --strip-all --max=100 \"$filePath\"");
-
-        return $fileName;
     }
 
     /**
