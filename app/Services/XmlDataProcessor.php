@@ -120,7 +120,14 @@ class XmlDataProcessor
      */
     public function processPersonData($moduleXml, int $productId)
     {
-        $PersonItem = $this->parseXml($moduleXml)[0];
+        $parsedXml = $this->parseXml($moduleXml);
+        
+        if (empty($parsedXml)) {
+            Log::error("Aucun élément XML trouvé pour processPersonData avec productId: $productId");
+            return null;
+        }
+        
+        $PersonItem = $parsedXml[0];
 
         $PersonItem->registerXPathNamespace('zetcom', $this->moduleNamspace);
         $personType = $this->extractValue($PersonItem, '//zetcom:vocabularyReference[@name="PerTypeVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue');
@@ -157,7 +164,14 @@ class XmlDataProcessor
      */
     public function processMultimediaData($moduleXml): array
     {
-        $multimediaItem = $this->parseXml($moduleXml)[0];
+        $parsedXml = $this->parseXml($moduleXml);
+        
+        if (empty($parsedXml)) {
+            Log::error("Aucun élément XML trouvé pour processMultimediaData");
+            return [];
+        }
+        
+        $multimediaItem = $parsedXml[0];
         $communication = $this->extractValue($multimediaItem, '//zetcom:vocabularyReference[@name="MulCommunicationVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue');
 
         return [
@@ -176,7 +190,14 @@ class XmlDataProcessor
      */
     public function processConservationData($moduleXml)
     {
-        $multimediaItem = $this->parseXml($moduleXml)[0];
+        $parsedXml = $this->parseXml($moduleXml);
+        
+        if (empty($parsedXml)) {
+            Log::error("Aucun élément XML trouvé pour processConservationData");
+            return null;
+        }
+        
+        $multimediaItem = $parsedXml[0];
 
         return $this->extractValue($multimediaItem, '//zetcom:vocabularyReference[@name="ConCoveringVoc"]/zetcom:vocabularyReferenceItem/@name') ?? null;
     }
@@ -249,8 +270,14 @@ class XmlDataProcessor
      * @return bool
      */
     public function isImagePublishable($moduleXml) {
-
-        $multimediaItem = $this->parseXml($moduleXml)[0];
+        $parsedXml = $this->parseXml($moduleXml);
+        
+        if (empty($parsedXml)) {
+            Log::error("Aucun élément XML trouvé pour isImagePublishable");
+            return false;
+        }
+        
+        $multimediaItem = $parsedXml[0];
         $mulInternetVoc = $this->extractValue($multimediaItem, '//zetcom:vocabularyReference[@name="MulInternetVoc"]/zetcom:vocabularyReferenceItem/@name');
 
         if ($mulInternetVoc == "yes") {
@@ -266,7 +293,14 @@ class XmlDataProcessor
      */
     public function getLiteratureItem($moduleXml)
     {
-        $LiteratureItem = $this->parseXml($moduleXml)[0];
+        $parsedXml = $this->parseXml($moduleXml);
+        
+        if (empty($parsedXml)) {
+            Log::error("Aucun élément XML trouvé pour getLiteratureItem");
+            return "";
+        }
+        
+        $LiteratureItem = $parsedXml[0];
 
         return $this->extractValue($LiteratureItem, '//zetcom:dataField[@name="LitCitationClb"]/zetcom:value') ?? "";
     }
