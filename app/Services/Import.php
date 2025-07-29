@@ -115,6 +115,8 @@ class Import
                 if ($productType) {
                     $product->productType()->associate($productType);
                 }
+            } else {
+                $product->productType()->dissociate();
             }
 
             // Period
