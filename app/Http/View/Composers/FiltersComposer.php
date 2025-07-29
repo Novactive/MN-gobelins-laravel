@@ -24,7 +24,6 @@ class FiltersComposer
                 ->map(function ($item) {
                     $item->first_name = mb_convert_encoding($item->first_name, 'UTF-8', 'UTF-8');
                     $item->last_name = mb_convert_encoding($item->last_name, 'UTF-8', 'UTF-8');
-                    $item->last_name = ucwords(strtolower($item->last_name));
                     return $item;
                 });
 
