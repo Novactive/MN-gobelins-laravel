@@ -121,13 +121,16 @@ class Import
 
             // Period
             if ($item['period_legacy_id']) {
+                $startYear = $item['period_start_year'];
+                $endYear = $item['period_end_year'];
+                $name = $item['period_name'];
                 $period = \App\Models\Period::updateOrCreate(
                     ['legacy_id' => $item['period_legacy_id']],
                     [
                         'legacy_id' => $item['period_legacy_id'],
-                        'name' => $item['period_name'],
-                        'start_year' => $this->extractYearFromDate($item['period_start_year']),
-                        'end_year' => $this->extractYearFromDate($item['period_end_year']),
+                        'name' => $name,
+                        'start_year' => empty($startYear) ? $this->extractYear($name, 'start') : $this->extractYear($startYear),
+                        'end_year' => empty($endYear) ? $this->extractYear($name, 'end') : $this->extractYear($endYear),
                     ]
                 );
 
@@ -390,21 +393,37 @@ class Import
     /**
      * Extract year from a date string
      *
-     * @param string|null $dateString
+     * @param string|null $value
+     * @param string|null $indice
      * @return int|null
      */
-    private function extractYearFromDate($dateString)
+    private function extractYear($value, $indice = null)
     {
-        if (empty($dateString)) {
+        if(is_numeric($value)){
+            return (int) $value;
+        }
+        if (empty($value)) {
             return null;
         }
 
+        // Si l'indice est spécifié, essayer d'extraire l'année depuis une chaîne comme "Louis XVI (1774-1792)"
+        if ($indice !== null) {
+            // Pattern pour "Louis XVI (1774-1792)" ou "le Louis XVI (1774-1792)"
+            if (preg_match('/\((\d{4})-(\d{4})\)/', $value, $matches)) {
+                if ($indice === 'start') {
+                    return (int) $matches[1];
+                } elseif ($indice === 'end') {
+                    return (int) $matches[2];
+                }
+            }
+        }
+
         try {
-            $date = new \DateTime($dateString);
+            $date = new \DateTime($value);
             return (int) $date->format('Y');
         } catch (\Exception $e) {
             // If the date format is invalid, try to extract year using regex
-            if (preg_match('/(\d{4})/', $dateString, $matches)) {
+            if (preg_match('/(\d{4})/', $value, $matches)) {
                 return (int) $matches[1];
             }
             return null;
