@@ -67,7 +67,7 @@ return [
 
     'indices' => [
 
-        'gobelins_search_1' => [
+        'gobelins_search_3' => [
 
             'aliases' => [
                 'gobelins_search'
