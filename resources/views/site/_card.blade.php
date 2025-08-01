@@ -1,6 +1,6 @@
 @if($article)
     <li class="Card @if($article->present()->isNew()) is-new @endif">
-        @if($article->hasImage('cover'))
+        @if ($article->hasImage('cover', $orientation ?? 'recirculation'))
             <figure class="Card__fig">
                 <img src="{{ $article->image('cover', ($orientation ?? 'recirculation')) }}" alt="{{ $article->imageAltText('cover') }}" class="Card__img">
             </figure>
