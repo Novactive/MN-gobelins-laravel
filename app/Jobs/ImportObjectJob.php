@@ -33,6 +33,7 @@ class ImportObjectJob implements ShouldQueue
      */
     public function handle()
     {
+        ini_set('memory_limit', '1G');
         $import = \app(Import::class);
         $import->execute($this->object, $this->object['skip_image_download'] ?? false);
     }
