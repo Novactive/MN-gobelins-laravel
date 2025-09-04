@@ -48,15 +48,15 @@ class Import
             // We only post to ES once we have all the products saved (see above).
             $inventoryId = $item['inventory_root'] . '-' . ((!isset($item['inventory_number']) || $item['inventory_number'] == 0) ? "000" : $item['inventory_number']) . '-' .
                 ((!isset($item['inventory_suffix']) || $item['inventory_suffix'] == 0) ? "000" : $item['inventory_suffix']) .($item['inventory_suffix2'] ? "-" . $item['inventory_suffix2'] : '');
-
+            $zetcomProductId = (int)$item['id'];
             $product = null;
-            \App\Models\Product::withoutSyncingToSearch(function () use (&$product, $item, $inventoryId) {
+            \App\Models\Product::withoutSyncingToSearch(function () use (&$product, $item, $inventoryId,$zetcomProductId) {
                 $product = \App\Models\Product::updateOrCreate(
                     //with auth "GMT-11047-001"
-                    ['inventory_id' => $inventoryId],
+                    ['zetcom_product_id' => $zetcomProductId],
                     [
                         'inventory_id' => $inventoryId,
-                        'zetcom_product_id' => (int)$item['id'],
+                        'zetcom_product_id' => $zetcomProductId,
                         'inventory_root' => (string)$item['inventory_root'],
                         'inventory_number' => (int)$item['inventory_number'] ?? 0,
                         'inventory_suffix' => (int)$item['inventory_suffix'] ?? 0,
@@ -73,7 +73,7 @@ class Import
                         'denomination' => (string)$item['denomination'],
                         'title_or_designation' => (string)$item['title_or_designation'],
                         'description' => (string)$item['description'],
-                        'bibliography' => $this->getBibliography($item['obj_literature_ref'] ?? [], $item['pages_ref_txt'] ?? [], $item['obj_literature_clb'] ?? ''),
+                        'bibliography' => $this->getBibliography($item['obj_literature_ref'] ?? [], $item['obj_literature_clb'] ?? ''),
                         'is_published' => (bool)$item['is_publishable'],
                         'publication_code' => (string)$item['publication_code'],
                         'dim_order' => (string)$item['dim_order'],
@@ -353,24 +353,23 @@ class Import
 
     /**
      * @param array $objLiteratureRef
-     * @param array $pagesRefTxt
      * @param string $objLiteratureClb
      * @return string
      * @throws \Exception
      */
-    private function getBibliography(array $objLiteratureRef, array $pagesRefTxt, string $objLiteratureClb) {
+    private function getBibliography(array $objLiteratureRef, string $objLiteratureClb) {
 
         $bibliography = "";
-
-        foreach ($objLiteratureRef as $key => $objLiteratureId) {
+        foreach ($objLiteratureRef as $literatureRef) {
+            $objLiteratureId = $literatureRef['id'];
+            $pageRefTxt = $literatureRef['page'];
             $literatureXml = $this->zetcomService->getSingleModule('Literature', (int)$objLiteratureId);
             $litCitationClb = $this->dataProcessor->getLiteratureItem($literatureXml);
 
             if ($litCitationClb === ""){
                 continue;
             }
-
-            $bibliography .= $litCitationClb . (isset($pagesRefTxt[$key]) ? ", p.$pagesRefTxt[$key] " : "") . "\n";
+            $bibliography .= $litCitationClb . (!empty($pageRefTxt) ? ", p. $pageRefTxt " : "") . "\n";
         }
 
         $bibliography .= $objLiteratureClb;
