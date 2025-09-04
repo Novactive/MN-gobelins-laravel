@@ -73,7 +73,7 @@ class Import
                         'denomination' => (string)$item['denomination'],
                         'title_or_designation' => (string)$item['title_or_designation'],
                         'description' => (string)$item['description'],
-                        'bibliography' => $this->getBibliography($item['obj_literature_ref'] ?? [], $item['pages_ref_txt'] ?? [], $item['obj_literature_clb'] ?? ''),
+                        'bibliography' => $this->getBibliography($item['obj_literature_ref'] ?? [], $item['obj_literature_clb'] ?? ''),
                         'is_published' => (bool)$item['is_publishable'],
                         'publication_code' => (string)$item['publication_code'],
                         'dim_order' => (string)$item['dim_order'],
@@ -353,24 +353,23 @@ class Import
 
     /**
      * @param array $objLiteratureRef
-     * @param array $pagesRefTxt
      * @param string $objLiteratureClb
      * @return string
      * @throws \Exception
      */
-    private function getBibliography(array $objLiteratureRef, array $pagesRefTxt, string $objLiteratureClb) {
+    private function getBibliography(array $objLiteratureRef, string $objLiteratureClb) {
 
         $bibliography = "";
-
-        foreach ($objLiteratureRef as $key => $objLiteratureId) {
+        foreach ($objLiteratureRef as $literatureRef) {
+            $objLiteratureId = $literatureRef['id'];
+            $pageRefTxt = $literatureRef['page'];
             $literatureXml = $this->zetcomService->getSingleModule('Literature', (int)$objLiteratureId);
             $litCitationClb = $this->dataProcessor->getLiteratureItem($literatureXml);
 
             if ($litCitationClb === ""){
                 continue;
             }
-
-            $bibliography .= $litCitationClb . (isset($pagesRefTxt[$key]) ? ", p.$pagesRefTxt[$key] " : "") . "\n";
+            $bibliography .= $litCitationClb . (!empty($pageRefTxt) ? ", p. $pageRefTxt " : "") . "\n";
         }
 
         $bibliography .= $objLiteratureClb;
