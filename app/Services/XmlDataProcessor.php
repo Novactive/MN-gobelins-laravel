@@ -44,7 +44,7 @@ class XmlDataProcessor
 
         foreach ($moduleItems as $item) {
 
-            $inventoryRoot = $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjObjectNumberGrp"]/zetcom:repeatableGroupItem[zetcom:vocabularyReference[@name="DenominationVoc"]/zetcom:vocabularyReferenceItem[@name="objInvNumber"]]/zetcom:dataField[@name="Part1Txt"]/zetcom:value');
+            $inventoryRoot = $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjObjectNumberGrp"]/zetcom:repeatableGroupItem[zetcom:vocabularyReference[@name="DenominationVoc"]/zetcom:vocabularyReferenceItem[@name="objInvNumber"] and zetcom:dataField[@name="Part2Txt"]]/zetcom:dataField[@name="Part1Txt"]/zetcom:value');
             $diffusion = $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjInternetVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue');
             $dimensions = [
                 'WidthNum' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDimAllGrp"]/zetcom:repeatableGroupItem[zetcom:dataField[@name="SortLnu"]/zetcom:value="1"]/zetcom:dataField[@name="WidthNum"]/zetcom:value'),

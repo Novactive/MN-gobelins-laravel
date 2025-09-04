@@ -48,15 +48,15 @@ class Import
             // We only post to ES once we have all the products saved (see above).
             $inventoryId = $item['inventory_root'] . '-' . ((!isset($item['inventory_number']) || $item['inventory_number'] == 0) ? "000" : $item['inventory_number']) . '-' .
                 ((!isset($item['inventory_suffix']) || $item['inventory_suffix'] == 0) ? "000" : $item['inventory_suffix']) .($item['inventory_suffix2'] ? "-" . $item['inventory_suffix2'] : '');
-
+            $zetcomProductId = (int)$item['id'];
             $product = null;
-            \App\Models\Product::withoutSyncingToSearch(function () use (&$product, $item, $inventoryId) {
+            \App\Models\Product::withoutSyncingToSearch(function () use (&$product, $item, $inventoryId,$zetcomProductId) {
                 $product = \App\Models\Product::updateOrCreate(
                     //with auth "GMT-11047-001"
-                    ['inventory_id' => $inventoryId],
+                    ['zetcom_product_id' => $zetcomProductId],
                     [
                         'inventory_id' => $inventoryId,
-                        'zetcom_product_id' => (int)$item['id'],
+                        'zetcom_product_id' => $zetcomProductId,
                         'inventory_root' => (string)$item['inventory_root'],
                         'inventory_number' => (int)$item['inventory_number'] ?? 0,
                         'inventory_suffix' => (int)$item['inventory_suffix'] ?? 0,
