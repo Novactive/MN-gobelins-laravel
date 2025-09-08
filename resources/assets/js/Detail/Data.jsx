@@ -49,10 +49,11 @@ function Authors(props) {
 }
 
 function ConceptionYear(props) {
-  return props.conceptionYear ? (
+  const value = props.conceptionYearAsText || props.conceptionYear;
+  return value ? (
     <DataUnitTemplate
       label="Année de conception"
-      value={props.conceptionYear}
+      value={value}
     />
   ) : null;
 }
@@ -195,7 +196,10 @@ function Data(props) {
       <div className="DetailData__columns">
         <InventoryId inventoryId={props.product.inventory_id} />
         <Authors authors={props.product.authors} />
-        <ConceptionYear conceptionYear={props.product.conception_year} />
+        <ConceptionYear 
+          conceptionYear={props.product.conception_year}
+          conceptionYearAsText={props.product.conception_year_as_text}
+        />
         <Style style={props.product.style} />
         <Types types={props.product.product_types} />
         <Period
