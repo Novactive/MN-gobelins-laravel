@@ -44,7 +44,7 @@ class XmlDataProcessor
 
         foreach ($moduleItems as $item) {
 
-            $inventoryRoot = $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjObjectNumberGrp"]/zetcom:repeatableGroupItem[zetcom:vocabularyReference[@name="DenominationVoc"]/zetcom:vocabularyReferenceItem[@name="objInvNumber"]]/zetcom:dataField[@name="Part1Txt"]/zetcom:value');
+            $inventoryRoot = $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjObjectNumberGrp"]/zetcom:repeatableGroupItem[zetcom:vocabularyReference[@name="DenominationVoc"]/zetcom:vocabularyReferenceItem[@name="objInvNumber"] and zetcom:dataField[@name="Part2Txt"]]/zetcom:dataField[@name="Part1Txt"]/zetcom:value');
             $diffusion = $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjInternetVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue');
             $dimensions = [
                 'WidthNum' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDimAllGrp"]/zetcom:repeatableGroupItem[zetcom:dataField[@name="SortLnu"]/zetcom:value="1"]/zetcom:dataField[@name="WidthNum"]/zetcom:value'),
@@ -82,9 +82,8 @@ class XmlDataProcessor
                 'period_end_year' => $this->extractValue($item,'./zetcom:repeatableGroup[@name="ObjDateGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="DateToTxt"]/zetcom:value'),
                 'product_type' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjCategoryOnlineVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue'),
                 'description' => stripos($diffusion, 'description') !== false ? $this->extractValue($item, './zetcom:repeatableGroup[@name="ObjCurrentDescriptionGrp"]/zetcom:repeatableGroupItem/zetcom:dataField[@name="DescriptionClb"]/zetcom:value') : '',
-                'obj_literature_ref' => $this->extractValue($item,'./zetcom:moduleReference[@name="ObjLiteratureRef"]/zetcom:moduleReferenceItem/@moduleItemId', true),
+                'obj_literature_ref' => $this->extractLiteratureReferencesWithPages($item),
                 'obj_literature_clb' => $this->extractValue($item,'./zetcom:dataField[@name="ObjLiteratureClb"]/zetcom:value'),
-                'pages_ref_txt' => $this->extractValue($item,'./zetcom:moduleReference[@name="ObjLiteratureRef"]/zetcom:moduleReferenceItem/zetcom:dataField[@name="PageRefTxt"]/zetcom:value', true),
                 'created_at' => $this->extractValue($item,'./zetcom:systemField[@name="__created"]/zetcom:value'),
                 'updated_at' => $this->extractValue($item,'./zetcom:systemField[@name="__lastModified"]/zetcom:value'),
                 'style_legacy_id' => $this->extractValue($item,'./zetcom:vocabularyReference[@name="ObjStyleVoc"]/zetcom:vocabularyReferenceItem/@name'),
@@ -303,5 +302,29 @@ class XmlDataProcessor
         $LiteratureItem = $parsedXml[0];
 
         return $this->extractValue($LiteratureItem, '//zetcom:dataField[@name="LitCitationClb"]/zetcom:value') ?? "";
+    }
+
+    /**
+     * Extract literature references with their corresponding page references
+     * @param \SimpleXMLElement $item
+     * @return array
+     */
+    private function extractLiteratureReferencesWithPages($item)
+    {
+        $literatureRefs = [];
+        // Get all moduleReferenceItem elements for ObjLiteratureRef
+        $moduleRefItems = $item->xpath('./zetcom:moduleReference[@name="ObjLiteratureRef"]/zetcom:moduleReferenceItem');
+        
+        foreach ($moduleRefItems as $moduleRefItem) {
+            $moduleItemId = (string)$moduleRefItem['moduleItemId'];
+            $pageRefTxt = $this->extractValue($moduleRefItem, './zetcom:dataField[@name="PageRefTxt"]/zetcom:value');
+            
+            $literatureRefs[] = [
+                'id' => $moduleItemId,
+                'page' => $pageRefTxt
+            ];
+        }
+
+        return $literatureRefs;
     }
 }

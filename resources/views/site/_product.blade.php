@@ -108,10 +108,10 @@ $orientation = $first_img['width'] < $first_img['height'] ? 'portrait' : 'landsc
                         </dd>
                     </div>
                     @endunless
-                    @unless(empty($product['conception_year']))
+                    @unless(empty($product['conception_year_as_text']) || empty($product['conception_year']))
                     <div class="DetailData__unit">
                         <dt class="DetailData__label">Année de conception</dt>
-                        <dd class="DetailData__datum">{{ $product['conception_year'] }}</dd>
+                        <dd class="DetailData__datum">{{ $product['conception_year_as_text'] ?: $product['conception_year'] }}</dd>
                     </div>
                     @endunless
                     @unless(empty($product['style']))

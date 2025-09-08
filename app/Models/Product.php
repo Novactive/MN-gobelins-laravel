@@ -303,14 +303,21 @@ class Product extends Model
     // fine tune the image quality criteria.
     public function imageQualityScore()
     {
-        if ($this->images()->published()->where('is_prime_quality', true)->exists()) {
+        // Priority 1: High-quality main photo (poster) for publication
+        if ($this->images()->published()->where('is_poster', true)->where('is_prime_quality', true)->exists()) {
             return 3;
         }
-        if ($this->images()->published()->where('is_poster', true)->exists()) {
+        if ($this->images()->published()->where('is_poster', true)->where('is_documentation_quality', true)->exists()) {
             return 2;
         }
+        if ($this->images()->published()->where('is_poster', true)->exists()) {
+            return 1;
+        }
+        if ($this->images()->published()->where('is_prime_quality', true)->exists()) {
+            return 1;
+        }
         if ($this->images()->published()->where('is_documentation_quality', true)->exists()) {
-            return 2;
+            return 0;
         }
 
         return 0;
@@ -410,9 +417,9 @@ class Product extends Model
         }
 
         $dimensionsMap = [
-            'Height' => str_replace('.', ',', (float)$this->height_or_thickness),
-            'Width' => str_replace('.', ',', (float)$this->length_or_diameter),
-            'Depth' => str_replace('.', ',', (float)$this->depth_or_width),
+            'Height' => (float) $this->height_or_thickness,
+            'Width' => (float) $this->length_or_diameter,
+            'Depth' => (float) $this->depth_or_width,
         ];
 
         $isSmall = count(array_filter($dimensionsMap, fn($d) => $d > 0 && $d < 1)) > 0;
@@ -424,6 +431,11 @@ class Product extends Model
         $unit = $isSmall ? 'cm' : 'm';
         $dimensionsOrder = explode(' x ', $TypeDimRef);
         $orderedDimensions = array_map(fn($dim) => $dimensionsMap[$dim] ?? null, $dimensionsOrder);
+
+        $orderedDimensions = array_map(function($value) {
+            return str_replace('.', ',', strval($value));
+        }, $orderedDimensions);
+
         $formattedDimensions = implode(' x ', $orderedDimensions) . ' ' . $unit;
 
         $labelMap = [
