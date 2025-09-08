@@ -303,14 +303,21 @@ class Product extends Model
     // fine tune the image quality criteria.
     public function imageQualityScore()
     {
-        if ($this->images()->published()->where('is_prime_quality', true)->exists()) {
+        // Priority 1: High-quality main photo (poster) for publication
+        if ($this->images()->published()->where('is_poster', true)->where('is_prime_quality', true)->exists()) {
             return 3;
         }
-        if ($this->images()->published()->where('is_poster', true)->exists()) {
+        if ($this->images()->published()->where('is_poster', true)->where('is_documentation_quality', true)->exists()) {
             return 2;
         }
+        if ($this->images()->published()->where('is_poster', true)->exists()) {
+            return 1;
+        }
+        if ($this->images()->published()->where('is_prime_quality', true)->exists()) {
+            return 1;
+        }
         if ($this->images()->published()->where('is_documentation_quality', true)->exists()) {
-            return 2;
+            return 0;
         }
 
         return 0;
