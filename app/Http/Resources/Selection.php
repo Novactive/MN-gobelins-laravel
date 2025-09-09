@@ -30,7 +30,7 @@ class Selection extends JsonResource
         if (sizeof($product_ids)) {
             // Use search query instead of mget to get products by database IDs
             $es = $this->client->search([
-                "index" => "gobelins_search_1",
+                "index" => env('ELASTIC_INDEX', 'gobelins_search_1'),
                 "type" => "products",
                 "body" => [
                     "query" => [
