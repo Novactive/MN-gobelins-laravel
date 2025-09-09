@@ -67,7 +67,7 @@ return [
 
     'indices' => [
 
-        'gobelins_search_3' => [
+        env('ELASTIC_INDEX', 'gobelins_search_1') => [
 
             'aliases' => [
                 'gobelins_search'
