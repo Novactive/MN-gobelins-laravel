@@ -32,11 +32,21 @@ class FiltersComposer
             // to pre-process them here, once.
             $separated_authors = collect([]);
             $authors->map(function ($item, $i) use (&$separated_authors, &$authors) {
-                if ($i !== 0 && $item->last_name[0] !== $authors->get($i - 1)->last_name[0]) {
-                    $separated_authors->push((object) [
-                        'is_separator' => true,
-                        'last_name' => '_', // Placeholder string, for offsets.
-                    ]);
+                if ($i !== 0) {
+                    $current_first_char = mb_substr($item->last_name, 0, 1, 'UTF-8');
+                    $previous_first_char = mb_substr($authors->get($i - 1)->last_name, 0, 1, 'UTF-8');
+                    // Normalize to ASCII and uppercase to ignore accents consistently
+                    $current_key = strtoupper(\Illuminate\Support\Str::ascii($current_first_char));
+                    $previous_key = strtoupper(\Illuminate\Support\Str::ascii($previous_first_char));
+                    if ($current_key === '') { $current_key = '_'; }
+                    if ($previous_key === '') { $previous_key = '_'; }
+
+                    if ($current_key !== $previous_key) {
+                        $separated_authors->push((object) [
+                            'is_separator' => true,
+                            'last_name' => '_', // Placeholder string, for offsets.
+                        ]);
+                    }
                 }
                 $separated_authors->push($item);
             });
@@ -44,8 +54,9 @@ class FiltersComposer
             $i = 0;
             $authors_offsets = $separated_authors->reduce(function ($offsets, $item) use (&$i) {
                 $first_char = mb_substr($item->last_name, 0, 1, 'UTF-8');
-                $clean_char = mb_convert_encoding($first_char, 'UTF-8', 'UTF-8');
-                if (!mb_check_encoding($clean_char, 'UTF-8') || $clean_char === '') {
+                // Normalize for offset keys as well
+                $clean_char = strtoupper(\Illuminate\Support\Str::ascii($first_char));
+                if ($clean_char === '') {
                     $clean_char = '_';
                 }
 
