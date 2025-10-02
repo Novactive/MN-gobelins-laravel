@@ -18,6 +18,16 @@ class XmlDataProcessor
     }
 
     /**
+     * Get the module namespace
+     *
+     * @return string
+     */
+    public function getModuleNamespace(): string
+    {
+        return $this->moduleNamspace;
+    }
+
+    /**
      * @param $itemData
      * @return array|false|\SimpleXMLElement[]|null
      */

@@ -255,6 +255,36 @@ class ZetcomService
     }
 
     /**
+     * @param bool $all
+     * @param $limit
+     * @param $offset
+     * @return string
+     * @throws Exception
+     */
+    public function getPublishableMultimediaModules(bool $all, $limit = null, $offset = null): string
+    {
+        //$startDate = $startDate ?? now()->subDays(90)->setTime(2, 0, 0);
+        $startDate = $startDate ?? now()->subDay()->setTime(2, 0, 0);
+        $expertConditions = [
+            '__lastModified' => [
+                'operator' => 'betweenIncl',
+                'operand1' => $startDate->toIso8601String(),
+                'operand2' => now()->toIso8601String()
+            ]
+        ];
+
+        $requestXml = $this->buildSearchRequestXml(
+            'Multimedia',
+            $expertConditions,
+            false,
+            $limit,
+            $offset
+        );
+
+        return $this->callEndpoint('post', "/module/Multimedia/search", ['body' => $requestXml])->body();
+    }
+
+    /**
      * @param array $attributes
      * @return string
      */
