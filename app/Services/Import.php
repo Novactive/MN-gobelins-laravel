@@ -353,6 +353,7 @@ class Import
                 $author = \App\Models\Author::updateOrCreate(
                     ['legacy_id' => $legacyId],
                     [
+                        'zetcom_author_id' => (int) $author['id'],
                         'legacy_id' => $legacyId,
                         'name' => (string) $author['name'],
                         'first_name' => (string) $author['first_name'],
