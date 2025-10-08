@@ -2,5 +2,11 @@
 
 
 return [
-    'fields' => ['ConCoveringVoc']
+    'fields' => [
+        '__created',
+        '__lastModified',
+        'ConCoveringVoc',
+        'ConObjectRef',
+        'ConObjectRef.moduleReferenceItem',
+    ]
 ];

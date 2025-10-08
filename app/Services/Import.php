@@ -248,6 +248,34 @@ class Import
     }
 
     /**
+     * Remove image variations with the -image suffix
+     * @param string $originalImagePath
+     * @return void
+     */
+    private function cleanupImageVariations(string $originalImagePath): void
+    {
+        $mediaDir = public_path('media/xl/');
+        $originalFile = $mediaDir . $originalImagePath;
+        
+        if (!file_exists($originalFile)) {
+            return;
+        }
+        $pathInfo = pathinfo($originalFile);
+        $baseName = $pathInfo['filename'];
+        $extension = $pathInfo['extension'];
+        $directory = $pathInfo['dirname'];
+        $pattern = $directory . '/' . $baseName . '-image(*).' . $extension;
+        $variationFiles = glob($pattern);
+        
+        foreach ($variationFiles as $variationFile) {
+            if (file_exists($variationFile)) {
+                unlink($variationFile);
+                Log::info("Variation d'image supprimée: " . basename($variationFile));
+            }
+        }
+    }
+
+    /**
      * @param $product
      * @param array $images
      * @return void
@@ -287,6 +315,7 @@ class Import
 
                 if (file_exists($imagePath) && ($size = @getimagesize($imagePath))) {
                     list($img['width'], $img['height']) = $size;
+                    $this->cleanupImageVariations($img['path']);
                 } else {
                     Log::error("Fichier image ( " . $img['path'] . ") invalide ou corrompu pour le produit :" . $product['inventory_id']);
                     $img['width'] = null;
@@ -324,6 +353,7 @@ class Import
                 $author = \App\Models\Author::updateOrCreate(
                     ['legacy_id' => $legacyId],
                     [
+                        'zetcom_author_id' => (int) $author['id'],
                         'legacy_id' => $legacyId,
                         'name' => (string) $author['name'],
                         'first_name' => (string) $author['first_name'],
