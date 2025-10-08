@@ -26,6 +26,8 @@ return [
         'PerRightsGrp',
         'PerRightsGrp.repeatableGroupItem',
         'PerRightsGrp.TypeVoc',
+        'PerObjectRef',
+        'PerObjectRef.moduleReferenceItem',
     ]
 
 ];
