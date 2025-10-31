@@ -305,22 +305,22 @@ class Product extends Model
     {
         // Priority 1: High-quality main photo (poster) for publication
         if ($this->images()->published()->where('is_poster', true)->where('is_prime_quality', true)->exists()) {
-            return 3;
+            return 6;
         }
         if ($this->images()->published()->where('is_poster', true)->where('is_documentation_quality', true)->exists()) {
-            return 2;
+            return 5;
         }
         if ($this->images()->published()->where('is_poster', true)->exists()) {
-            return 1;
+            return 4;
         }
         if ($this->images()->published()->where('is_prime_quality', true)->exists()) {
-            return 1;
+            return 3;
         }
         if ($this->images()->published()->where('is_documentation_quality', true)->exists()) {
-            return 0;
+            return 2;
         }
 
-        return 0;
+        return $this->images()->count() ? 1 : 0;
     }
 
     public function getSeoTitleAttribute()
