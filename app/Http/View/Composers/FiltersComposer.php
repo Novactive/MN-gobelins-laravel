@@ -22,8 +22,8 @@ class FiltersComposer
                 ->orderBy('last_name', 'asc')
                 ->select('id', 'first_name', 'last_name')->get()
                 ->map(function ($item) {
-                    $item->first_name = mb_convert_encoding($item->first_name, 'UTF-8', 'UTF-8');
-                    $item->last_name = mb_convert_encoding($item->last_name, 'UTF-8', 'UTF-8');
+                    $item->first_name = trim(mb_convert_encoding($item->first_name, 'UTF-8', 'UTF-8'));
+                    $item->last_name = trim(mb_convert_encoding($item->last_name, 'UTF-8', 'UTF-8'));
                     return $item;
                 });
 
@@ -33,13 +33,15 @@ class FiltersComposer
             $separated_authors = collect([]);
             $authors->map(function ($item, $i) use (&$separated_authors, &$authors) {
                 if ($i !== 0) {
-                    $current_first_char = mb_substr($item->last_name, 0, 1, 'UTF-8');
-                    $previous_first_char = mb_substr($authors->get($i - 1)->last_name, 0, 1, 'UTF-8');
+                    $current_last_name_trimmed = trim($item->last_name);
+                    $previous_last_name_trimmed = trim($authors->get($i - 1)->last_name);
+                    $current_first_char = $current_last_name_trimmed ? mb_substr($current_last_name_trimmed, 0, 1, 'UTF-8') : '';
+                    $previous_first_char = $previous_last_name_trimmed ? mb_substr($previous_last_name_trimmed, 0, 1, 'UTF-8') : '';
                     // Normalize to ASCII and uppercase to ignore accents consistently
                     $current_key = strtoupper(\Illuminate\Support\Str::ascii($current_first_char));
                     $previous_key = strtoupper(\Illuminate\Support\Str::ascii($previous_first_char));
-                    if ($current_key === '') { $current_key = '_'; }
-                    if ($previous_key === '') { $previous_key = '_'; }
+                    if ($current_key === '' || ctype_space($current_key)) { $current_key = '_'; }
+                    if ($previous_key === '' || ctype_space($previous_key)) { $previous_key = '_'; }
 
                     if ($current_key !== $previous_key) {
                         $separated_authors->push((object) [
@@ -53,10 +55,17 @@ class FiltersComposer
 
             $i = 0;
             $authors_offsets = $separated_authors->reduce(function ($offsets, $item) use (&$i) {
-                $first_char = mb_substr($item->last_name, 0, 1, 'UTF-8');
+                // Skip separators for offsets
+                if (isset($item->is_separator) && $item->is_separator) {
+                    $i++;
+                    return $offsets;
+                }
+                // Get first non-space character, ignoring leading spaces
+                $last_name_trimmed = trim($item->last_name);
+                $first_char = $last_name_trimmed ? mb_substr($last_name_trimmed, 0, 1, 'UTF-8') : '';
                 // Normalize for offset keys as well
                 $clean_char = strtoupper(\Illuminate\Support\Str::ascii($first_char));
-                if ($clean_char === '') {
+                if ($clean_char === '' || ctype_space($clean_char)) {
                     $clean_char = '_';
                 }
 
