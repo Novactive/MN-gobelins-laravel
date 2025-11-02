@@ -360,7 +360,7 @@ class Product extends Model
             'about_author' => $this->getAboutAuthorAttribute(),
             'bibliography' => $this->bibliography,
             'acquisition_origin' => $this->acquisition_origin,
-            'acquisition_date' => $this->acquisition_date,
+            'acquisition_date' => $this->acquisition_date ?: null,
             'acquisition_mode' => $this->searchableEntryMode,
             'inventory_id' => $this->inventory_id,
             'formatted_inventory_id' => $this->formatInventoryId($this->inventory_id),
