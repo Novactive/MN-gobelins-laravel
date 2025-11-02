@@ -309,6 +309,8 @@ class SearchController extends Controller
                 ],
             ];
             $body["sort"] = [['image_quality_score' => 'desc'], '_score'];
+        } else {
+            $body["sort"] = [['image_quality_score' => 'desc']];
         }
 
         if (\App::environment(['local', 'staging'])) {
