@@ -8,6 +8,7 @@ class Author extends Model
 {
     protected $fillable = [
         'legacy_id',
+        'zetcom_author_id',
         'name',
         'first_name',
         'last_name',

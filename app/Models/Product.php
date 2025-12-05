@@ -303,17 +303,24 @@ class Product extends Model
     // fine tune the image quality criteria.
     public function imageQualityScore()
     {
-        if ($this->images()->published()->where('is_prime_quality', true)->exists()) {
-            return 3;
+        // Priority 1: High-quality main photo (poster) for publication
+        if ($this->images()->published()->where('is_poster', true)->where('is_prime_quality', true)->exists()) {
+            return 6;
+        }
+        if ($this->images()->published()->where('is_poster', true)->where('is_documentation_quality', true)->exists()) {
+            return 5;
         }
         if ($this->images()->published()->where('is_poster', true)->exists()) {
-            return 2;
+            return 4;
+        }
+        if ($this->images()->published()->where('is_prime_quality', true)->exists()) {
+            return 3;
         }
         if ($this->images()->published()->where('is_documentation_quality', true)->exists()) {
             return 2;
         }
 
-        return 0;
+        return $this->images()->count() ? 1 : 0;
     }
 
     public function getSeoTitleAttribute()
@@ -353,7 +360,7 @@ class Product extends Model
             'about_author' => $this->getAboutAuthorAttribute(),
             'bibliography' => $this->bibliography,
             'acquisition_origin' => $this->acquisition_origin,
-            'acquisition_date' => $this->acquisition_date,
+            'acquisition_date' => $this->acquisition_date ?: null,
             'acquisition_mode' => $this->searchableEntryMode,
             'inventory_id' => $this->inventory_id,
             'formatted_inventory_id' => $this->formatInventoryId($this->inventory_id),
@@ -410,9 +417,9 @@ class Product extends Model
         }
 
         $dimensionsMap = [
-            'Height' => str_replace('.', ',', (float)$this->height_or_thickness),
-            'Width' => str_replace('.', ',', (float)$this->length_or_diameter),
-            'Depth' => str_replace('.', ',', (float)$this->depth_or_width),
+            'Height' => (float) $this->height_or_thickness,
+            'Width' => (float) $this->length_or_diameter,
+            'Depth' => (float) $this->depth_or_width,
         ];
 
         $isSmall = count(array_filter($dimensionsMap, fn($d) => $d > 0 && $d < 1)) > 0;
@@ -424,6 +431,11 @@ class Product extends Model
         $unit = $isSmall ? 'cm' : 'm';
         $dimensionsOrder = explode(' x ', $TypeDimRef);
         $orderedDimensions = array_map(fn($dim) => $dimensionsMap[$dim] ?? null, $dimensionsOrder);
+
+        $orderedDimensions = array_map(function($value) {
+            return str_replace('.', ',', strval($value));
+        }, $orderedDimensions);
+
         $formattedDimensions = implode(' x ', $orderedDimensions) . ' ' . $unit;
 
         $labelMap = [
