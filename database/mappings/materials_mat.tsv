@@ -1,118 +1,202 @@
-Bambou	Bois > Bambou
+Soie	Textile > Soie
 Bois	Bois
-Bois Acajou	Bois > Acajou
-Bois Amarante	Bois > Amarante
-Bois Amboine	Bois > Amboine
-Bois blanc	Bois > Bois blanc
-Bois Bouleau	Bois > Bouleau
-Bois Cerisier	Bois > Cerisier
-Bois Châtaignier	Bois > Châtaignier
-Bois Chêne	Bois > Chêne
-Bois Citronnier	Bois > Citronnier
-Bois Contreplaqué	Bois > Contreplaqué
-Bois de Rose	Bois > Rose
-Bois de Violette	Bois > Violette
-Bois doré	Bois > Doré
-Bois Ebène	Bois > Ebène
-Bois Erable	Bois > Erable
-Bois Frêne	Bois > Frêne
-Bois Gaïac	Bois > Gaïac
-Bois Hêtre	Bois > Hêtre
-Bois If	Bois > If
-Bois Isorel	Bois > Isorel
-Bois Louro Faia	Bois > Louro Faia
-Bois Louro Preto	Bois > Louro Preto
-Bois Marqueterie	Bois > Marqueterie
-Bois Médium	Bois > Médium
-Bois Merisier	Bois > Merisier
-Bois noir	Bois > Bois noir
-Bois Noyer	Bois > Noyer
-Bois Orme	Bois > Orme
-Bois Palissandre	Bois > Palissandre
+Laine	Textile > Laine
+Coton	Textile > Coton
+Acajou	Bois > Acajou
+Bronze	Métal > Bronze
 Bois peint	Bois > Bois peint
-Bois Pin	Bois > Pin
-Bois Platane	Bois > Platane
-Bois Poirier	Bois > Poirier
-Bois Satine	Bois > Satine
-Bois Stratifié / Lamifié / Formica	Bois > Stratifié / Lamifié / Formica
-Bois Sycomore	Bois > Sycomore
-Bois Teck	Bois > Teck
-Bois Wengé	Bois > Wengé
+Bois doré	Bois > Doré
+Métal	Métal
+Dentelle	Dentelle
+Fil d'or	Textile > Fils d’or et d’argent
+Lin	Textile > Lin
+Hêtre	Bois > Hêtre
+Porcelaine de Sèvres	Céramique > Porcelaine
+Peinture à l'huile	Peinture > Peinture à l'huile
+Noyer	Bois > Noyer
+Acier	Métal > Acier
+Marbre	Pierre > Marbre
+Chêne	Bois > Chêne
+Métal laqué	Métal > Laqué
+Verre	Verre
+Textile	Textile
+Aluminium	Métal > Aluminium
+Cuivre	Métal > Cuivre
+Métal précieux	Métal > Précieux
+Cuir	Cuir et skaï > Cuir
+Laiton	Métal > Laiton
+Fil d'argent	Textile > Fils d’or et d’argent
+Marqueterie	Bois > Marqueterie
+Palissandre	Bois > Palissandre
+Porcelaine	Céramique > Porcelaine
+Papier	Papier
+Laque	Laque
+Merisier	Bois > Merisier
+Fer forgé	Métal > Fer forgé
+Biscuit de Sèvres	Céramique > Biscuit
+Chanvre	Textile
+Polyester	Plastique > Polyester
+Bois reconstitué (aggloméré, contre-plaqué, latté, médium ou MDF)	Bois
+Cristal	Verre > Cristal
+Frêne	Bois > Frêne
+Broderie	
+Bois stratifié / lamifié / formica / mélaminé	Bois > Stratifié / Lamifié / Formica
+Jute	Textile
+Fer	Métal > Fer
+Carton	Papier > Carton
+Érable	Bois > Erable
+Sycomore	Bois > Sycomore
+Polycarbonate	Plastique > Polycarbonate
+Plastique	Plastique
+Faïence	Céramique > Faïence
+Plâtre / Stuc / Staff	Plâtre et stuc
+Argent	Métal > Précieux
+Bois de rose	Bois > Rose
+Bois noir	Bois > Bois noir
+Fibre de verre	
+Gouache	
+Tôle peinte	Métal > Tôle peinte
+Ebène	Bois > Ebène
+Métal doré	Métal
+Photographie	
+Grès	Céramique > Grès
 Céramique	Céramique
-Céramique Biscuit	Céramique > Biscuit
-Céramique Biscuit de Sèvres	Céramique > Biscuit > de Sèvres
-Céramique Faïence	Céramique > Faïence
-Céramique Grès	Céramique > Grès
-Céramique Grès de Sèvres	Céramique > Grès > de Sèvres
-Céramique Porcelaine	Céramique > Porcelaine
-Céramique Porcelaine d'Asie	Céramique > Porcelaine > d’Asie
-Céramique Porcelaine de Sèvres	Céramique > Porcelaine > de Sèvres
-Céramique Terre cuite	Céramique > Terre cuite
+Peinture	
+Bois Contreplaqué	Bois > Contreplaqué
+Inox	Métal > Inox
+Pin	Bois > Pin
+Velours	
+Porcelaine d'Asie	Céramique > Porcelaine
+Pierre	Pierre
+Terre cuite	Céramique > Terre cuite
+Amarante	Bois > Amarante
+Verre peint	Verre > Peint
+Papier cartonné	Papier
+Bois de violette	Bois > Violette
+Bouleau	Bois > Bouleau
+Altuglas	Plastique > Altuglas
+Métal chromé	Métal
+Vermeil	Métal > Précieux
+Fonte	Métal > Fonte
+Nylon	Textile
+Louro preto	Bois > Louro Preto
+Grès de Sèvres	Céramique > Grès
+Bois Médium 	Bois > Médium
+Peau	Cuir et skaï > Peau
+Poirier	Bois > Poirier
+Wengé	Bois > Wengé
+Plexiglas	Plastique > Plexiglas
+Orme	Bois > Orme
+Résine (Matières plastiques)	Plastique > Résine
+Aquarelle	
+Citronnier	Bois > Citronnier
+Simili cuir	Cuir et skaï
+Émail	
+Caoutchouc / élastomère	
+Papier toilé	Papier
+Placage	Bois
+Acrylique	
+Polypropylène	Plastique > Polypropylène
+Ivoire	
+Bois de satiné	Bois > Satine
+PMMA (Polyméthacrylate de méthyle = Plexiglas / Altuglas)	Plastique
+Mousse (Polyuréthane)	Plastique
+Albâtre	Pierre > Albâtre
+Résine (Polyester)	Plastique > Résine
 Composite Béton	
+Encre	
+Granit	Pierre > Granit
+Acrylonitrile Butadiène Styrène = ABS	Plastique
+Viscose	Textile
+Rotin	Bois > Rotin
+Cerisier	Bois > Cerisier
+Châtaignier	Bois > Châtaignier
+Mousse (Polyester)	Plastique > Polyester
+Technique mixte	
+Bois blanc	Bois > Bois blanc
+Pastel	
+Amboine	Bois > Amboine
+Métal argenté	Métal
+Lithographie	
+Polyuréthane	Plastique
+Louro faia	Bois > Louro Faia
+Étain	Métal > Étain
+Résine thermodurcissable	Plastique > Résine
+Galuchat	Cuir et skaï > Peau
+Verre blanc	Verre > Blanc
+Biscuit	Céramique > Biscuit
+Papier intissé classé feu M1	Papier
+Papier aquarelle	Papier
+Porphyre	Pierre > Porphyre
+PVC (Polychlorure de vinyle)	Plastique
+Miroir	Verre > Miroir
+Crayon	
+Opaline	Pierre > Opaline
+Polyéthylène	Plastique
+Nickel	Métal
+Ardoise	
+Or	Métal > Précieux
+Bambou	Bois > Bambou
+Sapin	Bois
+Tilleul	Bois
+Crin de cheval	
+Bambou (textile)	Textile
+Écaille de tortue	
+Verre de Venise	Verre > de Venise
+Teck	Bois > Teck
+Sanguine	
+Buis	Bois
+If	Bois > If
+Mélèze	Bois
+Papier marouflé	Papier
+Epoxy (Peinture)	
+Malachite	Pierre > Malachite
+Onyx	Pierre > Onyx
+Travertin	Pierre
+Polystyrène	Plastique
+Étimoé	Bois
+Fusain	
+Fibre animale	
+Mousse de Latex	
+Toile	
+Résine (Epoxy)	Plastique > Résine
+Sable	
+Tencel	Textile
+Cèdre	Bois
+Platane	Bois > Platane
+Zebrano	Bois
+Ciment	
 Composite Fibre de Carbone	
 Coquillage	
+Lavis	
+Paille de seigle	
+Nacre	
+Feutre	
+Vinylique	
+Bioplastique	Plastique
+Gel-coat	Plastique
+Linoleum	Textile
+Béton	
+Gaïac	Bois > Gaïac
+Sipo	Bois
+Dessin	
+Lin (Fibre)	
+Gravure	
+Os	
+Papier calque	Papier
+Mica	Pierre
+Pierre de lave	Pierre
+Plume	
+Eucalyptus	Bois
+Olivier	Bois
+Thuya	Bois
+Bois Isorel	Bois > Isorel
 Corian	
-Dessin Aquarelle	
-Dessin Craie blanche	
-Dessin Crayon	
-Dessin Fusain	
-Dessin Gouache	
-Dessin Mine de plomb	
-Dessin Pastel	
-Dessin Sanguine	
-Email	
-Ivoire	
-Laque	Laque
-Lithographie	
-Métal	Métal
-Métal Acier	Métal > Acier
-Métal Aluminium	Métal > Aluminium
-Métal Argenté	Métal > Précieux > Argent
-Métal Bronze	Métal > Bronze
-Métal Cuivre	Métal > Cuivre
-Métal Doré	Bois > Doré
-Métal Etain	Métal > Étain
-Métal Fer	Métal > Fer
-Métal Fer forgé	Métal > Fer forgé
-Métal Fonte	Métal > Fonte
-Métal Graphite	Métal > Graphite
-Métal Inox	Métal > Inox
-Métal Laiton	Métal > Laiton
-Métal laqué	Métal > Laqué
-Métal précieux	Métal > Précieux
-Métal précieux Argent	Métal > Précieux > Argent
-Métal précieux Vermeil	Métal > Précieux > Vermeil
-Métal Tôle peinte	Métal > Tôle peinte
-Peau	Cuir et skaï > Peau
-Peau Cheval	Cuir et skaï > Peau
-Peau Cuir	Cuir et skaï > Cuir
-Peau Galuchat	Cuir et skaï > Peau
-Peinture Acrylique	
-Peinture Huile	
-Photographie	
-Pierre	Pierre
-Pierre Albâtre	Pierre > Albâtre
-Pierre Granit	Pierre > Granit
-Pierre Malachite	Pierre > Malachite
-Pierre Marbre	Pierre > Marbre
-Pierre Onyx	Pierre > Onyx
-Pierre Opaline	Pierre > Opaline
-Pierre Porphyre	Pierre > Porphyre
-Plastique Altuglas	Plastique > Altuglas
-Plastique Plexiglas	Plastique > Plexiglas
-Plastique Polycarbonate	Plastique > Polycarbonate
-Plastique Polyester	Plastique > Polyester
-Plastique Polypropylène	Plastique > Polypropylène
-Plastique Résine	Plastique > Résine
-Plâtre / Stuc / Staff	Plâtre et stuc
-Rotin	Bois > Rotin
-Textile Coton	Textile > Coton
-Textile Fil d'Argent	Textile > Fils d’or et d’argent
-Textile Fil d'Or	Textile > Fils d’or et d’argent
-Textile Laine	Textile > Laine
-Textile Lin	Textile > Lin
-Textile Soie	Textile > Soie
-Verre	Verre
-Verre blanc	Verre > Blanc
-Verre Cristal	Verre > Cristal
-Verre de Venise	Verre > de Venise
+Mine de plomb	
+Fibre cheveux	
+Fibre végétale	
+Métal Graphite	
+Papier washi	Papier
+Peau de cheval	Cuir et skaï > Peau
+Grès (Pierre)	Pierre
+Sérigraphie	

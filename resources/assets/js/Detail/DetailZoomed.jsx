@@ -95,9 +95,12 @@ class DetailZoomed extends Component {
   }
 
   render() {
-    let imageUrl = `/media/orig/${encodeURIComponent(
+    let imageUrl = `/media/xl/${encodeURIComponent(
       this.state.zoomedImage.path
     )}`;
+    // let imageUrl = !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+    //   ? `https://collection.mobiliernational.culture.gouv.fr/media/xl/${encodeURI(this.state.zoomedImage.path)}`
+    //   : `/media/xl/${encodeURI(this.state.zoomedImage.path)}`;
 
     return (
       <section className="DetailZoomed">

@@ -17,6 +17,10 @@ class Image extends Model
         'has_privacy_issue',
         'has_marking',
         'is_reviewed',
+        'photographer',
+        'license',
+        'update_date',
+        'zetcom_image_id'
     ];
 
     protected $touches = ['product'];
@@ -25,28 +29,17 @@ class Image extends Model
         'pivot', // Hide from toArray()
     ];
 
-    // Maps the directory name to a human name.
-    const IDENTIFIED_PHOTOGRAPHERS = [
-        'BERSANI' => 'Marie-Hélène Bersani',
-        'BIDEAU' => 'Isabelle Bideau',
-        // 'BOHL' => 'Thomas Bohl',
-        'BROUILLET' => 'Stéphanie Brouillet',
-        // 'CAVALIE' => 'Hélène Cavalié',
-        'CINQPEYRES' => 'Muriel Cinqpeyres',
-        'DELAMOTTE' => 'Céline Delamotte',
-        'DENIS' => 'Arnaud Denis',
-        // 'GAUTIER' => 'Jean-Jacques Gautier',
-        'GLOMET' => 'Valérie Glomet',
-        'ISAKOVITCH' => 'Sandra Isakovitch',
-        'MANCEL' => 'Nicolas Mancel',
-        // 'MONTAGNE' => 'Lucile Montagne',
-        // 'SARASA' => 'Marina Sarasa',
-        'THARAUD' => 'Marie-Amélie Tharaud',
-    ];
-
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Relation many-to-many avec Selection via la table pivot image_selection
+     */
+    public function selections()
+    {
+        return $this->belongsToMany(Selection::class)->withPivot('order');
     }
 
     public function scopePublished($query)
@@ -71,43 +64,8 @@ class Image extends Model
             'is_documentation_quality' => $this->is_documentation_quality,
             'has_marking' => $this->has_marking,
             'license' => $this->license,
+            'update_date' => $this->update_date,
+            'zetcom_image_id' => $this->zetcom_image_id
         ];
-    }
-
-    /**
-     * Photographer's name
-     * Derive the name of the photographer from the storage path.
-     *
-     * @return string|null
-     */
-    public function getPhotographerAttribute()
-    {
-        $re = '/(' . collect(self::IDENTIFIED_PHOTOGRAPHERS)->keys()->implode('|') . ')/';
-        if (preg_match($re, $this->path, $matches) > 0) {
-            return self::IDENTIFIED_PHOTOGRAPHERS[$matches[1]];
-        }
-        return null;
-    }
-
-    /**
-     * Distribution license
-     * Only the production of internal photographers, of objects that have fallen
-     * in the public domain, can be (at this point) safely licensed as License
-     * Ouverte 2.0.
-     *
-     * @return string|null
-     */
-    public function getLicenseAttribute()
-    {
-        $public_domain_horizon = getdate()['year'] - 70;
-        if ($this->photographer && preg_match('/CINQPEYRES|BIDEAU/i', $this->photographer) > 0) {
-            if ($this->product && (
-                ($this->product->period && $this->product->period->end_year && $this->product->period->end_year < $public_domain_horizon) ||
-                ($this->product->conception_year && $this->product->conception_year < $public_domain_horizon)
-            )) {
-                return 'LO 2.0';
-            }
-        }
-        return null;
     }
 }

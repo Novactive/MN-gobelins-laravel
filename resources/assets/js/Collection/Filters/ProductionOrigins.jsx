@@ -39,10 +39,10 @@ class ProductionOrigins extends Component {
           }
         >
           <strong className="ProductionOrigins__name">
-            {production_origin.name}
+            {production_origin.label}
           </strong>
           <span className="ProductionOrigins__label">
-            {production_origin.label}
+            {production_origin.label_md}
           </span>
           {/* <span className="ProductionOrigins__objcount">15340</span> */}
         </button>

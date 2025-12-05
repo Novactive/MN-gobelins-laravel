@@ -2,13 +2,18 @@
 
 namespace App\Providers;
 
+use App\Services\Import;
+use App\Services\XmlDataProcessor;
+use App\Services\ZetcomService;
 use App\User;
-use App\Observers\UserObserver;
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Auth\Notifications\VerifyEmail;
-use Illuminate\Support\Facades\View;
-
 use App\Mail\EmailVerification;
+use App\Observers\UserObserver;
+use App\Repositories\SectionRepository;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(SectionRepository $sectionRepository)
     {
         User::observe(UserObserver::class);
 
@@ -28,9 +33,37 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer(
-            ['site.search', 'site.selection'],
+            ['site.selection'],
             'App\Http\View\Composers\FiltersComposer'
         );
+
+        View::share('nav', $sectionRepository->cachedNavSections());
+
+        Relation::morphMap([
+            'articles' => 'App\Models\Article',
+        ]);
+
+        // Blade directive to set "is-current" CSS classes, infered from
+        // the current route and params.
+        Blade::if('route', function ($route, $params = array()) {
+            // Check if we are currently using the given named route.
+            if (request()->route()->named($route)) {
+                // Check if we are using the required params for that route.
+                if (count($params)) {
+                    $params_used = array_intersect($params, request()->route()->parameters());
+                    if (!empty($params_used)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        });
+
     }
 
     /**
@@ -40,6 +73,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(Import::class, function ($app) {
+            return new Import($app->make(ZetcomService::class), $app->make(XmlDataProcessor::class));
+        });
     }
 }

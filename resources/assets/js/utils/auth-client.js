@@ -33,6 +33,7 @@ function login({ email, password, csrfToken }) {
 }
 
 function register({ name, email, password, csrfToken }) {
+  console.log(name, email);
   return client("register", {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"

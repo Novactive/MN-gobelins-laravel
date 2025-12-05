@@ -9,8 +9,11 @@
   "type": "project",
   "require": {
     "php": "^7.4.8",
+    "ext-SimpleXML": "^7.4",
+    "area17/twill": "^2.13",
     "artesaos/seotools": "^0.18.0",
     "basemkhirat/elasticsearch": "dev-dev-scout-engine",
+    "doctrine/dbal": "^2.13",
     "fideloper/proxy": "^4.4.0",
     "flynsarmy/csv-seeder": "^2.0.3",
     "folklore/image": "dev-master",
@@ -29,12 +32,14 @@
     "nothingworks/blade-svg": "^0.3",
     "nyholm/psr7": "^1.3",
     "orangehill/iseed": "^2.6",
+    "php-amqplib/php-amqplib": "^2.11",
     "picturae/oai-pmh": "^0.5.20",
     "platformsh/laravel-bridge": "^2.2",
     "predis/predis": "^1.1",
     "seld/signal-handler": "^1.2",
     "spatie/laravel-image-optimizer": "^1.6",
     "symfony/psr-http-message-bridge": "~2.0",
+    "vladimir-yuldashev/laravel-queue-rabbitmq": "^10.0",
     "zendframework/zend-diactoros": "^2.2"
   },
   "require-dev": {
@@ -50,7 +55,7 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/nedbaldessin/elasticsearch"
+      "url": "https://github.com/Amazighettal/elasticsearch"
     },
     {
       "type": "vcs",

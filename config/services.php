@@ -36,4 +36,12 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'zetcom' => [
+        'base_url' => env('ZETCOM_BASE_URL', 'https://mpparismobiliernationaltest.zetcom.app/ria-ws/application'),
+        'username' => env('ZETCOM_USERNAME', ''),
+        'password' => env('ZETCOM_PASSWORD', ''),
+        'module_namespace' => env('ZETCOM_MODULE_NAMESPACE', 'http://www.zetcom.com/ria/ws/module')
+    ],
+
+
 ];

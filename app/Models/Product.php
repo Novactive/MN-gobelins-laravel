@@ -2,14 +2,42 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use A17\Twill\Models\Behaviors\HasMedias;
+use A17\Twill\Models\Model;
+use App\Models\Presenters\Admin\ProductPresenter as AdminProductPresenter;
+use App\Models\Presenters\ProductPresenter;
 use Laravel\Scout\Searchable;
+use Carbon\Carbon;
 
 class Product extends Model
 {
-    use Searchable;
+    use Searchable, HasMedias;
 
     protected $hidden = ['pivot'];
+
+    protected $casts = [
+        'is_published' => 'boolean',
+    ];
+
+    public $presenterAdmin = AdminProductPresenter::class;
+    public $presenter = ProductPresenter::class;
+
+    // Twill requirement
+    public $slugAttributes = [
+        'inventory_id',
+    ];
+
+    // Twill images
+    public $mediasParams = [
+        'cover' => [ // role name
+            'default' => [ // crop name
+                [
+                    'name' => 'default',
+                    'ratio' => 16 / 9,
+                ],
+            ],
+        ],
+    ];
 
     // Eloquent relationships
 
@@ -78,6 +106,31 @@ class Product extends Model
     }
 
     /**
+     * Start dirty hacks to get Twill to properly list
+     * browser items in a block, upon page reload.
+     * For some reason,
+     * A17\Twill\Repositories\Behaviors\HandleBrowsers::getFormFieldsForRelatedBrowser()
+     * does not use  ProductController::$browserColumns.
+     * Refs: https://github.com/area17/twill/issues/75
+     *
+     */
+    public function getTitleInBrowserAttribute()
+    {
+        return $this->inventory_id;
+    }
+
+    public function defaultCmsImage($params)
+    {
+        return $this->presentAdmin()->listing_thumbnail();
+    }
+
+    public function getAdminEditUrlAttribute()
+    {
+        return route('admin.collection.products.edit', ['product' => $this]);
+    }
+    /* End dirty hacks */
+
+    /**
      * Get all the related Materials in a flat array,
      * with the directly related items marked as leaves.
      *
@@ -85,9 +138,11 @@ class Product extends Model
      */
     public function getSearchableMaterialsAttribute()
     {
-        return $this->materials->map(function ($mat) {
+        return array_values(
+            $this->materials->map(function ($mat) {
             return $mat->toSearchableAncestorsAndSelf();
-        })->flatten(1)->unique('id')->all();
+        })->flatten(1)->unique('id')->all()
+        );
     }
 
     public function getSearchableProductTypesAttribute()
@@ -98,8 +153,58 @@ class Product extends Model
     public function getSearchableAuthorsAttribute()
     {
         return $this->authors->map(function ($author) {
-            return $author->toSearchableArray();
-        })->all();
+            $birth_date = null;
+            $death_date = null;
+
+            if (!empty($author->date_of_birth)) {
+                $birth_date = Carbon::parse($author->date_of_birth)->locale('fr')->isoFormat('D MMMM Y');
+            } elseif (!empty($author->year_of_birth)) {
+                $birth_date = $author->year_of_birth;
+            }
+
+            if (!empty($author->date_of_death)) {
+                $death_date = Carbon::parse($author->date_of_death)->locale('fr')->isoFormat('D MMMM Y');
+            } elseif (!empty($author->year_of_death)) {
+                $death_date = $author->year_of_death;
+            }
+
+            $dates = null;
+            if ($birth_date || $death_date) {
+                if ($birth_date && $death_date) {
+                    $dates = '(' . $birth_date . ' - ' . $death_date . ')';
+                } elseif ($birth_date) {
+                    $dates = '(' . $birth_date . ')';
+                } elseif ($death_date) {
+                    $dates = '(' . $death_date . ')';
+                }
+            }
+            if ($dates === null && !empty($author->name)) {
+                if (preg_match('/\((\d{4})-(\d{4})\)/', $author->name, $matches)) {
+                    $dates = '(' . $matches[1] . ' - ' . $matches[2] . ')';
+                } elseif (preg_match('/\((\d{4})\)/', $author->name, $matches)) {
+                    $dates = '(' . $matches[1] . ')';
+                }
+            }
+
+            return [
+                'id' => $author->id,
+                'first_name' => $author->first_name,
+                'last_name' => $author->last_name,
+                'dates' => $dates,
+            ];
+        })->toArray();
+    }
+
+    public function getAboutAuthorAttribute()
+    {
+        return $this->authors->map(function ($author) {
+            if (!empty($author->biography)) {
+                $text = $author->name;
+                $text .= "\n" . $author->biography;
+
+                return $text;
+            }
+        })->filter()->implode("\n\n");
     }
 
     public function getSearchableImagesAttribute()
@@ -171,6 +276,9 @@ class Product extends Model
         'publication_code',
         'entry_mode_id',
         'legacy_updated_on',
+        'historic',
+        'dim_order',
+        'zetcom_product_id'
     ];
 
     // Eloquent scopes
@@ -185,25 +293,27 @@ class Product extends Model
         return $query->where('is_published', true);
     }
 
+    public function scopeDraft($query)
+    {
+        return $query->where('is_published', false);
+    }
+
     // Temporary addition for demo purposes.
     // Todo: get score from source data (SCOM), or
     // fine tune the image quality criteria.
-    public function getImageQualityScoreAttribute()
+    public function imageQualityScore()
     {
-        $images = $this->images()->published()->get();
-        if ($images && sizeof($images) > 0) {
-            if ($images[0]->is_prime_quality) {
-                if (strstr($images[0]->path, 'BIDEAU')) {
-                    return 5;
-                } else {
-                    return 3;
-                }
-            } else {
-                return 2;
-            }
-        } else {
-            return 0;
+        if ($this->images()->published()->where('is_prime_quality', true)->exists()) {
+            return 3;
         }
+        if ($this->images()->published()->where('is_poster', true)->exists()) {
+            return 2;
+        }
+        if ($this->images()->published()->where('is_documentation_quality', true)->exists()) {
+            return 2;
+        }
+
+        return 0;
     }
 
     public function getSeoTitleAttribute()
@@ -238,22 +348,25 @@ class Product extends Model
             'id' => $this->id,
             'title_or_designation' => $this->title_or_designation,
             'denomination' => $this->denomination,
-            'description' => in_array($this->publication_code, ['P+D', 'P+D+P', 'P+D+O']) ? $this->description : null,
+            'description' => $this->description,
+            'historic' => $this->historic,
+            'about_author' => $this->getAboutAuthorAttribute(),
             'bibliography' => $this->bibliography,
-            'acquisition_origin' => $this->publication_code === 'P+D+O' ? $this->acquisition_origin : null,
+            'acquisition_origin' => $this->acquisition_origin,
             'acquisition_date' => $this->acquisition_date,
             'acquisition_mode' => $this->searchableEntryMode,
             'inventory_id' => $this->inventory_id,
-            'inventory_id_as_keyword' => strtoupper($this->inventory_id),
+            'formatted_inventory_id' => $this->formatInventoryId($this->inventory_id),
+            'inventory_id_as_keyword' => $this->inventory_id ? strtoupper($this->inventory_id) : '',
             'product_types' => $this->searchableProductTypes,
             'authors' => $this->searchableAuthors,
             'period_name' => $this->period ? $this->period->name : null,
             'period_start_year' => $this->period ? $this->period->start_year : null,
             'period_end_year' => $this->period ? $this->period->end_year : null,
-            'conception_year' => $this->conception_year,
+            'conception_year' => $this->extractYear($this->conception_year),
             'conception_year_as_text' => $this->conception_year ? (string) $this->conception_year : null,
             'images' => $this->searchableImages,
-            'image_quality_score' => $this->imageQualityScore,
+            'image_quality_score' => $this->imageQualityScore(),
             'style' => $this->searchableStyle,
             'materials' => $this->searchableMaterials,
             'production_origin' => $this->searchableProductionOrigin,
@@ -261,9 +374,14 @@ class Product extends Model
             'depth_or_width' => $this->depth_or_width,
             'height_or_thickness' => $this->height_or_thickness,
             'legacy_inventory_number' => $this->legacy_inventory_number,
+            'formatted_dimensions' => $this->getFormattedDimensions($this->dim_order)
         ];
     }
 
+    function extractYear($text): ?int
+    {
+        return is_numeric($text) ? $text : (preg_match('/\d+/', $text, $m) ? $m[0] : null);
+    }
     /***
      * Determine if a model should be indexed in Elasticsearch, or not.
      */
@@ -271,4 +389,56 @@ class Product extends Model
     {
         return $this->is_published;
     }
+
+    private function formatInventoryId($inventoryId) {
+        if (!$inventoryId) {
+            return '';
+        }
+        
+        $inventoryId = preg_replace('/^([A-Z]+)-(\d+)/', '$1 $2', $inventoryId);
+        $inventoryId = preg_replace_callback('/-(\d{3})$/', function ($matches) {
+            return ($matches[1] === "000") ? '' : "/{$matches[1]}";
+        }, $inventoryId);
+        $inventoryId = preg_replace('/-(\d{3})/', '/$1', $inventoryId);
+
+        return $inventoryId;
+    }
+
+    private function getFormattedDimensions($TypeDimRef) {
+        if (!$this->height_or_thickness && !$this->length_or_diameter && !$this->depth_or_width ) {
+            return null;
+        }
+
+        $dimensionsMap = [
+            'Height' => str_replace('.', ',', (float)$this->height_or_thickness),
+            'Width' => str_replace('.', ',', (float)$this->length_or_diameter),
+            'Depth' => str_replace('.', ',', (float)$this->depth_or_width),
+        ];
+
+        $isSmall = count(array_filter($dimensionsMap, fn($d) => $d > 0 && $d < 1)) > 0;
+
+        if ($isSmall) {
+            $dimensionsMap = array_map(fn($d) => round($d * 100, 2), $dimensionsMap);
+        }
+
+        $unit = $isSmall ? 'cm' : 'm';
+        $dimensionsOrder = explode(' x ', $TypeDimRef);
+        $orderedDimensions = array_map(fn($dim) => $dimensionsMap[$dim] ?? null, $dimensionsOrder);
+        $formattedDimensions = implode(' x ', $orderedDimensions) . ' ' . $unit;
+
+        $labelMap = [
+            'Height' => 'h',
+            'Width' => 'l',
+            'Depth' => 'L',
+        ];
+
+        $orderedLabels = array_map(fn($dim) => $labelMap[$dim] ?? null, $dimensionsOrder);
+        $formattedLabel = 'Dimensions (' . implode(' × ', array_filter($orderedLabels)) . ')';
+
+        return [
+            'dimensions' => $formattedDimensions,
+            'label' => $formattedLabel
+        ];
+    }
+
 }

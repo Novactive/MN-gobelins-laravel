@@ -15,6 +15,7 @@ import ProductionOrigins from "./ProductionOrigins";
 import Dimensions from "./Dimensions";
 import ResultCount from "../ResultCount";
 import DesktopOverlayZone from "./DesktopOverlayZone";
+import SelectionsNav from "../../Selection/SelectionsNav.jsx";
 
 class FilterPanelDesktop extends Component {
   constructor(props) {
@@ -30,7 +31,7 @@ class FilterPanelDesktop extends Component {
       filterPanelOpen: false,
       searchFieldValue: "",
       searchFieldPlaceholder: "Rechercher",
-      isLoadingFullTextSearch: false
+      isLoadingFullTextSearch: false,
     };
     this.openPanel = this.openPanel.bind(this);
     this.closeFilterPanels = this.closeFilterPanels.bind(this);
@@ -39,12 +40,35 @@ class FilterPanelDesktop extends Component {
     this.handleSearchFieldBlur = this.handleSearchFieldBlur.bind(this);
     this.handleFullTextSearch = this.handleFullTextSearch.bind(this);
     this.renderOverlayContent = this.renderOverlayContent.bind(this);
+    this.handleFiltersLoaded = this.handleFiltersLoaded.bind(this);
     this.hot_keys = {
       esc: {
         priority: 1,
-        handler: this.closeFilterPanels
-      }
+        handler: this.closeFilterPanels,
+      },
     };
+  }
+
+  componentDidMount() {
+    window.addEventListener('filtersLoaded', this.handleFiltersLoaded);
+    window.addEventListener('filtersUpdated', this.handleFiltersLoaded);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('filtersLoaded', this.handleFiltersLoaded);
+    window.removeEventListener('filtersUpdated', this.handleFiltersLoaded);
+  }
+
+  handleFiltersLoaded(event) {
+    this.setState({
+      productTypes: window.__INITIAL_STATE__.productTypes,
+      styles: window.__INITIAL_STATE__.styles,
+      authors: window.__INITIAL_STATE__.authors,
+      periods: window.__INITIAL_STATE__.periods,
+      materials: window.__INITIAL_STATE__.materials,
+      productionOrigins: window.__INITIAL_STATE__.productionOrigins,
+      dimensions: window.__INITIAL_STATE__.dimensions,
+    });
   }
 
   openPanel(panel, ev) {
@@ -150,9 +174,9 @@ class FilterPanelDesktop extends Component {
                       ? " is-open"
                       : "")
                   }
-                  onClick={ev => this.openPanel("ProductTypes", ev)}
+                  onClick={(ev) => this.openPanel("ProductTypes", ev)}
                 >
-                  Type d’objet
+                  Type d'objet
                 </button>
               </li>
               <li>
@@ -164,7 +188,7 @@ class FilterPanelDesktop extends Component {
                       ? " is-open"
                       : "")
                   }
-                  onClick={ev => this.openPanel("Authors", ev)}
+                  onClick={(ev) => this.openPanel("Authors", ev)}
                 >
                   Auteur
                 </button>
@@ -178,7 +202,7 @@ class FilterPanelDesktop extends Component {
                       ? " is-open"
                       : "")
                   }
-                  onClick={ev => this.openPanel("Periods", ev)}
+                  onClick={(ev) => this.openPanel("Periods", ev)}
                 >
                   Époque
                 </button>
@@ -192,7 +216,7 @@ class FilterPanelDesktop extends Component {
                       ? " is-open"
                       : "")
                   }
-                  onClick={ev => this.openPanel("Styles", ev)}
+                  onClick={(ev) => this.openPanel("Styles", ev)}
                 >
                   Style
                 </button>
@@ -206,7 +230,7 @@ class FilterPanelDesktop extends Component {
                       ? " is-open"
                       : "")
                   }
-                  onClick={ev => this.openPanel("ProductionOrigins", ev)}
+                  onClick={(ev) => this.openPanel("ProductionOrigins", ev)}
                 >
                   Manufacture et atelier
                 </button>
@@ -220,7 +244,7 @@ class FilterPanelDesktop extends Component {
                       ? " is-open"
                       : "")
                   }
-                  onClick={ev => this.openPanel("Materials", ev)}
+                  onClick={(ev) => this.openPanel("Materials", ev)}
                 >
                   Matière
                 </button>
@@ -234,7 +258,7 @@ class FilterPanelDesktop extends Component {
                       ? " is-open"
                       : "")
                   }
-                  onClick={ev => this.openPanel("Dimensions", ev)}
+                  onClick={(ev) => this.openPanel("Dimensions", ev)}
                 >
                   Dimension
                 </button>
@@ -242,19 +266,13 @@ class FilterPanelDesktop extends Component {
             </ul>
           </div>
           <div className="FilterPanelDesktop__bottom-row">
-            <a
-              href="http://www.mobiliernational.culture.gouv.fr/"
-              title="Mobilier national"
-            >
+            <SelectionsNav />
+            {/* <a href="http://www.mobiliernational.culture.gouv.fr/" title="Mobilier national">
               <MnLogo className="FilterPanelDesktop__mn-logo" />
             </a>
-            <a
-              href="/info"
-              className="FilterPanelDesktop__info-link"
-              title="Information"
-            >
+            <a href="/info" className="FilterPanelDesktop__info-link" title="Information">
               <span>i</span>
-            </a>
+            </a> */}
           </div>
         </div>
 
@@ -263,15 +281,16 @@ class FilterPanelDesktop extends Component {
           transitionEnterTimeout={150}
           transitionLeaveTimeout={150}
         >
-          {this.state.isLoadingFullTextSearch && !this.state.filterPanelOpen && (
-            <DesktopOverlayZone
-              onClickOverlay={this.handleOverlayClick}
-              offsetLeft={288}
-              filterPanelsWidth={288}
-            >
-              {this.renderOverlayContent()}
-            </DesktopOverlayZone>
-          )}
+          {this.state.isLoadingFullTextSearch &&
+            !this.state.filterPanelOpen && (
+              <DesktopOverlayZone
+                onClickOverlay={this.handleOverlayClick}
+                offsetLeft={288}
+                filterPanelsWidth={288}
+              >
+                {this.renderOverlayContent()}
+              </DesktopOverlayZone>
+            )}
         </CSSTransitionGroup>
 
         <CSSTransitionGroup

@@ -11,9 +11,18 @@ function DataUnitTemplate(props) {
   );
 }
 
+function formatInventoryId(inventoryId) {
+  if (!inventoryId) return '';
+  
+  return inventoryId
+      .replace(/^([A-Z]+)-(\d+)/, "$1 $2")
+      .replace(/-(\d{3})$/, (match, p1) => (p1 === "000" ? "" : `/${p1}`))
+      .replace(/-(\d{3})/g, "/$1");
+}
+
 function InventoryId(props) {
   return props.inventoryId ? (
-    <DataUnitTemplate label="Numéro d’inventaire" value={props.inventoryId} />
+    <DataUnitTemplate label="Numéro d’inventaire" value={formatInventoryId(props.inventoryId)} />
   ) : null;
 }
 
@@ -30,7 +39,7 @@ function Authors(props) {
       <DataUnitTemplate
         label={label}
         value={props.authors
-          .map(a => [a.first_name, a.last_name].join(" "))
+          .map(a => [a.first_name, a.last_name, a.dates].join(" "))
           .join(", ")}
       />
     );
@@ -71,9 +80,17 @@ function Types(props) {
 }
 
 function Period(props) {
-  return props.period && props.period.name ? (
-    <DataUnitTemplate label="Époque" value={props.period.name} />
-  ) : null;
+  if (!props.period || !props.period.name) return null;
+  const { name, startYear, endYear } = props.period;
+  const hasDateAtEnd = /\(\d{4}\s*-\s*\d{4}\)$/.test(name);
+  const dateRange =
+      !hasDateAtEnd && startYear && endYear ? ` (${startYear} - ${endYear})` : '';
+  return (
+      <DataUnitTemplate
+          label="Époque"
+          value={`${name}${dateRange}`}
+      />
+  );
 }
 
 function Materials(props) {
@@ -113,24 +130,12 @@ function ProductionOrigin(props) {
 
 /* By default, values are in meters. */
 function Dimensions(props) {
-  const has_dims = props.l || props.w || props.h; // values can be null!
-  let dims = [
-    parseFloat(props.l || 0),
-    parseFloat(props.w || 0),
-    parseFloat(props.h || 0)
-  ];
-  const is_small = has_dims && dims.filter(d => d > 0 && d < 1).length > 0;
-  dims = is_small
-    ? dims
-        .map(d => parseFloat((d * 100).toFixed(2)))
-        .map(d => (Number.isInteger(d) ? parseInt(d) : d))
-    : dims;
-  const unit = is_small ? "cm" : "m";
+  const has_dims = props.dimensions && props.dimensions.trim().length > 0;
   return has_dims ? (
     <DataUnitTemplate
-      label="Dimensions (L × l × h)"
+      label={props.label}
       value={
-        dims.map(d => d.toString().replace(".", ",")).join(" × ") + " " + unit
+        props.dimensions
       }
     />
   ) : null;
@@ -203,9 +208,8 @@ function Data(props) {
         <Materials materials={props.product.materials} />
         <ProductionOrigin productionOrigin={props.product.production_origin} />
         <Dimensions
-          l={props.product.length_or_diameter}
-          w={props.product.depth_or_width}
-          h={props.product.height_or_thickness}
+          label={props.product.formatted_dimensions.label}
+          dimensions={props.product.formatted_dimensions.dimensions}
         />
         <Acquisition
           acquisitionDate={props.product.acquisition_date}

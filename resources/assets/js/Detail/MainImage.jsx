@@ -14,24 +14,35 @@ class MainImage extends Component {
   }
 
   render() {
+    // ${location.origin}
+    // ${location.origin}/media/xl/${encodeURIComponent(this.props.image.path)}
+    // ${location.origin}/media/orig/${encodeURIComponent(this.props.image.path)}`
     let imgUrl = this.props.image
-      ? `/media/xl/${encodeURIComponent(this.props.image.path)}`
+      ?
+        !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+          ? `https://collection.mobiliernational.culture.gouv.fr/media/xl/${encodeURIComponent(this.props.image.path)}`
+          : `${location.origin}/media/xl/${encodeURI(this.props.image.path)}`
       : "";
     let downloadUrl = this.props.image
-      ? `${location.origin}/media/orig/${encodeURIComponent(
-          this.props.image.path
-        )}`
+      ? !process.env.NODE_ENV || process.env.NODE_ENV === 'development'
+        ? `https://collection.mobiliernational.culture.gouv.fr/media/orig/${encodeURIComponent(this.props.image.path)}`
+        : `${location.origin}/media/xl/${encodeURI(this.props.image.path)}`
       : "";
     let downloadFilename = "";
-    let downloadFilenameRes = this.props.image
-      ? this.props.image.path.match(/.*\/(.+)(\.jpg)$/i)
-      : null;
-    if (downloadFilenameRes) {
-      downloadFilename =
-        downloadFilenameRes[1] +
-        " © Mobilier national" +
-        downloadFilenameRes[2];
+    if (this.props.image) {
+      const path = this.props.image.path;
+      const isImage = /\.(jpg|jpeg|png|gif)$/i.test(path);
+      const baseName = path.split('/').pop();
+      if (isImage) {
+        const nameParts = baseName.split('.');
+        const extension = nameParts.pop();
+        const name = nameParts.join('.');
+        downloadFilename = `${name} © Mobilier national.${extension}`;
+      } else {
+        downloadFilename = baseName;
+      }
     }
+
     return (
       <section className="DetailMainImage">
         {this.props.image ? (
@@ -65,7 +76,7 @@ class MainImage extends Component {
                       this,
                       this.props.product
                     )}
-                    title="Ajouter l’objet à une sélection"
+                    title="Ajouter l'objet à une sélection"
                   >
                     <Heart width="20" height="20" />
                   </button>
@@ -77,7 +88,7 @@ class MainImage extends Component {
               <Link
                 to={`${this.props.match.url}/zoom`}
                 className="DetailMainImage__button DetailMainImage__button--magnifying-glass"
-                title="Agrandir l’image"
+                title="Agrandir l'image"
               >
                 <MagnifyingGlass />
               </Link>
@@ -86,7 +97,7 @@ class MainImage extends Component {
                 download={downloadFilename}
                 onClick={() => this.props.onDownload(downloadUrl)}
                 className="DetailMainImage__button DetailMainImage__button--download"
-                title="Télécharger l’image en haute définition"
+                title="Télécharger l'image en haute définition"
               >
                 <Download />
               </a>

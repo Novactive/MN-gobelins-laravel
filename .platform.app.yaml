@@ -9,7 +9,7 @@ type: php:7.4
 
 dependencies:
   php:
-    composer/composer: '^1'
+    composer/composer: '^2'
 
 build:
   flavor: none
@@ -33,7 +33,10 @@ hooks:
   deploy: |
     set -e
     APP_ENV=prod composer run platformsh-deploy
-
+    # execute migrations
+    php artisan migrate --force
+    # Exécuter le seeder
+    php artisan db:seed --class=UpdateDatabaseSeeder --force
 
 # The relationships of the application with services or other applications.
 # The left-hand side is the name of the relationship as it will be exposed
@@ -44,15 +47,19 @@ relationships:
   rediscache: "cache:redis"
   redissession: "cache:redis"
   elasticsearch: "es:elasticsearch"
+  rabbitmq: "rabbitmq:rabbitmq"
 
 # The size of the persistent disk of the application (in MB).
-disk: 3584
+disk: 4500
 
 # The mounts that will be performed when the package is deployed.
 mounts:
   "storage/app/public":
     source: local
     source_path: "public"
+  "storage/app/glide_cache":
+    source: local
+    source_path: "glide_cache"
   "storage/framework/views":
     source: local
     source_path: "views"
@@ -71,6 +78,9 @@ mounts:
   "/.config":
     source: local
     source_path: "config"
+  "public/media/xl":
+    source: local
+    source_path: "media_xl"
 
 # The configuration of app when it is exposed to the web.
 web:
@@ -86,11 +96,23 @@ web:
       scripts: false
 
 variables:
+  php:
+    memory_limit: "256M"
   env:
     N_PREFIX: /app/.global
+    MEDIA_LIBRARY_ENDPOINT_TYPE: local
+    MEDIA_LIBRARY_IMAGE_SERVICE: A17\Twill\Services\MediaLibrary\Glide
+    FILE_LIBRARY_ENDPOINT_TYPE: local
 
-crons:
-  # Run Laravel's scheduler every 5 minutes, which is often as crons can run on Professional plans.
-  scheduler:
-    spec: '*/5 * * * *'
-    cmd: 'php artisan schedule:run'
+# crons:
+#   # Run Laravel's scheduler every 5 minutes, which is often as crons can run on Professional plans.
+#   scheduler:
+#     spec: '*/5 * * * *'
+#     cmd: 'php artisan schedule:run'
+
+workers:
+  # Run the consumer to cosume messages on the queue
+  rabbitmq-consumer:
+    commands:
+      start: php artisan queue:work rabbitmq --daemon
+

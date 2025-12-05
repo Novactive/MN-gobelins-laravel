@@ -47,7 +47,7 @@ export default function CollectionGridItem({
 
   return (
     <a
-      href={`/objet/${datum.inventory_id}`}
+      href={`/objet/${datum.inventory_id ? datum.inventory_id.replace(/[\s/]+/g, "-") : ''}`}
       onClick={onObjectClick.bind(this, datum)}
       className={classNames("Collection__cell", className)}
     >

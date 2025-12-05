@@ -12,7 +12,7 @@ class Selection extends JsonResource
     public function __construct($r)
     {
         parent::__construct($r);
-        $this->client = ClientBuilder::create()->build();
+        $this->client = ClientBuilder::create()->setHosts(config("es.host"))->build();
     }
 
     /**
@@ -26,16 +26,26 @@ class Selection extends JsonResource
         $canUpdateThis = $request->user('api') && $request->user('api')->can('update', $this->resource);
 
         $product_ids = $this->resource->products()->where('is_published', true)->select('id')->get()->pluck('id')->toArray();
+
         if (sizeof($product_ids)) {
-            $es = $this->client->mget([
-                "index" => "gobelins_search",
+            // Use search query instead of mget to get products by database IDs
+            $es = $this->client->search([
+                "index" => "gobelins_search_1",
                 "type" => "products",
-                "body" => ["ids" => $product_ids],
+                "body" => [
+                    "query" => [
+                        "terms" => [
+                            "id" => $product_ids
+                        ]
+                    ],
+                    "size" => count($product_ids)
+                ]
             ]);
-            $products = collect($es['docs'])->map(function ($d) {
-                $d['_source']['_id'] = $d['_id'];
-                return $d;
-            })->pluck('_source')->all();
+            
+            $products = collect($es['hits']['hits'])->map(function ($hit) {
+                $hit['_source']['_id'] = $hit['_id'];
+                return $hit['_source'];
+            })->all();
         } else {
             $products = [];
         }

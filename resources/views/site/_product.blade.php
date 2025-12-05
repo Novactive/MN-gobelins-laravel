@@ -93,7 +93,7 @@ $orientation = $first_img['width'] < $first_img['height'] ? 'portrait' : 'landsc
                 <dl class="DetailData">
                     <div class="DetailData__unit">
                         <dt class="DetailData__label">Numéro d’inventaire</dt>
-                        <dd class="DetailData__datum">{{ $product['inventory_id'] }}</dd>
+                        <dd class="DetailData__datum">{{ $product['formatted_inventory_id'] }}</dd>
                     </div>
                     @unless(empty($product['authors']))
                     <div class="DetailData__unit">
@@ -124,7 +124,7 @@ $orientation = $first_img['width'] < $first_img['height'] ? 'portrait' : 'landsc
                     <div class="DetailData__unit">
                         <dt class="DetailData__label">Types</dt>
                         <dd class="DetailData__datum">
-                            {{ 
+                            {{
                                 collect($product['product_types'])
                                 ->map(function($pt) {
                                     return $pt['name'];
@@ -133,15 +133,26 @@ $orientation = $first_img['width'] < $first_img['height'] ? 'portrait' : 'landsc
                         </dd>
                     </div>
                     @endunless
-                    @unless(empty($product['period']))
+                    @unless(empty($product['period_name']))
                     <div class="DetailData__unit">
                         <dt class="DetailData__label">Époque</dt>
-                        <dd class="DetailData__datum">{{ $product['period']['name'] }}</dd>
+                        @php
+                            $name = $product['period_name'] ?? '';
+                            $start = $product['period_start_year'] ?? '';
+                            $end = $product['period_end_year'] ?? '';
+                            $hasDateAtEnd = preg_match('/\(\d{4}\s*-\s*\d{4}\)$/', $name);
+                        @endphp
+                        <dd class="DetailData__datum">
+                            {{ $name }}
+                            @if (!$hasDateAtEnd && !empty($start) && !empty($end))
+                                ({{ $start }} - {{ $end }})
+                            @endif
+                        </dd>
                     </div>
                     @endunless
                     @unless(empty($product['materials']))
                     <div class="DetailData__unit">
-                        <dt class="DetailData__label">Types</dt>
+                        <dt class="DetailData__label">Matières</dt>
                         <dd class="DetailData__datum">
                             {{ 
                                 collect($product['materials'])
@@ -158,25 +169,45 @@ $orientation = $first_img['width'] < $first_img['height'] ? 'portrait' : 'landsc
                         <dd class="DetailData__datum">{{ $product['production_origin']['name'] }}</dd>
                     </div>
                     @endunless
-                    @unless(empty(array_filter([ $product['length_or_diameter'], $product['height_or_thickness'],
-                    $product['depth_or_width'] ])))
+                    @unless(empty($product['formatted_dimensions']))
                     <div class="DetailData__unit">
-                        <dt class="DetailData__label">Dimensions (L × l × h) mètres</dt>
+                        <dt class="DetailData__label">{{$product['formatted_dimensions']['label']}}</dt>
                         <dd class="DetailData__datum">
-                            {{ join(' × ',array_filter([ $product['length_or_diameter'], $product['height_or_thickness'], $product['depth_or_width'] ])) }}
+                            {{$product['formatted_dimensions']['dimensions']}}
                         </dd>
                     </div>
                     @endunless
-                    @unless(empty($product['acquisition_date']))
+
+                    @unless(empty($product['acquisition_date']) && empty($product['acquisition_mode']) && empty($product['acquisition_origin']))
                     <div class="DetailData__unit">
                         <dt class="DetailData__label">Acquisition</dt>
                         <dd class="DetailData__datum">
-                            {{ $product['acquisition_date'] }}
-                            @unless(empty($product['acquisition_mode']))
-                            {{ isset($product['acquisition_mode']['name']) ?: $product['acquisition_mode']['name'] }}
-                            @endunless
+                            @php
+                                $elements = [];
+
+                                if (!empty($product['acquisition_date'])) {
+                                    $elements[] = $product['acquisition_date'];
+                                }
+
+                                if (!empty($product['acquisition_mode']) && isset($product['acquisition_mode']['name'])) {
+                                    $elements[] = $product['acquisition_mode']['name'];
+                                }
+
+                                if (!empty($product['acquisition_origin'])) {
+                                    $elements[] = $product['acquisition_origin'];
+                                }
+                            @endphp
+
+                            {{ implode(' - ', $elements) }}
                         </dd>
                     </div>
+                    @endunless
+
+                    @unless(empty($product['legacy_inventory_number']))
+                        <div class="DetailData__unit">
+                            <dt class="DetailData__label">Ancien numéro d’inventaire</dt>
+                            <dd class="DetailData__datum">{{ $product['legacy_inventory_number'] }}</dd>
+                        </div>
                     @endunless
 
                 </dl><!-- /.DetailData -->
@@ -190,6 +221,25 @@ $orientation = $first_img['width'] < $first_img['height'] ? 'portrait' : 'landsc
                             {!! nl2br($product['description']) !!}
                         </dd>
                     </div>
+                    @endunless
+                    @unless(empty($product['historic']))
+                        <div class="DetailInfo__unit">
+                            <dt class="DetailData__label">Historique</dt>
+                            <dd class="DetailData__datum">
+                                {!! nl2br($product['historic']) !!}
+                            </dd>
+                        </div>
+                    @endunless
+                    @unless(empty($product['about_author']))
+                        <div class="DetailInfo__unit">
+                            <dt class="DetailData__label">
+                                A propos de
+                                {{ count($product['authors']) > 1 ? 'des auteurs' : 'l\'auteur' }}
+                            </dt>
+                            <dd class="DetailData__datum">
+                                {!! nl2br($product['about_author']) !!}
+                            </dd>
+                        </div>
                     @endunless
                     @unless(empty($product['bibliography']))
                     <div class="DetailInfo__unit">

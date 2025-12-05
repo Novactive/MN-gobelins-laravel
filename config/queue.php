@@ -1,5 +1,8 @@
 <?php
 
+$relationships = json_decode(base64_decode($_ENV['PLATFORM_RELATIONSHIPS'] ?? ''), true);
+$rabbitmq = $relationships['rabbitmq'][0] ?? [];
+
 return [
 
     /*
@@ -13,7 +16,7 @@ return [
     |
     */
 
-    'default' => env('QUEUE_DRIVER', 'sync'),
+    'default' => env('QUEUE_DRIVER', 'rabbitmq'),
 
     /*
     |--------------------------------------------------------------------------
@@ -63,6 +66,29 @@ return [
             'queue' => 'default',
             'retry_after' => 90,
             'block_for' => null,
+        ],
+        'rabbitmq' => [
+            'driver' => 'rabbitmq',
+            'queue' => env('RABBITMQ_QUEUE', 'default'),
+            'connection' => PhpAmqpLib\Connection\AMQPStreamConnection::class,
+
+            'hosts' => [
+                [
+                    'host' => env('RABBITMQ_HOST', 'rabbitmq'),
+                    'port' => env('RABBITMQ_PORT', 5672),
+                    'user' => env('RABBITMQ_USER', 'guest'),
+                    'password' => env('RABBITMQ_PASSWORD', 'guest'),
+                    'vhost' => env('RABBITMQ_VHOST', '/'),
+                ],
+            ],
+
+            'options' => [
+                'exchange' => [
+                    'name' => env('RABBITMQ_EXCHANGE_NAME', 'default'),
+                    'type' => env('RABBITMQ_EXCHANGE_TYPE', 'direct'),
+                    'declare' => env('RABBITMQ_EXCHANGE_DECLARE', true),
+                ],
+            ],
         ],
 
     ],
