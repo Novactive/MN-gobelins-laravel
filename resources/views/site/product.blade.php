@@ -23,9 +23,7 @@
                     </span>
                 </a>
                 </div><!-- /.BackToCollection -->
-                
-        
-        
+
                 <section class="DetailMainImage">
                     <figure class="DetailMainImage__fig">
         
