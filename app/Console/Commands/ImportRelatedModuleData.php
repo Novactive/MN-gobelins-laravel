@@ -73,7 +73,7 @@ class ImportRelatedModuleData extends Command
 
         try {
             // Lancer l'import pour chaque type demandé
-            $startDate = now()->subHours(2);
+            $startDate = now()->subHours(24);
             foreach ($types as $type) {
                 $this->importModules($offset, $limit, $type, $startDate);
             }
