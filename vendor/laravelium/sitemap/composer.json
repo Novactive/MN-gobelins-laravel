@@ -1,0 +1,44 @@
+{
+	"name": "laravelium/sitemap",
+	"description": "Laravelium Sitemap package for Laravel.",
+	"homepage": "https://gitlab.com/Laravelium",
+	"keywords": ["laravelium", "laravel", "php", "sitemap", "generator", "xml", "html", "google-news"],
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Rumen Damyanov",
+			"email": "r@alfamatter.com",
+			"role": "Developer",
+			"homepage": "https://darumen.com"
+		}
+	],
+	"support": {
+		"issues": "https://gitlab.com/Laravelium/Sitemap/issues",
+		"source": "https://gitlab.com/Laravelium/Sitemap",
+		"wiki": "https://gitlab.com/Laravelium/Sitemap/wikis/home"
+	},
+	"require": {
+		"php": ">=7.2",
+		"illuminate/support": "~7.0",
+		"illuminate/filesystem": "~7.0"
+	},
+	"require-dev": {
+		"laravel/framework": "~7.0",
+		"phpunit/phpunit": "^8.0",
+		"orchestra/testbench-core": "~5.0"
+	},
+	"autoload": {
+		"psr-0": {
+			"Laravelium\\Sitemap": "src/"
+		}
+	},
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Laravelium\\Sitemap\\SitemapServiceProvider"
+			]
+		}
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true
+}
