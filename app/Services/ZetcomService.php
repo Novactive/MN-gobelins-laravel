@@ -16,12 +16,14 @@ class ZetcomService
         'Multimedia' => 'images.fields',
         'Conservation' => 'conservation.fields'
     ];
+    private XmlDataProcessor $dataProcessor;
     protected $baseUrl;
     protected $username;
     protected $password;
 
-    public function __construct()
+    public function __construct(XmlDataProcessor $dataProcessor)
     {
+        $this->dataProcessor = $dataProcessor;
         $this->baseUrl = config('services.zetcom.base_url');
         $this->username = config('services.zetcom.username');
         $this->password = config('services.zetcom.password');
@@ -72,7 +74,7 @@ class ZetcomService
     /**
      * @param string $moduleName
      * @param int $moduleRecordId
-     * @return string
+     * @return \SimpleXMLElement|null
      * @throws Exception
      */
     public function getSingleModule(string $moduleName, int $moduleRecordId)
@@ -85,7 +87,9 @@ class ZetcomService
             ]],
         );
 
-        return $this->callEndpoint('post', "/module/$moduleName/search", ['body' => $requestXml])->body();
+        $modulesXml = $this->callEndpoint('post', "/module/$moduleName/search", ['body' => $requestXml])->body();
+        $parsedXml = $this->dataProcessor->parseXml($modulesXml);
+        return !empty($parsedXml['items']) ? $parsedXml['items'][0] : null;
     }
 
     /**
@@ -94,7 +98,8 @@ class ZetcomService
      * @param $limit
      * @param $offset
      * @param $startDate
-     * @return string
+     *
+     * @return array{totalCount:int, items:\SimpleXMLElement[]|false}|null
      * @throws Exception
      */
     public function getModifiedModules(string $moduleName, bool $all, $limit, $offset, $startDate = null) {
@@ -113,7 +118,8 @@ class ZetcomService
             $offset
         );
 
-        return $this->callEndpoint('post', "/module/$moduleName/search", ['body' => $requestXml])->body();
+        $modulesXml = $this->callEndpoint('post', "/module/$moduleName/search", ['body' => $requestXml])->body();
+        return $this->dataProcessor->parseXml($modulesXml);
     }
 
     /**
@@ -215,7 +221,7 @@ class ZetcomService
             '<application ' . $this->buildXmlAttributes($xmlNamespaces) . '>',
             '  <modules>',
             "    <module name='$moduleName'>",
-            "      <search " . ($all && $limit ? "limit='$limit' " : "") . "offset='$offset'>",
+            "      <search " . ($limit ? "limit='$limit' " : "") . "offset='$offset'>",
             '        <sort>',
             '            <field fieldPath="__lastModified" direction="Descending"/>',
             '        </sort>'
@@ -244,14 +250,14 @@ class ZetcomService
             $xmlParts[] = '        </expert>';
         }
 
-        $xmlParts[] = implode("\n", [
+        $xmlParts[] = implode(PHP_EOL, [
             '      </search>',
             '    </module>',
             '  </modules>',
             '</application>'
         ]);
 
-        return implode("\n", $xmlParts);
+        return implode(PHP_EOL, $xmlParts);
     }
 
     /**

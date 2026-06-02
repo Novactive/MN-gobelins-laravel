@@ -192,8 +192,13 @@ class Import
 
             // Materials
             $conservation = !empty($item['conservation']) ? array_map(function ($id) {
-                $moduleXml = $this->zetcomService->getSingleModule('Conservation', (int)$id);
-                return $this->dataProcessor->processConservationData($moduleXml);
+                $multimediaItem = $this->zetcomService->getSingleModule('Conservation', (int)$id);
+                if (!$multimediaItem) {
+                    Log::error("Aucun élément XML trouvé pour processConservationData");
+                    return null;
+                }
+
+                return $this->dataProcessor->processConservationData($multimediaItem);
             }, $item['conservation']) : [];
 
             $materials = $item['mat_tech'];
@@ -256,7 +261,7 @@ class Import
     {
         $mediaDir = public_path('media/xl/');
         $originalFile = $mediaDir . $originalImagePath;
-        
+
         if (!file_exists($originalFile)) {
             return;
         }
@@ -266,7 +271,7 @@ class Import
         $directory = $pathInfo['dirname'];
         $pattern = $directory . '/' . $baseName . '-image(*).' . $extension;
         $variationFiles = glob($pattern);
-        
+
         foreach ($variationFiles as $variationFile) {
             if (file_exists($variationFile)) {
                 unlink($variationFile);
@@ -284,17 +289,27 @@ class Import
 
         $images = collect($images)
             ->map(function ($imgId) {
-                $moduleXml = $this->zetcomService->getSingleModule('Multimedia', $imgId);
+                $multimediaItem = $this->zetcomService->getSingleModule('Multimedia', $imgId);
                 return [
                     'imgId' => $imgId,
-                    'moduleXml' => $moduleXml,
+                    'multimediaItem' => $multimediaItem,
                 ];
             })
             ->filter(function ($img) {
-                return $this->dataProcessor->isImagePublishable($img['moduleXml']);
+                if (!$img['multimediaItem']) {
+                    Log::error("Aucun élément XML trouvé pour isImagePublishable");
+                    return false;
+                }
+
+                return $this->dataProcessor->isImagePublishable($img['multimediaItem']);
             })
             ->map(function ($img) use ($isPublicDomain, $skipImageDownload) {
-                $imageDetails = $this->dataProcessor->processMultimediaData($img['moduleXml']);
+                if (!$img['multimediaItem']) {
+                    Log::error("Aucun élément XML trouvé pour processMultimediaData");
+                    return [];
+                }
+
+                $imageDetails = $this->dataProcessor->processMultimediaData($img['multimediaItem']);
                 // On tente de deviner le nom du fichier à partir du moduleXml ou d'une méthode utilitaire
                 $path = $this->zetcomService->getImage($img['imgId'], $skipImageDownload);
                 return [
@@ -340,15 +355,13 @@ class Import
      */
     private function importAuthors(array $authorIds, int $productId) {
         return collect($authorIds)->map(function ($auId) use ($productId) {
-                $authorXml = $this->zetcomService->getSingleModule('Person', $auId);
-                $author = $this->dataProcessor->processPersonData($authorXml, $productId);
-                
-                // Vérifier si processPersonData a retourné null
-                if ($author === null) {
-                    Log::error("Impossible de traiter les données de l'auteur $auId pour le produit $productId");
+            $PersonItem = $this->zetcomService->getSingleModule('Person', $auId);
+                if (empty($PersonItem)) {
+                    Log::error("Aucun élément XML trouvé pour processPersonData avec productId: $productId");
                     return null;
                 }
-                
+
+                $author = $this->dataProcessor->processPersonData($PersonItem, $productId);
                 $legacyId = $author['legacy_id'] ? (int)$author['legacy_id'] : (int)$author['id'];
                 $author = \App\Models\Author::updateOrCreate(
                     ['legacy_id' => $legacyId],
@@ -393,9 +406,13 @@ class Import
         foreach ($objLiteratureRef as $literatureRef) {
             $objLiteratureId = $literatureRef['id'];
             $pageRefTxt = $literatureRef['page'];
-            $literatureXml = $this->zetcomService->getSingleModule('Literature', (int)$objLiteratureId);
-            $litCitationClb = $this->dataProcessor->getLiteratureItem($literatureXml);
+            $LiteratureItem = $this->zetcomService->getSingleModule('Literature', (int)$objLiteratureId);
+            if (!$LiteratureItem) {
+                Log::error("Aucun élément XML trouvé pour getLiteratureItem");
+                continue;
+            }
 
+            $litCitationClb = $this->dataProcessor->getLiteratureItem($LiteratureItem);
             if ($litCitationClb === ""){
                 continue;
             }
