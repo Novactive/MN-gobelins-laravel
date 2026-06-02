@@ -1,0 +1,4 @@
+- merge devs on "build_livraison" branche
+- update version number in [VERSION](VERSION)
+- on Jenkins, build release using [Init-Manuel](https://jenkins.almaviacx.local/job/WMO/job/Clients/job/MobilierNational/job/Init-Manuel/) pipeline
+- on Jenkins, deploy builded release using [Deploy](https://jenkins.almaviacx.local/job/WMO/job/Clients/job/MobilierNational/job/Deploy/) pipeline
