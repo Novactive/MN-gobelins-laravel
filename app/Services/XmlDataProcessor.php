@@ -28,15 +28,17 @@ class XmlDataProcessor
     }
 
     /**
-     * @param $itemData
-     * @return array|false|\SimpleXMLElement[]|null
+     * @return array{totalCount:int, items:\SimpleXMLElement[]|false}|null
      */
-    public function parseXml($itemData)
+    public function parseXml(string $itemData)
     {
         try {
             $parsedXml = new \SimpleXMLElement($itemData);
             $parsedXml->registerXPathNamespace('zetcom', $this->moduleNamspace);
-            return $parsedXml->xpath('//zetcom:moduleItem');
+            return [
+                'totalCount' => (int) $parsedXml->xpath('//zetcom:module')[0]['totalSize'],
+                'items' => $parsedXml->xpath('//zetcom:moduleItem')
+            ];
         } catch (\Exception $e) {
             Log::error('Erreur lors du parsing XML: ' . $e->getMessage());
             return null;
@@ -44,12 +46,11 @@ class XmlDataProcessor
     }
 
     /**
-     * @param $moduleXml
+     * @param \SimpleXMLElement[] $moduleItems
      * @return array
      */
-    public function processObjectsData($moduleXml)
+    public function processObjectsData(array $moduleItems): array
     {
-        $moduleItems = $this->parseXml($moduleXml);
         $objects = [];
 
         foreach ($moduleItems as $item) {
@@ -124,20 +125,10 @@ class XmlDataProcessor
     }
 
     /**
-     * @param $moduleXml
      * @return array
      */
-    public function processPersonData($moduleXml, int $productId)
+    public function processPersonData(\SimpleXMLElement $PersonItem, int $productId): array
     {
-        $parsedXml = $this->parseXml($moduleXml);
-        
-        if (empty($parsedXml)) {
-            Log::error("Aucun élément XML trouvé pour processPersonData avec productId: $productId");
-            return null;
-        }
-        
-        $PersonItem = $parsedXml[0];
-
         $PersonItem->registerXPathNamespace('zetcom', $this->moduleNamspace);
         $personType = $this->extractValue($PersonItem, '//zetcom:vocabularyReference[@name="PerTypeVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue');
         $attrs = $PersonItem->attributes();
@@ -168,19 +159,10 @@ class XmlDataProcessor
     }
 
     /**
-     * @param $moduleXml
      * @return array
      */
-    public function processMultimediaData($moduleXml): array
+    public function processMultimediaData(\SimpleXMLElement $multimediaItem): array
     {
-        $parsedXml = $this->parseXml($moduleXml);
-        
-        if (empty($parsedXml)) {
-            Log::error("Aucun élément XML trouvé pour processMultimediaData");
-            return [];
-        }
-        
-        $multimediaItem = $parsedXml[0];
         $communication = $this->extractValue($multimediaItem, '//zetcom:vocabularyReference[@name="MulCommunicationVoc"]/zetcom:vocabularyReferenceItem/zetcom:formattedValue');
 
         return [
@@ -194,32 +176,18 @@ class XmlDataProcessor
     }
 
     /**
-     * @param $moduleXml
      * @return array|string|null
      */
-    public function processConservationData($moduleXml)
+    public function processConservationData(\SimpleXMLElement $multimediaItem)
     {
-        $parsedXml = $this->parseXml($moduleXml);
-        
-        if (empty($parsedXml)) {
-            Log::error("Aucun élément XML trouvé pour processConservationData");
-            return null;
-        }
-        
-        $multimediaItem = $parsedXml[0];
-
         return $this->extractValue($multimediaItem, '//zetcom:vocabularyReference[@name="ConCoveringVoc"]/zetcom:vocabularyReferenceItem/@name') ?? null;
     }
 
 
     /**
-     * @param $xml
-     * @param $xpath
-     * @param int $key
-     * @param bool $isMultiVal
      * @return array|string|null
      */
-    private function extractValue($xml, $xpath, bool $isMultiVal = false) {
+    private function extractValue(\SimpleXMLElement $xml, string $xpath, bool $isMultiVal = false) {
         $xml->registerXPathNamespace('zetcom', $this->moduleNamspace);
         $results = $xml->xpath($xpath);
         if ($results && $isMultiVal) {
@@ -275,18 +243,10 @@ class XmlDataProcessor
 
 
     /**
-     * @param $moduleXml
      * @return bool
      */
-    public function isImagePublishable($moduleXml) {
-        $parsedXml = $this->parseXml($moduleXml);
-        
-        if (empty($parsedXml)) {
-            Log::error("Aucun élément XML trouvé pour isImagePublishable");
-            return false;
-        }
-        
-        $multimediaItem = $parsedXml[0];
+    public function isImagePublishable(\SimpleXMLElement $multimediaItem) {
+
         $mulInternetVoc = $this->extractValue($multimediaItem, '//zetcom:vocabularyReference[@name="MulInternetVoc"]/zetcom:vocabularyReferenceItem/@name');
 
         if ($mulInternetVoc == "yes") {
@@ -297,20 +257,10 @@ class XmlDataProcessor
     }
 
     /**
-     * @param $moduleXml
      * @return array|string
      */
-    public function getLiteratureItem($moduleXml)
+    public function getLiteratureItem(\SimpleXMLElement $LiteratureItem)
     {
-        $parsedXml = $this->parseXml($moduleXml);
-        
-        if (empty($parsedXml)) {
-            Log::error("Aucun élément XML trouvé pour getLiteratureItem");
-            return "";
-        }
-        
-        $LiteratureItem = $parsedXml[0];
-
         return $this->extractValue($LiteratureItem, '//zetcom:dataField[@name="LitCitationClb"]/zetcom:value') ?? "";
     }
 
@@ -324,11 +274,11 @@ class XmlDataProcessor
         $literatureRefs = [];
         // Get all moduleReferenceItem elements for ObjLiteratureRef
         $moduleRefItems = $item->xpath('./zetcom:moduleReference[@name="ObjLiteratureRef"]/zetcom:moduleReferenceItem');
-        
+
         foreach ($moduleRefItems as $moduleRefItem) {
             $moduleItemId = (string)$moduleRefItem['moduleItemId'];
             $pageRefTxt = $this->extractValue($moduleRefItem, './zetcom:dataField[@name="PageRefTxt"]/zetcom:value');
-            
+
             $literatureRefs[] = [
                 'id' => $moduleItemId,
                 'page' => $pageRefTxt

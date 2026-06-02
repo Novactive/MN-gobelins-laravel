@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 class UpdateZetcomProductId extends Command
 {
     const MODULE_NAME = "Object";
-    
+
     /**
      * The name and signature of the console command.
      *
@@ -75,8 +75,8 @@ class UpdateZetcomProductId extends Command
 
         try {
             // Récupérer les objets modifiés depuis Zetcom
-            $modulesXml = $this->zetcomService->getModifiedModules(self::MODULE_NAME, $all, $limit, $offset);
-            $objects = $this->dataProcessor->processObjectsData($modulesXml);
+            $moduleItems = $this->zetcomService->getModifiedModules(self::MODULE_NAME, $all, $limit, $offset);
+            $objects = $this->dataProcessor->processObjectsData($moduleItems['items']);
 
             if (empty($objects)) {
                 $this->info("Aucun objet trouvé pour la mise à jour.");
@@ -91,9 +91,9 @@ class UpdateZetcomProductId extends Command
 
             foreach ($objects as $object) {
                 try {
-                    $inventoryId = $object['inventory_root'] . '-' . 
+                    $inventoryId = $object['inventory_root'] . '-' .
                         ((!isset($object['inventory_number']) || $object['inventory_number'] == 0) ? "000" : $object['inventory_number']) . '-' .
-                        ((!isset($object['inventory_suffix']) || $object['inventory_suffix'] == 0) ? "000" : $object['inventory_suffix']) . 
+                        ((!isset($object['inventory_suffix']) || $object['inventory_suffix'] == 0) ? "000" : $object['inventory_suffix']) .
                         ($object['inventory_suffix2'] ? "-" . $object['inventory_suffix2'] : '');
 
                     // Chercher le produit par inventory_id
@@ -121,7 +121,7 @@ class UpdateZetcomProductId extends Command
            // $this->info("Mise à jour terminée :");
            // $this->info("- Produits mis à jour : $updatedCount");
            // $this->info("- Erreurs : $errorCount");
-            
+
             if (!empty($notFoundIds)) {
                 $notFoundIdsString = implode(',', $notFoundIds);
                 $this->info("- Objets non trouvés (" . count($notFoundIds) . ") : $notFoundIdsString");
@@ -133,4 +133,4 @@ class UpdateZetcomProductId extends Command
             return Command::FAILURE;
         }
     }
-} 
+}

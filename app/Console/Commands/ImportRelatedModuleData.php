@@ -17,7 +17,7 @@ class ImportRelatedModuleData extends Command
      *
      * @var string
      */
-    protected $signature = 'gobelins:import:related {--offset : Point de départ} {--limit= : Nombre d\'objets à traiter} {--types= : Liste des types (ex: multimedia,person,conservation,literature)}';
+    protected $signature = 'gobelins:import:related {--offset : Point de départ} {--limit= : Nombre d\'objets à traiter} {--types= : Liste des types (ex: multimedia,person,conservation,literature)} {--since=-1 day : Modifié depuis}';
 
     /**
      * The console command description.
@@ -50,6 +50,7 @@ class ImportRelatedModuleData extends Command
         $offset = (int)$this->option('offset');
         $limit = $this->option('limit') ? (int)$this->option('limit') : null;
         $typesOption = $this->option('types');
+        $since = $this->option('since');
 
         // Types autorisés et ordre par défaut
         $allowedTypes = ['multimedia',  'conservation', 'person', 'literature'];
@@ -73,7 +74,7 @@ class ImportRelatedModuleData extends Command
 
         try {
             // Lancer l'import pour chaque type demandé
-            $startDate = now()->subHours(24);
+            $startDate =  now()->modify($since);
             foreach ($types as $type) {
                 $this->importModules($offset, $limit, $type, $startDate);
             }
@@ -112,18 +113,17 @@ class ImportRelatedModuleData extends Command
         }
 
         $this->info("   Récupération des modules modifiés ($moduleName)");
-        $modulesXml = $this->zetcomService->getModifiedModules($moduleName, false, $limit, $offset, $startDate);
-        $moduleItems = $this->dataProcessor->parseXml($modulesXml);
+        $moduleItems = $this->zetcomService->getModifiedModules($moduleName, false, $limit, $offset, $startDate);
 
-        if (empty($moduleItems)) {
+        if (!$moduleItems || empty($moduleItems['items'])) {
             $this->warn("Aucun module trouvé pour $moduleName.");
             return;
         }
 
-        $this->info( count($moduleItems) . " modules $moduleName trouvés");
+        $this->info( $moduleItems['totalCount'] . " modules $moduleName trouvés");
 
         $this->info("2. Extraction des IDs des objets liés...");
-        $objectIds = $this->extractLinkedObjectIds($moduleItems,$moduleName );
+        $objectIds = $this->extractLinkedObjectIds($moduleItems['items'],$moduleName );
 
         if (empty($objectIds)) {
             $this->warn("Aucun objet lié trouvé.");
@@ -144,7 +144,7 @@ class ImportRelatedModuleData extends Command
     }
 
     /**
-     * @param array $moduleItems
+     * @param \SimpleXMLElement[] $moduleItems
      * @return array
      */
     private function extractLinkedObjectIds(array $moduleItems, $moduleName = null): array
