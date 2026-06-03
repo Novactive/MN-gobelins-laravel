@@ -71,6 +71,11 @@ class ImportZetcomData extends Command
             $objects = [];
             foreach ($aObjectIds as $objectId) {
                 $moduleItem = $this->zetcomService->getSingleModule('Object', $objectId);
+                if(!$moduleItem) {
+                    $this->error("Objet avec l'id $objectId non trouvé dans Zetcom.");
+                    Log::error("Objet avec l'id $objectId non trouvé dans Zetcom.");
+                    continue;
+                }
                 $aObject = $this->dataProcessor->processObjectsData([$moduleItem]);
                 if (!empty($aObject[0])) {
                     $obj = $aObject[0];
