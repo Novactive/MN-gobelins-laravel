@@ -175,7 +175,7 @@ class ImportRelatedModuleData extends Command
             $this->info("   Traitement du lot " . ($index + 1) . "/" . count($chunks) . " (" . count($chunk) . " objets)");
 
             $objectIdsString = implode(',', $chunk);
-            $command = "php artisan gobelins:import:zetcom --all --limit=10 --offset=0 --objectIds={$objectIdsString}";
+            $command = "/usr/local/bin/php artisan gobelins:import:zetcom --all --limit=10 --offset=0 --objectIds={$objectIdsString}";
             $this->info("   Commande: {$command}");
             $exitCode = 0;
             $output = [];
