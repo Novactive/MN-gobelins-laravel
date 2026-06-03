@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c5dd252879d892c1f4c05b989aca64e0",
+    "content-hash": "d1d9810cf6da9a60411bb23264720f07",
     "packages": [
         {
             "name": "area17/twill",
@@ -2629,16 +2629,16 @@
         },
         {
             "name": "laravel-lang/lang",
-            "version": "7.0.9",
+            "version": "7.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Laravel-Lang/lang.git",
-                "reference": "679a65755db37b35acd36a5e0ca51e055815a00a"
+                "reference": "c1519eb78139869ab8829912adde5f58ca09552f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Laravel-Lang/lang/zipball/679a65755db37b35acd36a5e0ca51e055815a00a",
-                "reference": "679a65755db37b35acd36a5e0ca51e055815a00a",
+                "url": "https://api.github.com/repos/Laravel-Lang/lang/zipball/c1519eb78139869ab8829912adde5f58ca09552f",
+                "reference": "c1519eb78139869ab8829912adde5f58ca09552f",
                 "shasum": ""
             },
             "require": {
@@ -2668,9 +2668,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Laravel-Lang/lang/issues",
-                "source": "https://github.com/Laravel-Lang/lang/tree/7.0.9"
+                "source": "https://github.com/Laravel-Lang/lang/tree/7.0.8"
             },
-            "time": "2020-11-30T20:35:41+00:00"
+            "time": "2020-10-11T08:55:55+00:00"
         },
         {
             "name": "laravel/framework",
@@ -12342,5 +12342,5 @@
         "ext-simplexml": "^7.4"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
